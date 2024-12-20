@@ -1,0 +1,37 @@
+<section  >
+						<img class = "sinistra" src=".\media\" style="width: 45px;"  >
+						<div>
+						<p style="font-size: 1.3svw;">
+							Nome: <br>
+							Vitigno: <br>
+							Produttore: <br>
+							Anno: <br>
+							Regione: <br> <br> 
+						</p>
+
+						<table> 
+
+							<thead><tr>
+								<th style="font-size: 1.3svw;">Odori / puzze / profumi
+								</th>
+								<th style="font-size: 1.3svw;">Un colore
+								</th>
+								<th style="font-size: 1.3svw;">Un sapore</th>
+								<th style="font-size: 1.3svw;">Un posto</th>
+								<th style="font-size: 1.3svw;" > <span class="upsidedown">Duce</span></th>							
+								<th style="font-size: 1.3svw;" > Non <span class="upsidedown">Duce</span></th>
+								<th style="font-size: 1.3svw;">Sentiti liberə</th>
+								<th style="font-size: 1.3svw;">Una canzone napoletana</th>
+							</tr></thead>
+							<tbody>
+								<tr style="font-size: 1.2svw;"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+
+							<tr>
+							</tr>
+						</tbody> 
+					</table>
+					</div>
+					<img  src=".\media\_pimpa.png" style="width: 350px;">
+					
+
+				</section>
