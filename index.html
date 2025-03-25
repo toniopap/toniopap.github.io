@@ -4,289 +4,334 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>Diario del vino</title>
-
+		<meta name="author" content="Antonio Paparella">
+		<title>Esercitazione Econometria n1</title>
 		<link rel="stylesheet" href="dist/reset.css">
 		<link rel="stylesheet" href="dist/reveal.css">
-		<link rel="stylesheet" href="dist/theme/moon.css">
-		<link rel="stylesheet" href="dist/theme/dracula.css">
-		<link rel="stylesheet" href="dist/theme/custom.css">
+		<link rel="stylesheet" href="dist/theme/black.css" id="theme">
 
-
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="plugin/highlight/stackoverflow-dark.css">
 	</head>
 	<body>
 		<div class="reveal">
-			<div class="slides"> 
+			<div class="slides">
+				<section >
+					<h2>Esercitazioni Econometria</h2>
+					<h6>Guida all'utilizzo di Stata</h6>
+					<img src="./img/staccah-stacca.gif"  width="550" >
+				</section>
 				<section>
-					<h2>  Memorie di<br>una bevuta</h2>
-					</section>
-					<section>			
+					<section data-auto-animate>
+						<h2 data-id="code-title">Tutto parte sempre da qui</h2>
+						<pre data-id="code-animation"><code class="language-stata" data-trim data-line-numbers>
+						clear all
 
-						<section>
+						</code></pre>
+						<p>...ma non finisce qui</a>.</p>
+					</section>
+					<section data-auto-animate>
+						<h2 data-id="code-title">Working directory</h2>
+						<p>Prima di iniziare qualunque elaborazione, va indicato a Stata dove si trova il nostro spazio di lavoro</p> 
 							
-							<div class="r-hstack">
-								<video src="./media/Alice_giftovid.mp4" data-autoplay></video>
-								<h4><span  style="writing-mode: vertical-rl; text-orientation: mixed;"  >Scorri a destra per la lista dei vini</span></h4>
-								<audio  data-autoplay  src=".\media\The Office.mp3"></audio>
-							</div>
-							<p>
-								<h4>   Un ringraziamento particolare a (scorri giù)</h4>
+						</p>
+
+						<pre data-id="code-animation"><code class="language-stata" data-trim data-line-numbers>
+						clear all
+						cd "C:\Users\Econometria" //inserire la propria directory
+						pwd
+						</code></pre>
+					</section>
+					<section data-auto-animate>
+						<h2 data-id="code-title">Input data</h2>
+						<p>Per caricare un dataset in Stata si può utilizzare il comando <code>use</code> o <code>import</code></p>
+						</p>
+
+						<pre data-id="code-animation"><code class="language-stata" data-trim data-line-numbers="6,5,4">
+						clear all
+						cd "C:\Users\Econometria" //inserire la propria directory
+						pwd
+						import delimited TableI_1.csv, clear 
+						save data.dta , replace //salvo il dataset in formato .dta
+						use data, clear
+						</code></pre>
+						<p style="font-size: 2svw;">Per aggiungere un commento puoi scrivere il commento dopo due slash <code>//</code> oppure, solo se su una nuova riga, dopo un asterisco <code>*</code></p>
+					</section>
+					<section data-auto-animate>
+						<h2 data-id="code-title">Descrivere il dataset</h2>
+						<p>Per avere un'idea di cosa contiene il dataset, si può utilizzare il comando <code>describe</code></p>
+						</p>
+
+						<pre data-id="code-animation"><code class="language-stata" data-trim data-line-numbers="7">
+						clear all
+						cd "C:\Users\Econometria" //inserire la propria directory
+						pwd
+						import delimited TableI_1.csv, clear 
+						save data.dta , replace //salvo il dataset in formato .dta
+						use data, clear
+						describe
+						</code>
+						</pre>
+
+		
+
+					</section>
+					<section>
+						<section data-markdown>
+							<script type="text/template">
+								Output Stata
+		
+								```html []
+	-------------------------------------
+	Variable      Storage   Display    Value
+		name         type    format    label      Variable label
+	--------------------------------
+	year            int     %8.0g                 Year
+	pcey            float   %9.0g                 PCE.Y.
+	gdpx            float   %9.0g                 GDP.X.
+	------------------------
+	
+								```
+							</script>
+							
+
+						</section>
+						<p style="font-size: 3svw;">
+							Il comando <code>describe</code> restituisce informazioni sulle variabili presenti nel dataset, come il nome, il tipo di dato, il formato e l'etichetta
+							<p  style="font-size: 2svw;"><code>int</code>  = intero, <code>float</code> = decimale, <code>%8.0g</code> = formato numerico
 							</p>
+						</p>
 
-						</section>
-
-						<section>
-							<img class = "sinistra" src=".\media\alinasfoc2.png" style="width: 445px;"  >
-							<h1>L'idea fantastica</h1>
-							
-
-
-						</section>		
-						<section>
-							<img class = "sinistra" src=".\media\dani.jpg" style="width: 300px;"  >
-							
-							<h1>L'ospitalità infinità</h1>
-
-
-						</section>					
-						<section>
-							<img class = "sinistra" src=".\media\aliceimg.jpg" style="width: 245px;"  >
-							<h2>La responsabilità di rappresentare il Piemonte contro la Campania (non era facile) e i super regali!</h2>
-						</section>
+					</section>
+					
+					<section  data-auto-animate>
+						<h3 data-id="code-title">Cambio etichetta alle variabili</h3>
+						 
 						
+						<pre data-id="code-animation"><code class="language-stata" data-trim data-line-numbers="8-9">
+							clear all
+							cd "C:\Users\Econometria" //inserire la propria directory
+							pwd
+							import delimited TableI_1.csv, clear 
+							save data.dta , replace //salvo il dataset in formato .dta
+							use data, clear
+							describe
+							label variable pcey "Personal Consumption Expenditure" 
+							label variable gdpx "Gross Domestic Product"
+						</code>
+						</pre>
+						<p> Do una etichetta più esplicativa ed informativa alle variabili</p>
 					</section>
-				<section>
-					<section  >
-						<img class = "sinistra" src=".\media\timorasso.webp" style="width: 45px;"  >
-						<div>
-						<p style="font-size: 1.3svw;">
-							Nome: Derthona<br>
-							Vitigno: Timorasso<br>
-							Produttore: Borgogno<br>
-							Anno: 2022<br>
-							Regione: Piemonte<br> <br> 
+					<section data-auto-animate>
+						<h3 data-id="code-title">Statistiche descrittive</h3>
+						<p>Per avere un'idea delle statistiche descrittive delle variabili presenti nel dataset, si può utilizzare il comando <code>summarize</code></p>
+						<pre data-id="code-animation"><code class="language-stata" data-trim data-line-numbers="10">
+							clear all
+							cd "C:\Users\Econometria" //inserire la propria directory
+							pwd
+							import delimited TableI_1.csv, clear 
+							save data.dta , replace //salvo il dataset in formato .dta
+							use data, clear
+							describe
+							label variable pcey "Personal Consumption Expenditure" 
+							label variable gdpx "Gross Domestic Product"
+							summarize
+						</code>
+						</pre>
+					</section>
+					<section>
+						<section data-markdown>
+							<script type="text/template">
+								Output Stata
+		
+								```html []
+								Variable |        Obs        Mean    Std. dev.       Min        Max
+								---------+---------------------------------------------------------
+									year |         46      1982.5    13.42262       1960       2005
+									pcey |         46    4047.976    1791.113     1597.4     7841.2
+									gdpx |         46    6022.944    2479.288     2501.8    11048.6	
+								```
+							</script>
+							
+
+						</section>
+						<p style="font-size: 3svw;">
+							Il comando <code>summarize</code> restituisce le statistiche descrittive delle variabili presenti nel dataset, come il numero di osservazioni, la media, la deviazione standard, il minimo e il massimo
+							<p  style="font-size: 2svw;"><code>Obs</code>  = numero di osservazioni, <code> Mean</code> = media, <code>Std. dev.</code> = deviazione standard
+							</p>
 						</p>
 
-						<table> 
-
-							<thead><tr>
-								<th style="font-size: 1.3svw;">Odori / puzze / profumi
-								</th>
-								<th style="font-size: 1.3svw;">Un colore
-								</th>
-								<th style="font-size: 1.3svw;">Un sapore</th>
-								<th style="font-size: 1.3svw;">Un posto</th>
-								<th style="font-size: 1.3svw;" > <span class="upsidedown">Duce</span></th>							
-								<th style="font-size: 1.3svw;" > Non <span class="upsidedown">Duce</span></th>
-								<th style="font-size: 1.3svw;">Sentiti liberə</th>
-								<th style="font-size: 1.3svw;">Una canzone napoletana</th>
-							</tr></thead>
-							<tbody>
-								<tr style="font-size: 1.2svw;"><td>Alghe</td><td>Verde Smeraldo</td><td>Salato Lime</td><td>La corsica</td><td>X</td><td></td><td>Pare leggero ma ti stronca. Comunqque vintage</td><td></td></tr>
-
-							<tr>
-							</tr>
-						</tbody> 
-					</table>
-					</div>
-					<img  src=".\media\timorasso_pimpa.png" style="width: 350px;"> <br>
-					<p style="font-size: 1.0svw;">Scorri in giù per vedere gli altri vini</p>
 					</section>
-					<section  >
-						<img class = "sinistra" src=".\media\terredilavoro.jpg" style="width: 150px;"  >
-						<div>
-						<p style="font-size: 1.3svw;">
-							Nome: Terre di lavoro<br>
-							Vitigno: Aglianico, Piedirosso<br>
-							Produttore: Galardi<br>
-							Anno: 2020?<br>
-							Regione: Campania<br> <br> 
-						</p>
+						<section>
+							<h2>Hypotesis</h2>
+							<blockquote >
+								&ldquo;The fundamental psychological law . . . is that men [women] are disposed, as a rule and on
+								average, to increase their consumption as their income increases, but not as much as the
+								increase in their income
+								&rdquo;
+							</blockquote>
+							<p>In soldoni Keynes dice che per ogni aumento della ricchezza ci sarà un aumento proporzionale della spesa individuale, pari a solo una parte dell'aumento.</p>
+						</section>
+						<section>
+							<h2>Marginal Propensity to Consume</h2>
+							<p>In economics, the marginal propensity to consume (MPC) is a metric that quantifies induced consumption, the concept that the increase in personal consumer spending (consumption) occurs with an increase in disposable income.</p>
+							MPC = ΔC / ΔI
 
-						<table> 
+						</section>
+						<section>
+							<h3>MPC = ΔC / ΔI</h3>
+							<p style="font-size: 2svw;">Mi creo (generate) due variabili contenenti la differenza fra i valori di gpd e pce di un anno con l'anno precedente</p>
+							<pre data-id="code-animation"><code class="language-stata" data-trim data-line-numbers="11-12">
+								clear all
+								cd "C:\Users\Econometria" //inserire la propria directory
+								pwd
+								import delimited TableI_1.csv, clear 
+								save data.dta , replace //salvo il dataset in formato .dta
+								use data, clear
+								describe
+								label variable pcey "Personal Consumption Expenditure" 
+								label variable gdpx "Gross Domestic Product"
+								summarize
+								generate delta_gdpx = (gdpx - gdpx[_n-1]) 
+								generate delta_pcey = (pcey-pcey[_n-1])
+							</code>
+							</pre>
+							<p style="font-size: 2svw;">Per fare riferimento alle osservazioni dell'anno precedente va indicato appnendo fra parentesi quadre l'osservazione a cui si vuole riferire _n -1 </p>
+						</section>
+						<section>
+							<h3>MPC = ΔC / ΔI</h3>
+							<p style="font-size: 3svw;">Mi creo il rapporto fra le due variabili appena create</p>
+							<pre data-id="code-animation"><code class="language-stata" data-trim data-line-numbers="13-14">
+								clear all
+								cd "C:\Users\Econometria" //inserire la propria directory
+								pwd
+								import delimited TableI_1.csv, clear 
+								save data.dta , replace //salvo il dataset in formato .dta
+								use data, clear
+								describe
+								label variable pcey "Personal Consumption Expenditure" 
+								label variable gdpx "Gross Domestic Product"
+								summarize
+								generate delta_gdpx = (gdpx - gdpx[_n-1]) 
+								generate delta_pcey = (pcey-pcey[_n-1])
+								generate MPC = delta_pcey / delta_gdpx
+								summarize MPC
+							</code>
+							</pre>
+						</section>
+						<section data-markdown>
+							<script type="text/template">
+								Output Stata
+		
+								```html []
+								. summarize MPC
 
-							<thead><tr>
-								<th style="font-size: 1.3svw;">Odori / puzze / profumi
-								</th>
-								<th style="font-size: 1.3svw;">Un colore
-								</th>
-								<th style="font-size: 1.3svw;">Un sapore</th>
-								<th style="font-size: 1.3svw;">Un posto</th>
-								<th style="font-size: 1.3svw;" > <span class="upsidedown">Duce</span></th>							
-								<th style="font-size: 1.3svw;" > Non <span class="upsidedown">Duce</span></th>
-								<th style="font-size: 1.3svw;">Sentiti liberə</th>
-								<th style="font-size: 1.3svw;">Una canzone napoletana</th>
-							</tr></thead>
-							<tbody>
-								<tr style="font-size: 1.2svw;"><td></td><td></td><td></td><td>Qui</td><td>gne</td><td>XX</td><td style="font-size: 0.9svw;">Chiacchierare, Gigi si addormenta sul divano a casa Beverello ed è bellino stare qui</td><td></td></tr>
-								<tr style="font-size: 1.2svw;"><td></td><td></td><td></td><td></td><td>X</td><td></td><td></td><td></td></tr>
+								Variable |        Obs        Mean    Std. dev.       Min        Max
+								-------------+-----------------------------------------------------
+									 MPC |         45     .662379     1.77437  -7.690548   8.538462
+								```
+							</script>
+							
 
-							<tr>
-							</tr>
-						</tbody> 
-					</table>
-					</div>
-					<img  src=".\media\terredilavoro_pimpa.png" style="width: 350px;">
-					</section>
+						</section>
+						<section>
+						Facciamo un grafico di dispersione della gdpx e pcey
+						<pre data-id="code-animation"><code class="language-stata" data-trim data-line-numbers="15-16">
+							clear all
+							cd "C:\Users\Econometria" //inserire la propria directory
+							pwd
+							import delimited TableI_1.csv, clear 
+							save data.dta , replace //salvo il dataset in formato .dta
+							use data, clear
+							describe
+							label variable pcey "Personal Consumption Expenditure" 
+							label variable gdpx "Gross Domestic Product"
+							summarize
+							generate delta_gdpx = (gdpx - gdpx[_n-1]) 
+							generate delta_pcey = (pcey-pcey[_n-1])
+							generate MPC = delta_pcey / delta_gdpx
+							summarize MPC
+							scatter pcey gdpx 
+							graph export scatterplot.png, replace
+						</code>
+						</pre>
+						<p>Per salvare il grafico ho bisogno di aggiungere un'ulteriore riga di comando (graph export nomedelgrafico.png,replace) </p>
+						</section>
+						<section>
+							<h1>Output</h1>
+							<img src="scatterplot.png"  width="750" >
+						</section>
+
+
+
+				</section>
 				
-					<section  >
-						<img class = "sinistra" src=".\media\facetus.jpeg" style="width: 150px;"  >
-						<div>
-						<p style="font-size: 1.3svw;">
-							Nome: Facetus<br>
-							Vitigno: Falanghina<br>
-							Produttore: Fontanavecchia<br>
-							Anno: 2010<br>
-							Regione: Campania<br> <br> 
-						</p>
-
-						<table> 
-
-							<thead><tr>
-								<th style="font-size: 1.3svw;">Odori / puzze / profumi
-								</th>
-								<th style="font-size: 1.3svw;">Un colore
-								</th>
-								<th style="font-size: 1.3svw;">Un sapore</th>
-								<th style="font-size: 1.3svw;">Un posto</th>
-								<th style="font-size: 1.3svw;" > <span class="upsidedown">Duce</span></th>							
-								<th style="font-size: 1.3svw;" > Non <span class="upsidedown">Duce</span></th>
-								<th style="font-size: 1.3svw;">Sentiti liberə</th>
-								<th style="font-size: 1.3svw;">Una canzone napoletana</th>
-							</tr></thead>
-							<tbody>
-								<tr style="font-size: 1.2svw;"><td>Pastiera</td><td>Dorato</td><td style="font-size: 0.9svw;">Dolcetto fine pasto (Piccola pasticceria)</td><td style="font-size: 0.9svw;">Cena a base di pesce a casa</td><td>X</td><td></td><td></td><td>Reginella</td></tr>
-								<tr style="font-size: 1.2svw;"><td>Profumo donna dolce</td><td></td><td>Passito</td><td></td><td></td><td></td><td></td><td></td></tr>
-								<tr style="font-size: 1.2svw;"><td>Le candele profumate però estive</td><td></td><td></td><td>La spiaggia</td><td></td><td></td><td></td><td></td></tr>
-
-							<tr>
-							</tr>
-						</tbody> 
-					</table>
-					</div>
-					<img  src=".\media\facetus_pimpa.png" style="width: 350px;">
+				<section>
+					<section>
+					<h1>Esercizio</h1>
+					Data_es1.csv gives data on the Consumer Price Index (CPI) for seven industrialized
+countries with 1982–1984 = 100 as the base of the index.
 					</section>
-					<section  >
-						<img class = "sinistra" src=".\media\lamatta.jpg" style="width: 195px;"  >
-						<div>
-						<p style="font-size: 1.3svw;">
-							Nome: La Matta<br>
-							Vitigno: Fiano<br>
-							Produttore: Casebianche<br>
-							Anno: 2023<br>
-							Regione: Campania<br> <br> 
-						</p>
+					<section>
+						<h2>Esercizio</h2>
+						<h4>Parte 1</h4>
+						<ol>
+							<li>Import the data end save the as Stata dataset (.dta)</li>
+							<li>Create a do file indicating the directory where the data is stored</li>
+							<li>Calculate the descriptive statistics for the Consumer Price Index (CPI) for the seven industrialized countries</li>
+							<li>which country has the highest average CPI?</li>
+							<li>Which has scored in any year the maximum level of CPI?</li>
+						</ol>
+					</section>
+						<section>
+							<h2>Esercizio</h2>
+							<h4>Parte 2</h4>
+							<ol>
+								<li  style="font-size: 2svw;">From the given data, compute the inflation rate for each country.
+									<p  style="font-size: 1svw;">Hint - Subtract from the current year’s CPI the CPI from the previous year, divide the difference by the
+										previous year’s CPI, and multiply the result by 100. Thus, the inflation rate for Canada for 1981 is
+										[(85.6 − 76.1)/76.1] × 100 = 12.48% (approx.).</p></li>
+									<li  style="font-size: 2svw;">Plot the inflation rate for each country against time (i.e., use the horizontal axis for	time and the vertical axis for the inflation rate).</li>
+									<li  style="font-size: 2svw;">What broad conclusions can you draw about the inflation experience in the seven countries?</li>
+									<li  style="font-size: 2svw;">Which country’s inflation rate seems to be most variable? Can you offer any explanation?</li>
+							</ol>
 
-						<table> 
+						
+						</section>
+						<section>
+							<h2>Esercizio</h2>
+							<h4>Parte 3</h4>
+							<ol>
+								<li  style="font-size: 2svw;">
+									Plot the inflation rate of Canada, France, Germany, Italy, Japan,and the United Kingdom against the United States inflation rate.
+								</li>
+								<li  style="font-size: 2svw;">
+									Comment generally about the behavior of the inflation rate in the six countries vis-à-vis the U.S. inflation rate.
+								</li>
+								<li  style="font-size: 2svw;">
+									If you find that the six countries’ inflation rates move in the same direction as the U.S. inflation rate, would that suggest that U.S. inflation “causes” inflation in the other countries? Why or why not?
+								</li>
+							</ol>
+							
+						</section>
 
-							<thead><tr>
-								<th style="font-size: 1.3svw;">Odori / puzze / profumi
-								</th>
-								<th style="font-size: 1.3svw;">Un colore
-								</th>
-								<th style="font-size: 1.3svw;">Un sapore</th>
-								<th style="font-size: 1.3svw;">Un posto</th>
-								<th style="font-size: 1.3svw;" > <span class="upsidedown">Duce</span></th>							
-								<th style="font-size: 1.3svw;" > Non <span class="upsidedown">Duce</span></th>
-								<th style="font-size: 1.3svw;">Sentiti liberə</th>
-								<th style="font-size: 1.3svw;">Una canzone napoletana</th>
-							</tr></thead>
-							<tbody>
-								<tr style="font-size: 1.2svw;"><td></td><td>Arancione tipo clementine</td><td></td><td></td><td>Zazzu</td><td>X</td><td>ALICE PUZZA non il vino</td><td></td></tr>
-
-							<tr>
-							</tr>
-						</tbody> 
-					</table>
-					</div>
-					<img  src=".\media\lamatta_pimpa.png" style="width: 350px;">
+					</section>
 					
 
 				</section>
-
-
-
-				<section  >
-					<img class = "sinistra" src=".\media\ventiventi.jpg" style="width: 145px;"  >
-					<div>
-					<p style="font-size: 1.3svw;">
-						Nome: Ventiventi<br>
-						Vitigno: Trebbiano<br>
-						Produttore: Fattoria La Rivolta<br>
-						Anno: ?<br>
-						Regione: Campania<br> <br> 
-					</p>
-
-					<table> 
-
-						<thead><tr>
-							<th style="font-size: 1.3svw;">Odori / puzze / profumi
-							</th>
-							<th style="font-size: 1.3svw;">Un colore
-							</th>
-							<th style="font-size: 1.3svw;">Un sapore</th>
-							<th style="font-size: 1.3svw;">Un posto</th>
-							<th style="font-size: 1.3svw;" > <span class="upsidedown">Duce</span></th>							
-							<th style="font-size: 1.3svw;" > Non <span class="upsidedown">Duce</span></th>
-							<th style="font-size: 1.3svw;">Sentiti liberə</th>
-							<th style="font-size: 1.3svw;">Una canzone napoletana</th>
-						</tr></thead>
-						<tbody>
-							<tr style="font-size: 1.2svw;"><td>Benzina (kerosene?)</td><td>Turchese</td><td>Sapone</td><td>Chiringuito</td><td></td><td></td><td></td><td></td></tr>
-
-						<tr>
-						</tr>
-					</tbody> 
-				</table>
-				</div>
-				<img  src=".\media\ventiventi_pimpa.png" style="width: 350px;">
-				
-
-			</section>
-			<section  >
-				<img class = "sinistra" src=".\media\bramaterra.png" style="width: 45px;"  >
-				<div>
-				<p style="font-size: 1.3svw;">
-					Nome: Bramaterra<br>
-					Vitigno: Nebbiolo 70%, Croatina 20%, Vespolina 7%, Uva Rara 3%<br>
-					Produttore: Antoniotti<br>
-					Anno: 2000<br>
-					Regione: Piemonte<br> <br> 
-				</p>
-				<p>
-					<img class = "sinistra" src=".\media\altalanga.webp" style="width: 100px;"  >
-				<div>
-				<p style="font-size: 1.3svw;">
-					Nome: Limited Edition<br>
-					Vitigno: Pinot Nero, Chardonnay<br>
-					Produttore: Fontanafredda<br>
-					Anno: 2020<br>
-					Regione: Piemonte<br> <br> 
-				</p>
-				</p>
-				
-				<p>
-					<img class = "sinistra" src=".\media\gelsonero.webp" style="width: 100px;"  >
-				<div>
-				<p style="font-size: 1.3svw;">
-					Nome: Lacrima Christi Gelsonero<br>
-					Vitigno: Piedirosso 80%, Aglianico 20%<br>
-					Produttore: Villa Dora<br>
-					Anno: 2020<br>
-					Regione: Campania<br> <br> 
-				</p>
-				</p>
-		</section>
-				<section>
-					<h4>
-						Gli altri vini non ci ricordiamo quali erano
-					</h4> 
-					<img  src=".\media\io.jpg" style="width: 400px;"  >
-					<h4>Bonus pic</h4>
-				</section>
 					
-			</section>
+						</section>
+						</script>
+					</section>
+					</section>
+					</section>
+
+
+					
+				</section>
+
 			</div>
+			
 		</div>
 
 		<script src="dist/reveal.js"></script>
