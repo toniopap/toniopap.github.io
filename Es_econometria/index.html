@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<meta name="author" content="Antonio Paparella">
+		<title>Esercitazione Econometria n1</title>
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="dist/theme/black.css" id="theme">
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="plugin/highlight/stackoverflow-dark.css">
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section >
+					<h2>Esercitazioni Econometria</h2>
+					<h6>Guida all'utilizzo di Stata</h6>
+					<img src="./img/staccah-stacca.gif"  width="550" >
+				</section>
+				<section>
+					<section data-auto-animate>
+						<h2 data-id="code-title">Tutto parte sempre da qui</h2>
+						<pre data-id="code-animation"><code class="language-stata" data-trim data-line-numbers>
+						clear all
+
+						</code></pre>
+						<p>...ma non finisce qui</a>.</p>
+					</section>
+					<section data-auto-animate>
+						<h2 data-id="code-title">Working directory</h2>
+						<p>Prima di iniziare qualunque elaborazione, va indicato a Stata dove si trova il nostro spazio di lavoro</p> 
+							
+						</p>
+
+						<pre data-id="code-animation"><code class="language-stata" data-trim data-line-numbers>
+						clear all
+						cd "C:\Users\Econometria" //inserire la propria directory
+						pwd
+						</code></pre>
+					</section>
+					<section data-auto-animate>
+						<h2 data-id="code-title">Input data</h2>
+						<p>Per caricare un dataset in Stata si può utilizzare il comando <code>use</code> o <code>import</code></p>
+						</p>
+
+						<pre data-id="code-animation"><code class="language-stata" data-trim data-line-numbers="6,5,4">
+						clear all
+						cd "C:\Users\Econometria" //inserire la propria directory
+						pwd
+						import delimited TableI_1.csv, clear 
+						save data.dta , replace //salvo il dataset in formato .dta
+						use data, clear
+						</code></pre>
+						<p style="font-size: 2svw;">Per aggiungere un commento puoi scrivere il commento dopo due slash <code>//</code> oppure, solo se su una nuova riga, dopo un asterisco <code>*</code></p>
+					</section>
+					<section data-auto-animate>
+						<h2 data-id="code-title">Descrivere il dataset</h2>
+						<p>Per avere un'idea di cosa contiene il dataset, si può utilizzare il comando <code>describe</code></p>
+						</p>
+
+						<pre data-id="code-animation"><code class="language-stata" data-trim data-line-numbers="7">
+						clear all
+						cd "C:\Users\Econometria" //inserire la propria directory
+						pwd
+						import delimited TableI_1.csv, clear 
+						save data.dta , replace //salvo il dataset in formato .dta
+						use data, clear
+						describe
+						</code>
+						</pre>
+
+		
+
+					</section>
+					<section>
+						<section data-markdown>
+							<script type="text/template">
+								Output Stata
+		
+								```html []
+	-------------------------------------
+	Variable      Storage   Display    Value
+		name         type    format    label      Variable label
+	--------------------------------
+	year            int     %8.0g                 Year
+	pcey            float   %9.0g                 PCE.Y.
+	gdpx            float   %9.0g                 GDP.X.
+	------------------------
+	
+								```
+							</script>
+							
+
+						</section>
+						<p style="font-size: 3svw;">
+							Il comando <code>describe</code> restituisce informazioni sulle variabili presenti nel dataset, come il nome, il tipo di dato, il formato e l'etichetta
+							<p  style="font-size: 2svw;"><code>int</code>  = intero, <code>float</code> = decimale, <code>%8.0g</code> = formato numerico
+							</p>
+						</p>
+
+					</section>
+					
+					<section  data-auto-animate>
+						<h3 data-id="code-title">Cambio etichetta alle variabili</h3>
+						 
+						
+						<pre data-id="code-animation"><code class="language-stata" data-trim data-line-numbers="8-9">
+							clear all
+							cd "C:\Users\Econometria" //inserire la propria directory
+							pwd
+							import delimited TableI_1.csv, clear 
+							save data.dta , replace //salvo il dataset in formato .dta
+							use data, clear
+							describe
+							label variable pcey "Personal Consumption Expenditure" 
+							label variable gdpx "Gross Domestic Product"
+						</code>
+						</pre>
+						<p> Do una etichetta più esplicativa ed informativa alle variabili</p>
+					</section>
+					<section data-auto-animate>
+						<h3 data-id="code-title">Statistiche descrittive</h3>
+						<p>Per avere un'idea delle statistiche descrittive delle variabili presenti nel dataset, si può utilizzare il comando <code>summarize</code></p>
+						<pre data-id="code-animation"><code class="language-stata" data-trim data-line-numbers="10">
+							clear all
+							cd "C:\Users\Econometria" //inserire la propria directory
+							pwd
+							import delimited TableI_1.csv, clear 
+							save data.dta , replace //salvo il dataset in formato .dta
+							use data, clear
+							describe
+							label variable pcey "Personal Consumption Expenditure" 
+							label variable gdpx "Gross Domestic Product"
+							summarize
+						</code>
+						</pre>
+					</section>
+					<section>
+						<section data-markdown>
+							<script type="text/template">
+								Output Stata
+		
+								```html []
+								Variable |        Obs        Mean    Std. dev.       Min        Max
+								---------+---------------------------------------------------------
+									year |         46      1982.5    13.42262       1960       2005
+									pcey |         46    4047.976    1791.113     1597.4     7841.2
+									gdpx |         46    6022.944    2479.288     2501.8    11048.6	
+								```
+							</script>
+							
+
+						</section>
+						<p style="font-size: 3svw;">
+							Il comando <code>summarize</code> restituisce le statistiche descrittive delle variabili presenti nel dataset, come il numero di osservazioni, la media, la deviazione standard, il minimo e il massimo
+							<p  style="font-size: 2svw;"><code>Obs</code>  = numero di osservazioni, <code> Mean</code> = media, <code>Std. dev.</code> = deviazione standard
+							</p>
+						</p>
+
+					</section>
+						<section>
+							<h2>Hypotesis</h2>
+							<blockquote >
+								&ldquo;The fundamental psychological law . . . is that men [women] are disposed, as a rule and on
+								average, to increase their consumption as their income increases, but not as much as the
+								increase in their income
+								&rdquo;
+							</blockquote>
+							<p>In soldoni Keynes dice che per ogni aumento della ricchezza ci sarà un aumento proporzionale della spesa individuale, pari a solo una parte dell'aumento.</p>
+						</section>
+						<section>
+							<h2>Marginal Propensity to Consume</h2>
+							<p>In economics, the marginal propensity to consume (MPC) is a metric that quantifies induced consumption, the concept that the increase in personal consumer spending (consumption) occurs with an increase in disposable income.</p>
+							MPC = ΔC / ΔI
+
+						</section>
+						<section>
+							<h3>MPC = ΔC / ΔI</h3>
+							<p style="font-size: 2svw;">Mi creo (generate) due variabili contenenti la differenza fra i valori di gpd e pce di un anno con l'anno precedente</p>
+							<pre data-id="code-animation"><code class="language-stata" data-trim data-line-numbers="11-12">
+								clear all
+								cd "C:\Users\Econometria" //inserire la propria directory
+								pwd
+								import delimited TableI_1.csv, clear 
+								save data.dta , replace //salvo il dataset in formato .dta
+								use data, clear
+								describe
+								label variable pcey "Personal Consumption Expenditure" 
+								label variable gdpx "Gross Domestic Product"
+								summarize
+								generate delta_gdpx = (gdpx - gdpx[_n-1]) 
+								generate delta_pcey = (pcey-pcey[_n-1])
+							</code>
+							</pre>
+							<p style="font-size: 2svw;">Per fare riferimento alle osservazioni dell'anno precedente va indicato appnendo fra parentesi quadre l'osservazione a cui si vuole riferire _n -1 </p>
+						</section>
+						<section>
+							<h3>MPC = ΔC / ΔI</h3>
+							<p style="font-size: 3svw;">Mi creo il rapporto fra le due variabili appena create</p>
+							<pre data-id="code-animation"><code class="language-stata" data-trim data-line-numbers="13-14">
+								clear all
+								cd "C:\Users\Econometria" //inserire la propria directory
+								pwd
+								import delimited TableI_1.csv, clear 
+								save data.dta , replace //salvo il dataset in formato .dta
+								use data, clear
+								describe
+								label variable pcey "Personal Consumption Expenditure" 
+								label variable gdpx "Gross Domestic Product"
+								summarize
+								generate delta_gdpx = (gdpx - gdpx[_n-1]) 
+								generate delta_pcey = (pcey-pcey[_n-1])
+								generate MPC = delta_pcey / delta_gdpx
+								summarize MPC
+							</code>
+							</pre>
+						</section>
+						<section data-markdown>
+							<script type="text/template">
+								Output Stata
+		
+								```html []
+								. summarize MPC
+
+								Variable |        Obs        Mean    Std. dev.       Min        Max
+								-------------+-----------------------------------------------------
+									 MPC |         45     .662379     1.77437  -7.690548   8.538462
+								```
+							</script>
+							
+
+						</section>
+						<section>
+						Facciamo un grafico di dispersione della gdpx e pcey
+						<pre data-id="code-animation"><code class="language-stata" data-trim data-line-numbers="15-16">
+							clear all
+							cd "C:\Users\Econometria" //inserire la propria directory
+							pwd
+							import delimited TableI_1.csv, clear 
+							save data.dta , replace //salvo il dataset in formato .dta
+							use data, clear
+							describe
+							label variable pcey "Personal Consumption Expenditure" 
+							label variable gdpx "Gross Domestic Product"
+							summarize
+							generate delta_gdpx = (gdpx - gdpx[_n-1]) 
+							generate delta_pcey = (pcey-pcey[_n-1])
+							generate MPC = delta_pcey / delta_gdpx
+							summarize MPC
+							scatter pcey gdpx 
+							graph export scatterplot.png, replace
+						</code>
+						</pre>
+						<p>Per salvare il grafico ho bisogno di aggiungere un'ulteriore riga di comando (graph export nomedelgrafico.png,replace) </p>
+						</section>
+						<section>
+							<h1>Output</h1>
+							<img src="scatterplot.png"  width="750" >
+						</section>
+
+
+
+				</section>
+				
+				<section>
+					<section>
+					<h1>Esercizio</h1>
+					Data_es1.csv gives data on the Consumer Price Index (CPI) for seven industrialized
+countries with 1982–1984 = 100 as the base of the index.
+					</section>
+					<section>
+						<h2>Esercizio</h2>
+						<h4>Parte 1</h4>
+						<ol>
+							<li><a href="Data_es_1.csv" download>
+								Download the data from this link
+							  </a></li>
+								<li>import the data end save the as Stata dataset (.dta)</li>
+							<li>Create a do file indicating the directory where the data is stored</li>
+							<li>Calculate the descriptive statistics for the Consumer Price Index (CPI) for the seven industrialized countries</li>
+							<li>which country has the highest average CPI?</li>
+							<li>Which has scored in any year the maximum level of CPI?</li>
+						</ol>
+					</section>
+						<section>
+							<h2>Esercizio</h2>
+							<h4>Parte 2</h4>
+							<ol>
+								<li  style="font-size: 2svw;">From the given data, compute the inflation rate for each country.
+									<p  style="font-size: 1svw;">Hint - Subtract from the current year’s CPI the CPI from the previous year, divide the difference by the
+										previous year’s CPI, and multiply the result by 100. Thus, the inflation rate for Canada for 1981 is
+										[(85.6 − 76.1)/76.1] × 100 = 12.48% (approx.).</p></li>
+									<li  style="font-size: 2svw;">Plot the inflation rate for each country against time (i.e., use the horizontal axis for	time and the vertical axis for the inflation rate).</li>
+									<li  style="font-size: 2svw;">What broad conclusions can you draw about the inflation experience in the seven countries?</li>
+									<li  style="font-size: 2svw;">Which country’s inflation rate seems to be most variable? Can you offer any explanation?</li>
+							</ol>
+
+						
+						</section>
+						<section>
+							<h2>Esercizio</h2>
+							<h4>Parte 3</h4>
+							<ol>
+								<li  style="font-size: 2svw;">
+									Plot the inflation rate of Canada, France, Germany, Italy, Japan,and the United Kingdom against the United States inflation rate.
+								</li>
+								<li  style="font-size: 2svw;">
+									Comment generally about the behavior of the inflation rate in the six countries vis-à-vis the U.S. inflation rate.
+								</li>
+								<li  style="font-size: 2svw;">
+									If you find that the six countries’ inflation rates move in the same direction as the U.S. inflation rate, would that suggest that U.S. inflation “causes” inflation in the other countries? Why or why not?
+								</li>
+							</ol>
+							
+						</section>
+
+					</section>
+					
+
+				</section>
+					
+						</section>
+						</script>
+					</section>
+					</section>
+					</section>
+
+
+					
+				</section>
+
+			</div>
+			
+		</div>
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+			});
+		</script>
+	</body>
+</html>
