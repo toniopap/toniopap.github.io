@@ -318,14 +318,14 @@
 <script>
 const questions = [
   {
-    q: "Il surplus del produttore:",
+    q: "All'impresa conviene sospendere la produzione se:",
     opts: [
-      { l:"a", t:"è la differenza tra i profitti e i costi di produzione." },
-      { l:"b", t:"è la differenza tra i ricavi totali e i costi di produzione." },
-      { l:"c", t:"è la disponibilità a pagare meno i costi." }
+      { l:"a", t:"il prezzo è inferiore ai costi totali medi, ma superiore ai costi variabili medi." },
+      { l:"b", t:"il prezzo è inferiore sia ai costi totali medi che ai costi variabili medi." },
+      { l:"c", t:"il prezzo è uguale ai costi marginali." }
     ],
     correct: "b",
-    explain: "Il surplus del produttore è ciò che il produttore riceve in più rispetto al minimo che sarebbe disposto ad accettare, cioè la differenza tra i ricavi totali e i costi di produzione. Non va confuso con il profitto netto (a) né con la disponibilità a pagare dei consumatori (c)."
+    explain: "Nel breve periodo l'impresa sopporta comunque i costi fissi, quindi conviene produrre finché il prezzo copre almeno i costi variabili medi (P ≥ CVM). Se P < CVM, ogni unità prodotta genera una perdita aggiuntiva superiore ai costi fissi: conviene fermarsi. Se invece P > CVM ma P < CMe (opzione a), l'impresa realizza una perdita, ma produce lo stesso perché riduce la perdita rispetto alla chiusura totale."
   },
   {
     q: "Il surplus del consumatore:",
@@ -400,11 +400,11 @@ const questions = [
   {
     q: "Con εd (elasticità di domanda al prezzo) uguale a −3, un aumento di prezzo del 4%:",
     opts: [
-      { l:"i",   t:"fa aumentare la domanda del 3%." },
-      { l:"ii",  t:"fa diminuire la domanda del 4%." },
-      { l:"iii", t:"fa diminuire la domanda del 12%." }
+      { l:"a",   t:"fa aumentare la domanda del 3%." },
+      { l:"b",  t:"fa diminuire la domanda del 4%." },
+      { l:"c", t:"fa diminuire la domanda del 12%." }
     ],
-    correct: "iii",
+    correct: "c",
     explain: "Dalla formula dell'elasticità: %ΔQ = εd × %ΔP = −3 × 4% = −12%. La domanda diminuisce del 12%. Un'elasticità di −3 indica che la domanda è molto elastica: una variazione del prezzo produce una variazione della quantità tre volte più grande."
   }
 ];
