@@ -1,0 +1,149 @@
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  c:\Users\tonio\OneDrive\Documenti\GitHub\toniopap.github.io\mus03p
+> 1reg.txt
+  log type:  text
+ opened on:   1 Apr 2025, 11:53:55
+
+. 
+. ********** OVERVIEW OF mus03p1reg.do **********
+. 
+. * STATA Program 
+. * copyright C 2008 by A. Colin Cameron and Pravin K. Trivedi 
+. * used for "Microeconometrics using Stata" 
+. * by A. Colin Cameron and Pravin K. Trivedi (2008)
+. * Stata Press
+. 
+. * Chapter 3
+. * 3.2: DATA: SUMMARY STATISTICS
+. * 3.4: BASIC REGRESSION ANALYSIS
+. * 3.5: SPECIFICATION ANALYSIS
+. * 3.6: PREDICTION
+. * 3.7: SAMPLING WEIGHTS
+. * 3.8: OLS USING MATA
+. 
+. * To run you need files
+. *   mus03data.dta 
+. * in your directory
+. * Stata user-written commands 
+. *    esttab
+. *    estadd
+. * are used
+. 
+. ********** SETUP **********
+. 
+. set more off
+
+. version 10.1
+
+. clear all
+
+. set mem 10m
+
+. set linesize 82
+
+. set scheme s1mono  /* Graphics scheme */
+
+. 
+. ********** DATA DESCRIPTION **********
+. 
+. * File mus03data is extract from MEPS
+. 
+. ************ 3.2: DATA SUMMARY STATISTICS
+. 
+. * Variable description for medical expenditure dataset
+. use mus03data.dta
+
+. describe totexp ltotexp posexp suppins phylim actlim totchr age female income
+
+Variable      Storage   Display    Value
+    name         type    format    label      Variable label
+----------------------------------------------------------------------------------
+totexp          double  %12.0g                Total medical expenditure
+ltotexp         float   %9.0g                 ln(totexp) if totexp > 0
+posexp          float   %9.0g                 =1 if total expenditure > 0
+suppins         float   %9.0g                 =1 if has supp priv insurance
+phylim          double  %12.0g                =1 if has functional limitation
+actlim          double  %12.0g                =1 if has activity limitation
+totchr          double  %12.0g                # of chronic problems
+age             double  %12.0g                Age
+female          double  %12.0g                =1 if female
+income          double  %12.0g                annual household income/1000
+
+. 
+. * Summary statistics for medical expenditure dataset
+. summarize totexp ltotexp posexp suppins phylim actlim totchr age female income
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+      totexp |      3,064    7030.889    11852.75          0     125610
+     ltotexp |      2,955    8.059866    1.367592   1.098612   11.74094
+      posexp |      3,064    .9644256    .1852568          0          1
+     suppins |      3,064    .5812663    .4934321          0          1
+      phylim |      3,064    .4255875    .4945125          0          1
+-------------+---------------------------------------------------------
+      actlim |      3,064    .2836162    .4508263          0          1
+      totchr |      3,064    1.754243    1.307197          0          7
+         age |      3,064    74.17167    6.372938         65         90
+      female |      3,064    .5796345    .4936982          0          1
+      income |      3,064    22.47472    22.53491         -1     312.46
+
+. 
+. reg ltotexp suppins phylim actlim totchr age female income
+
+      Source |       SS           df       MS      Number of obs   =     2,955
+-------------+----------------------------------   F(7, 2947)      =    124.98
+       Model |  1264.72124         7  180.674463   Prob > F        =    0.0000
+    Residual |  4260.16814     2,947  1.44559489   R-squared       =    0.2289
+-------------+----------------------------------   Adj R-squared   =    0.2271
+       Total |  5524.88938     2,954  1.87030785   Root MSE        =    1.2023
+
+------------------------------------------------------------------------------
+     ltotexp | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+     suppins |   .2556428   .0462264     5.53   0.000     .1650034    .3462821
+      phylim |   .3020598   .0569709     5.30   0.000      .190353    .4137666
+      actlim |   .3560054   .0621118     5.73   0.000     .2342185    .4777923
+      totchr |   .3758201   .0184227    20.40   0.000     .3396974    .4119429
+         age |   .0038016   .0036561     1.04   0.299    -.0033672    .0109704
+      female |  -.0843275   .0455442    -1.85   0.064    -.1736292    .0049741
+      income |   .0025498   .0010194     2.50   0.012      .000551    .0045486
+       _cons |   6.703737     .27676    24.22   0.000     6.161075      7.2464
+------------------------------------------------------------------------------
+
+. ereturn list
+
+scalars:
+                  e(N) =  2955
+               e(df_m) =  7
+               e(df_r) =  2947
+                  e(F) =  124.9827761030723
+                 e(r2) =  .2289134045493729
+               e(rmse) =  1.202328944623663
+                e(mss) =  1264.721238253047
+                e(rss) =  4260.168144012319
+               e(r2_a) =  .2270818449402265
+                 e(ll) =  -4733.447609695301
+               e(ll_0) =  -5117.530525235335
+               e(rank) =  8
+
+macros:
+            e(cmdline) : "regress ltotexp suppins phylim actlim totchr age fem.."
+              e(title) : "Linear regression"
+          e(marginsok) : "XB default"
+                e(vce) : "ols"
+             e(depvar) : "ltotexp"
+                e(cmd) : "regress"
+         e(properties) : "b V"
+            e(predict) : "regres_p"
+              e(model) : "ols"
+          e(estat_cmd) : "regress_estat"
+
+matrices:
+                  e(b) :  1 x 8
+                  e(V) :  8 x 8
+               e(beta) :  1 x 7
+
+functions:
+             e(sample)   
+
