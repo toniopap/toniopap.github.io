@@ -1,0 +1,11 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="50" height="50">
+	<title>social_tw</title>
+	<style>
+		.s0 { fill: #383737 } 
+		.s1 { fill: #ffffff } 
+	</style>
+	<g id="&lt;Group&gt;">
+		<path id="&lt;Path&gt;" fill-rule="evenodd" class="s0" d="m25 50c-13.8 0-24.9-11.2-24.9-25 0-13.8 11.1-24.9 24.9-24.9 13.8 0 25 11.1 25 24.9 0 13.8-11.2 25-25 25z"/>
+		<path id="&lt;Compound Path&gt;" fill-rule="evenodd" class="s1" d="m31.7 15.2h3.2l-7 8.3 8.2 11.3h-6.4l-5.1-6.9-5.8 6.9h-3.2l7.5-8.9-7.9-10.7h6.6l4.6 6.3zm-1.2 17.5h1.8l-11.5-15.7h-1.8z"/>
+	</g>
+</svg>

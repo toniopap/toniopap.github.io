@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="133" height="133" viewBox="0 0 133 133">
+  <defs>
+    <filter id="Ellipse_13" x="0" y="0" width="133" height="133" filterUnits="userSpaceOnUse">
+      <feOffset input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="7.5" result="blur"/>
+      <feFlood flood-opacity="0.078"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="torna-su" transform="translate(-1754.5 -6328.5)">
+    <g transform="matrix(1, 0, 0, 1, 1754.5, 6328.5)" filter="url(#Ellipse_13)">
+      <circle id="Ellipse_13-2" data-name="Ellipse 13" cx="44" cy="44" r="44" transform="translate(22.5 22.5)" fill="#fff"/>
+    </g>
+    <g id="Group_288" data-name="Group 288" transform="translate(1802 6376.338)">
+      <rect id="Rectangle_59" data-name="Rectangle 59" width="38" height="38" transform="translate(0 -0.338)" fill="none"/>
+      <line id="Line_87" data-name="Line 87" y1="22" transform="translate(19 10.662)" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+      <path id="Path_6" data-name="Path 6" d="M56,82.592,66.592,72,77.185,82.592" transform="translate(-47.762 -61.408)" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+      <line id="Line_88" data-name="Line 88" x2="26" transform="translate(6 5.662)" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+    </g>
+  </g>
+</svg>
