@@ -1,0 +1,125 @@
+
+<style>
+  .qblock { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 1rem; }
+  .qnum { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 0.4rem; }
+  .qtext { font-size: 15px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.9rem; line-height: 1.5; }
+  .opt { display: flex; align-items: flex-start; gap: 10px; padding: 0.55rem 0.75rem; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); margin-bottom: 0.45rem; cursor: pointer; font-size: 14px; color: var(--color-text-primary); background: var(--color-background-secondary); transition: background 0.12s; user-select: none; }
+  .opt:hover { background: var(--color-background-tertiary); }
+  .opt.selected { border-color: #378ADD; background: #E6F1FB; color: #042C53; }
+  .opt.correct { border-color: #3B6D11; background: #EAF3DE; color: #27500A; }
+  .opt.wrong { border-color: #A32D2D; background: #FCEBEB; color: #791F1F; }
+  .opt.reveal { border-color: #3B6D11; background: #EAF3DE; color: #27500A; }
+  .opt-letter { font-weight: 500; min-width: 18px; }
+  .feedback-txt { font-size: 13px; margin-top: 0.6rem; padding: 0.5rem 0.75rem; border-radius: var(--border-radius-md); }
+  .feedback-txt.ok { background: #EAF3DE; color: #27500A; }
+  .feedback-txt.ko { background: #FCEBEB; color: #791F1F; }
+  .submit-row { text-align: center; margin: 1.5rem 0 0.5rem; }
+  .submit-btn { background: transparent; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 0.65rem 2rem; font-size: 15px; cursor: pointer; color: var(--color-text-primary); }
+  .submit-btn:hover { background: var(--color-background-secondary); }
+  .result-banner { text-align: center; padding: 1.5rem; background: var(--color-background-secondary); border-radius: var(--border-radius-lg); margin-bottom: 1rem; }
+  .result-score { font-size: 42px; font-weight: 500; color: var(--color-text-primary); }
+  .result-sub { font-size: 14px; color: var(--color-text-secondary); margin-top: 0.3rem; }
+</style>
+
+<div style="padding: 0.5rem 0;" id="quizroot"></div>
+
+<script>
+const QS = [
+  { q:"Cosa studia la microeconomia?", opts:["L'economia di un intero paese nel suo complesso","Come individui, famiglie e imprese compiono le loro scelte e come queste influiscono su prezzi e risorse","Solo i fenomeni legati alla disoccupazione e al PIL","Esclusivamente le scelte delle grandi imprese multinazionali"], c:1, exp:"La microeconomia studia come individui, nuclei familiari ed imprese compiono le loro scelte e come queste influiscono sui prezzi, l'allocazione delle risorse e il benessere degli altri agenti." },
+
+  { q:"Cos'è il costo-opportunità?", opts:["Il costo monetario diretto di un bene o servizio","Il valore della migliore alternativa a cui si rinuncia quando si effettua una scelta","Il costo totale di tutte le alternative disponibili","La tassa pagata sulle opportunità di guadagno"], c:1, exp:"Il costo-opportunità è il valore della migliore alternativa a cui si rinuncia quando si effettua una scelta tra diverse opzioni." },
+
+  { q:"Quando si verifica un eccesso di offerta in un mercato?", opts:["Quando il prezzo è al di sotto del prezzo di equilibrio","Quando il prezzo è al di sopra del prezzo di equilibrio","Quando la domanda supera l'offerta","Quando non ci sono venditori nel mercato"], c:1, exp:"L'eccesso di offerta si verifica quando il prezzo di mercato è al di sopra del prezzo di equilibrio: la quantità offerta supera la quantità domandata." },
+
+  { q:"Come si sposta la curva di domanda di un bene normale quando il reddito aumenta?", opts:["Si sposta a sinistra (la domanda diminuisce)","Rimane invariata","Si sposta a destra (la domanda aumenta)","Diventa verticale"], c:2, exp:"Per un bene normale, un incremento di reddito causa uno spostamento a destra della curva di domanda, cioè si domanda di più a parità di prezzo." },
+
+  { q:"In un mercato perfettamente concorrenziale, i partecipanti sono detti:", opts:["Price-maker, perché possono fissare il prezzo","Price-taker, perché nessun singolo agente può influenzare il prezzo di mercato","Price-setter, perché negoziano bilateralmente","Price-leader, perché guidano le scelte degli altri"], c:1, exp:"In concorrenza perfetta, nessun singolo consumatore o impresa ha potere di influenzare il prezzo: tutti sono price-taker." },
+
+  { q:"Cosa produce lo spostamento della curva di offerta verso sinistra?", opts:["Prezzo più basso e quantità più alta","Prezzo più alto e quantità più alta","Prezzo più alto e quantità di equilibrio più bassa","Nessuna variazione nel prezzo di equilibrio"], c:2, exp:"Uno spostamento a sinistra della curva di offerta aumenta il prezzo di equilibrio e abbassa la quantità di equilibrio." },
+
+  { q:"Due beni si dicono complementari quando:", opts:["Si possono sostituire l'uno con l'altro in base al prezzo","Entrambi diminuiscono con l'aumento del reddito","È necessario l'uso congiunto dei due per soddisfare un bisogno","Hanno lo stesso prezzo di mercato"], c:2, exp:"I beni complementari richiedono l'uso congiunto per soddisfare un bisogno (es. auto e carburante, caffè e zucchero)." },
+  
+
+  { q:"Secondo Adam Smith, cosa rappresenta la 'mano invisibile'?", opts:["L'intervento dello Stato per correggere i fallimenti del mercato","La capacità dei mercati di allineare gli interessi individuali con quelli collettivi","La possibilità dei monopoli di controllare i prezzi","Un meccanismo di tassazione sui ricavi"], c:1, exp:"La 'mano invisibile' descrive la capacità delle economie di mercato di allineare gli interessi individuali con quelli della società nel suo complesso." },
+
+  { q:"Il mercato del Brunello di Montalcino è descritto da: Qd = 1800 − 4P Qs = −200 + P. Calcola P* e Q* di equilibrio.", opts:["P* = 400, Q* = 1600","P* = 500, Q* = 1000","P* = 400, Q* = 200","P* = 700, Q* = 1400"], c:1, exp:"Per trovare l'equilibrio, uguagliamo domanda e offerta: 1800 - 4P = -200 + P → 5P = 2000 → P* = 400. Sostituendo in una delle due equazioni otteniamo Q* = 1800 - 4(400) = 1800 - 1600 = 200." },
+
+  { q:"Calcola la funzione di domanda inversa a partire dalla funzione di domanda Qd = 1800 − 4P.", opts:["P =  450 - 1/4 Qd","P = 1800 - 4Qd","P = 1800 - Qd/4","P = 1800 + 4Qd"], c:1, exp:"Per ottenere la domanda inversa, isoliamo P: Qd = 1800 - 4P → 4P = 1800 - Qd → P = (1800 - Qd)/4." },
+
+];
+
+const selected = new Array(QS.length).fill(null);
+let submitted = false;
+
+function buildQuiz() {
+  const root = document.getElementById('quizroot');
+  root.innerHTML = '';
+
+  if (submitted) {
+    const correct = selected.filter((s,i) => s === QS[i].c).length;
+    const pct = Math.round(correct / QS.length * 100);
+    const msg = pct >= 80 ? "Ottimo risultato!" : pct >= 60 ? "Buono, continua così!" : "Ripassia qualche concetto!";
+    const banner = document.createElement('div');
+    banner.className = 'result-banner';
+    banner.innerHTML = `<div class="result-score">${correct}/${QS.length}</div><div class="result-sub">${pct}% corretto — ${msg}</div>`;
+    root.appendChild(banner);
+  }
+
+  QS.forEach((q, qi) => {
+    const block = document.createElement('div');
+    block.className = 'qblock';
+    block.innerHTML = `<div class="qnum">Domanda ${qi+1} di ${QS.length}</div><div class="qtext">${q.q}</div><div id="opts${qi}"></div><div id="fb${qi}"></div>`;
+    root.appendChild(block);
+
+    const optsDiv = block.querySelector(`#opts${qi}`);
+    q.opts.forEach((o, oi) => {
+      const div = document.createElement('div');
+      div.className = 'opt';
+      div.innerHTML = `<span class="opt-letter">${String.fromCharCode(65+oi)}.</span><span>${o}</span>`;
+      if (!submitted) {
+        div.onclick = () => { selected[qi] = oi; buildQuiz(); };
+        if (selected[qi] === oi) div.classList.add('selected');
+      } else {
+        if (oi === q.c) div.classList.add('correct');
+        else if (selected[qi] === oi && oi !== q.c) div.classList.add('wrong');
+        else if (oi === q.c && selected[qi] !== q.c) div.classList.add('reveal');
+      }
+      optsDiv.appendChild(div);
+    });
+
+    if (submitted) {
+      const fb = block.querySelector(`#fb${qi}`);
+      const isOk = selected[qi] === q.c;
+      fb.innerHTML = `<div class="feedback-txt ${isOk?'ok':'ko'}">${isOk ? '✓ Corretto!' : '✗ ' + q.exp}</div>`;
+    }
+  });
+
+  if (!submitted) {
+    const row = document.createElement('div');
+    row.className = 'submit-row';
+    const answered = selected.filter(s => s !== null).length;
+    row.innerHTML = `<button class="submit-btn" onclick="submitQuiz()" ${answered < QS.length ? 'disabled style="opacity:0.45;cursor:default"' : ''}>Controlla risposte (${answered}/${QS.length})</button>`;
+    root.appendChild(row);
+  } else {
+    const row = document.createElement('div');
+    row.className = 'submit-row';
+    row.innerHTML = `<button class="submit-btn" onclick="resetQuiz()">Ricomincia</button>`;
+    root.appendChild(row);
+  }
+}
+
+function submitQuiz() {
+  if (selected.filter(s => s !== null).length < QS.length) return;
+  submitted = true;
+  buildQuiz();
+  window.scrollTo(0,0);
+}
+
+function resetQuiz() {
+  for(let i=0;i<QS.length;i++) selected[i]=null;
+  submitted = false;
+  buildQuiz();
+}
+
+buildQuiz();
+</script>
