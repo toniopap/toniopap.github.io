@@ -403,12 +403,11 @@ const MC = [
 const NUM = [
   {
     q: "Data la funzione di domanda della birra q<sub>B</sub> = 25 − 20P, con P = 1€ e un aumento di prezzo del 10%, calcola passo per passo:",
-    formula: "qB = 25 − 20P\nεD = (Δq / ΔP) × (P / q)",
+    formula: "qB = 25 − 20P",
     steps: [
       { label: "Quantità iniziale q₀ a P = 1", ans: 5, hint: "q = 25 − 20 × 1 = 5" },
       { label: "Nuovo prezzo P₁ (+10%)", ans: 1.1, hint: "P₁ = 1 × 1.10 = 1.1" },
-      { label: "Quantità q₁ a P = 1.1", ans: 3, hint: "q = 25 − 20 × 1.1 = 3" },
-      { label: "Variazione % della quantità (es: −40)", ans: -40, hint: "Δq% = [(3−5)/5] × 100 = −40%" },
+      { label: "Quantità q₁ al nuovo prezzo P₁", ans: 3, hint: "q = 25 − 20 × 1.1 = 3" },
       { label: "Elasticità εD", ans: -4, hint: "εD = (−40%) / (+10%) = −4" }
     ],
     solution: "q₀ = 5 → P₁ = 1.1 → q₁ = 3 → Δq% = −40% → <strong>εD = −4</strong>.<br>La domanda è <em>elastica</em> (|εD| = 4 &gt; 1): un aumento del prezzo del 10% riduce la quantità del 40%."
