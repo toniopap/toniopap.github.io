@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz — Economia dell'Impresa Vitivinicola</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&family=DM+Mono&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1a1510;
+    --ink-muted: #6b6257;
+    --ink-faint: #c4b9ae;
+    --cream: #f7f3ee;
+    --cream-mid: #ede6dc;
+    --cream-deep: #e0d5c8;
+    --wine: #7a1f2e;
+    --wine-light: #c85c6e;
+    --wine-pale: #f5e8ea;
+    --gold: #b08d3c;
+    --gold-pale: #faf4e6;
+    --green-ok: #2d6a4f;
+    --green-ok-pale: #e8f5ee;
+    --red-ko: #8b1c1c;
+    --red-ko-pale: #fdeaea;
+    --radius: 12px;
+    --radius-sm: 7px;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+  }
+
+  header {
+    max-width: 720px;
+    margin: 0 auto 2.5rem;
+    border-bottom: 1.5px solid var(--cream-deep);
+    padding-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--wine);
+    font-weight: 500;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--ink);
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: var(--ink-muted);
+    margin-top: 0.2rem;
+  }
+
+  .progress-wrap {
+    max-width: 720px;
+    margin: 0 auto 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .progress-track {
+    flex: 1;
+    height: 4px;
+    background: var(--cream-deep);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--wine);
+    border-radius: 99px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  .progress-label {
+    font-size: 12px;
+    color: var(--ink-muted);
+    white-space: nowrap;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .quiz-container {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .qblock {
+    background: white;
+    border: 1px solid var(--cream-deep);
+    border-radius: var(--radius);
+    padding: 1.4rem 1.5rem;
+    transition: box-shadow 0.2s;
+  }
+
+  .qblock:hover { box-shadow: 0 2px 16px rgba(122,31,46,0.06); }
+
+  .qblock-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 1rem;
+  }
+
+  .qnum-badge {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--cream-mid);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-muted);
+    flex-shrink: 0;
+    margin-top: 1px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .qtag {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 99px;
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+  }
+
+  .qtag.teoria { background: var(--wine-pale); color: var(--wine); }
+  .qtag.numerico { background: var(--gold-pale); color: var(--gold); }
+
+  .qtext {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.55;
+    color: var(--ink);
+  }
+
+  .formula-box {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    background: var(--cream);
+    border: 1px solid var(--cream-deep);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 0.6rem 0.9rem;
+    margin: 0.75rem 0 1rem;
+    color: var(--ink-muted);
+    line-height: 1.8;
+  }
+
+  .opts { display: flex; flex-direction: column; gap: 0.45rem; }
+
+  .opt {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 0.65rem 0.9rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--cream-deep);
+    background: var(--cream);
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--ink);
+    transition: background 0.12s, border-color 0.12s;
+    user-select: none;
+  }
+
+  .opt:hover:not(.locked) { background: var(--cream-mid); border-color: var(--ink-faint); }
+  .opt.selected { background: #eef4fb; border-color: #7aabdd; color: #0d2f50; }
+  .opt.correct { background: var(--green-ok-pale); border-color: var(--green-ok); color: var(--green-ok); }
+  .opt.wrong { background: var(--red-ko-pale); border-color: var(--red-ko); color: var(--red-ko); }
+  .opt.reveal { background: var(--green-ok-pale); border-color: var(--green-ok); color: var(--green-ok); }
+  .opt.locked { cursor: default; }
+
+  .opt-letter {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    min-width: 18px;
+    margin-top: 1px;
+    opacity: 0.7;
+  }
+
+  .feedback {
+    margin-top: 0.75rem;
+    padding: 0.6rem 0.9rem;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    line-height: 1.5;
+    display: none;
+  }
+
+  .feedback.show { display: block; }
+  .feedback.ok { background: var(--green-ok-pale); color: var(--green-ok); }
+  .feedback.ko { background: var(--red-ko-pale); color: var(--red-ko); }
+
+  /* Numerical */
+  .num-steps { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1rem; }
+
+  .num-step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .num-step label {
+    font-size: 13px;
+    color: var(--ink-muted);
+    min-width: 220px;
+    flex-shrink: 0;
+  }
+
+  .num-step input[type=number] {
+    width: 100px;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid var(--cream-deep);
+    border-radius: var(--radius-sm);
+    background: var(--cream);
+    font-size: 14px;
+    font-family: 'DM Mono', monospace;
+    color: var(--ink);
+    transition: border-color 0.15s;
+  }
+
+  .num-step input:focus { outline: none; border-color: var(--wine-light); background: white; }
+  .num-step input.ok { border-color: var(--green-ok); background: var(--green-ok-pale); color: var(--green-ok); }
+  .num-step input.ko { border-color: var(--red-ko); background: var(--red-ko-pale); color: var(--red-ko); }
+
+  .tick { font-size: 14px; font-weight: 500; }
+  .tick.ok { color: var(--green-ok); }
+  .tick.ko { color: var(--red-ko); }
+
+  .hint-txt { font-size: 12px; color: var(--red-ko); margin-left: 230px; margin-top: -0.2rem; }
+
+  .check-btn {
+    background: transparent;
+    border: 1px solid var(--wine);
+    color: var(--wine);
+    border-radius: var(--radius-sm);
+    padding: 0.45rem 1.2rem;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .check-btn:hover { background: var(--wine-pale); }
+
+  .solution-box {
+    margin-top: 0.9rem;
+    padding: 0.75rem 1rem;
+    background: var(--green-ok-pale);
+    border-left: 3px solid var(--green-ok);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-size: 13px;
+    color: var(--green-ok);
+    line-height: 1.6;
+    display: none;
+  }
+
+  .solution-box.show { display: block; }
+
+  /* Bottom bar */
+  .bottom-bar {
+    max-width: 720px;
+    margin: 2rem auto 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .score-chip {
+    font-size: 13px;
+    color: var(--ink-muted);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .submit-btn {
+    background: var(--wine);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 0.65rem 1.75rem;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .submit-btn:hover { background: #5e1724; }
+  .submit-btn:disabled { opacity: 0.4; cursor: default; background: var(--wine); }
+
+  .result-banner {
+    max-width: 720px;
+    margin: 0 auto 1.5rem;
+    background: white;
+    border: 1px solid var(--cream-deep);
+    border-radius: var(--radius);
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .result-score-big {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    font-weight: 600;
+    color: var(--wine);
+    line-height: 1;
+  }
+
+  .result-info { display: flex; flex-direction: column; gap: 0.25rem; }
+  .result-pct { font-size: 1.1rem; font-weight: 500; color: var(--ink); }
+  .result-msg { font-size: 14px; color: var(--ink-muted); }
+
+  .restart-btn {
+    margin-left: auto;
+    background: transparent;
+    border: 1px solid var(--cream-deep);
+    border-radius: var(--radius-sm);
+    padding: 0.5rem 1.2rem;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    color: var(--ink-muted);
+    transition: border-color 0.15s;
+  }
+
+  .restart-btn:hover { border-color: var(--ink-faint); color: var(--ink); }
+
+  @media (max-width: 520px) {
+    .num-step label { min-width: 100%; }
+    .hint-txt { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="eyebrow">Docente: Dott. Antonio Paparella</span>
+  <h1>Economia dell'Impresa Vitivinicola</h1>
+  <p class="subtitle">Quiz di autovalutazione — 8 domande teoriche + 2 esercizi numerici</p>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <span class="progress-label" id="progressLabel">0 / 10</span>
+</div>
+
+<div id="resultBanner" class="result-banner" style="display:none"></div>
+
+<div class="quiz-container" id="quizContainer"></div>
+
+<div class="bottom-bar">
+  <span class="score-chip" id="scoreChip"></span>
+  <button class="submit-btn" id="submitBtn" onclick="submitMC()" disabled>Controlla risposte teoriche</button>
+</div>
+
+<script>
+const MC = [
+  { q:"Cosa misura l'elasticità della domanda rispetto al prezzo?", opts:["La variazione assoluta della quantità al variare del prezzo","La variazione percentuale della quantità domandata derivante da una variazione percentuale del prezzo","Il rapporto tra prezzo e quantità di equilibrio","La pendenza della curva di domanda in un punto"], c:1, exp:"L'elasticità della domanda rispetto al prezzo (εD) misura la variazione percentuale della quantità domandata derivante da una variazione percentuale del prezzo. εD = (Δq/Δp) × (p/q)." },
+  { q:"Una domanda si dice 'inelastica' quando l'elasticità rispetto al prezzo è:", opts:["Maggiore di 1 in valore assoluto","Uguale a 1","Minore di 1 in valore assoluto","Uguale a 0"], c:2, exp:"La domanda è inelastica quando |εD| < 1: la quantità domandata reagisce poco a variazioni di prezzo. È elastica quando |εD| > 1." },
+  { q:"Cos'è il surplus del consumatore?", opts:["La differenza tra i ricavi totali e i costi di produzione","La differenza tra la disponibilità a pagare e il prezzo effettivamente pagato","La somma progressiva della disponibilità a pagare","La differenza tra la spesa per il consumo e i ricavi del produttore"], c:1, exp:"Il surplus del consumatore è la differenza tra la disponibilità a pagare e il prezzo pagato. Graficamente è l'area del triangolo sotto la curva di domanda e sopra il prezzo di mercato." },
+  { q:"L'impresa in concorrenza perfetta massimizza il profitto quando:", opts:["La produzione è massima","Il ricavo marginale è uguale al costo marginale","La differenza tra ricavi totali e costi medi totali è massima","Il prezzo è uguale al costo fisso medio"], c:1, exp:"Il profitto è massimo quando il ricavo marginale (RM) eguaglia il costo marginale (CM). Produrre oltre questo punto riduce il profitto." },
+  { q:"Cosa afferma la legge dei rendimenti decrescenti?", opts:["All'aumentare degli input, il prodotto totale diminuisce sempre","Il prodotto marginale è sempre costante","A partire da un certo punto, dopo successivi incrementi degli input, il prodotto marginale comincia a diminuire","Il costo marginale è sempre decrescente"], c:2, exp:"La legge dei rendimenti decrescenti afferma che a un certo punto, dopo successivi incrementi degli input variabili (a parità di fattori fissi), il prodotto marginale comincia a diminuire." },
+  { q:"Cos'è il costo marginale?", opts:["Il costo medio per unità prodotta","Il costo totale diviso per la quantità","La variazione del costo totale associata alla produzione di un'ulteriore unità di output","Il costo fisso diviso per la quantità prodotta"], c:2, exp:"Il costo marginale (CM) è la variazione del costo totale associata alla produzione di un'ulteriore unità di output. CM = ΔCT / ΔY." },
+  { q:"Se l'elasticità incrociata della domanda rispetto al prezzo tra due beni è positiva, i due beni sono:", opts:["Complementari","Beni inferiori","Sostituti","Beni di lusso"], c:2, exp:"Se l'elasticità incrociata è positiva, i beni sono sostituti (all'aumento del prezzo di Y, aumenta la domanda di X). Se è negativa, i beni sono complementari." },
+  { q:"Nel breve periodo, la curva di offerta di un'impresa concorrenziale corrisponde a:", opts:["L'intera curva del costo totale medio","La porzione della curva del costo marginale che si trova sopra il costo variabile medio","La curva del costo fisso medio","La porzione della curva del costo marginale che si trova sotto il costo variabile medio"], c:1, exp:"La curva di offerta di breve periodo è la porzione della curva del costo marginale che giace sopra il costo variabile medio (CVMe)." }
+];
+
+const NUM = [
+  {
+    q: "Data la funzione di domanda della birra q<sub>B</sub> = 25 − 20P, con P = 1€ e un aumento di prezzo del 10%, calcola passo per passo:",
+    formula: "qB = 25 − 20P\nεD = (Δq / ΔP) × (P / q)",
+    steps: [
+      { label: "Quantità iniziale q₀ a P = 1", ans: 5, hint: "q = 25 − 20 × 1 = 5" },
+      { label: "Nuovo prezzo P₁ (+10%)", ans: 1.1, hint: "P₁ = 1 × 1.10 = 1.1" },
+      { label: "Quantità q₁ a P = 1.1", ans: 3, hint: "q = 25 − 20 × 1.1 = 3" },
+      { label: "Variazione % della quantità (es: −40)", ans: -40, hint: "Δq% = [(3−5)/5] × 100 = −40%" },
+      { label: "Elasticità εD", ans: -4, hint: "εD = (−40%) / (+10%) = −4" }
+    ],
+    solution: "q₀ = 5 → P₁ = 1.1 → q₁ = 3 → Δq% = −40% → <strong>εD = −4</strong>.<br>La domanda è <em>elastica</em> (|εD| = 4 &gt; 1): un aumento del prezzo del 10% riduce la quantità del 40%."
+  },
+  {
+    q: "Date le funzioni di domanda e offerta, calcola prezzo e quantità di equilibrio di mercato:",
+    formula: "qD = 3000 − 2P\nqS = −600 + 3P",
+    steps: [
+      { label: "Prezzo di equilibrio P*", ans: 720, hint: "qD = qS → 3000−2P = −600+3P → 3600 = 5P → P = 720" },
+      { label: "Quantità di equilibrio Q*", ans: 1560, hint: "Q = 3000 − 2×720 = 1560" }
+    ],
+    solution: "3000 − 2P = −600 + 3P → 3600 = 5P → <strong>P* = 720</strong>.<br>Q* = 3000 − 2 × 720 = <strong>1560</strong>."
+  }
+];
+
+const mcSel = new Array(MC.length).fill(null);
+let mcDone = false;
+const numAns = NUM.map(ex => ex.steps.map(() => ({ val: '', checked: false, ok: false })));
+const numDone = NUM.map(() => false);
+
+function tol(v, a) {
+  if (a === 0) return Math.abs(v) < 0.01;
+  return Math.abs((v - a) / a) <= 0.02;
+}
+
+function updateProgress() {
+  const mcAns = mcSel.filter(s => s !== null).length;
+  const numAnsCount = numDone.filter(Boolean).length;
+  const total = MC.length + NUM.length;
+  const done = mcAns + numAnsCount;
+  document.getElementById('progressFill').style.width = (done / total * 100) + '%';
+  document.getElementById('progressLabel').textContent = done + ' / ' + total;
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = mcAns < MC.length || mcDone;
+  document.getElementById('scoreChip').textContent = mcAns + '/' + MC.length + ' teoriche risposte';
+}
+
+function render() {
+  const cont = document.getElementById('quizContainer');
+  cont.innerHTML = '';
+
+  MC.forEach((q, qi) => {
+    const block = document.createElement('div');
+    block.className = 'qblock';
+    block.innerHTML = `
+      <div class="qblock-header">
+        <div class="qnum-badge">${qi+1}</div>
+        <div style="flex:1">
+          <span class="qtag teoria">Teoria</span>
+          <div class="qtext">${q.q}</div>
+        </div>
+      </div>
+      <div class="opts" id="opts${qi}"></div>
+      <div class="feedback" id="fb${qi}"></div>`;
+    cont.appendChild(block);
+
+    const optsDiv = block.querySelector('#opts' + qi);
+    q.opts.forEach((o, oi) => {
+      const div = document.createElement('div');
+      div.className = 'opt' + (mcDone ? ' locked' : '');
+      div.innerHTML = `<span class="opt-letter">${String.fromCharCode(65+oi)}</span><span>${o}</span>`;
+      if (!mcDone) {
+        if (mcSel[qi] === oi) div.classList.add('selected');
+        div.onclick = () => { mcSel[qi] = oi; render(); updateProgress(); };
+      } else {
+        if (oi === q.c) div.classList.add('correct');
+        else if (mcSel[qi] === oi) div.classList.add('wrong');
+      }
+      optsDiv.appendChild(div);
+    });
+
+    if (mcDone) {
+      const fb = block.querySelector('#fb' + qi);
+      fb.classList.add('show', mcSel[qi] === q.c ? 'ok' : 'ko');
+      fb.textContent = mcSel[qi] === q.c ? '✓ Corretto!' : '✗ ' + q.exp;
+    }
+  });
+
+  NUM.forEach((ex, ei) => {
+    const qnum = MC.length + ei + 1;
+    const block = document.createElement('div');
+    block.className = 'qblock';
+
+    let stepsHtml = '<div class="num-steps">';
+    ex.steps.forEach((step, si) => {
+      const state = numAns[ei][si];
+      const cls = state.checked ? (state.ok ? 'ok' : 'ko') : '';
+      stepsHtml += `<div class="num-step">
+        <label>${step.label}:</label>
+        <input type="number" step="any" id="ni_${ei}_${si}" value="${state.val}" class="${cls}" oninput="numInput(${ei},${si},this.value)">
+        ${state.checked ? `<span class="tick ${state.ok?'ok':'ko'}">${state.ok?'✓':'✗'}</span>` : ''}
+      </div>`;
+      if (state.checked && !state.ok) {
+        stepsHtml += `<div class="hint-txt">Suggerimento: ${step.hint}</div>`;
+      }
+    });
+    stepsHtml += '</div>';
+
+    block.innerHTML = `
+      <div class="qblock-header">
+        <div class="qnum-badge">${qnum}</div>
+        <div style="flex:1">
+          <span class="qtag numerico">Esercizio numerico</span>
+          <div class="qtext">${ex.q}</div>
+        </div>
+      </div>
+      <div class="formula-box">${ex.formula.replace(/\n/g,'<br>')}</div>
+      ${stepsHtml}
+      <button class="check-btn" onclick="checkNum(${ei})">Verifica</button>
+      <div class="solution-box ${numDone[ei]?'show':''}" id="sol${ei}">
+        <strong>Soluzione:</strong><br>${ex.solution}
+      </div>`;
+    cont.appendChild(block);
+  });
+
+  updateProgress();
+}
+
+function numInput(ei, si, v) { numAns[ei][si].val = v; }
+
+function checkNum(ei) {
+  NUM[ei].steps.forEach((step, si) => {
+    const inp = document.getElementById(`ni_${ei}_${si}`);
+    const v = parseFloat(inp ? inp.value : numAns[ei][si].val);
+    numAns[ei][si].val = isNaN(v) ? '' : String(v);
+    numAns[ei][si].checked = true;
+    numAns[ei][si].ok = !isNaN(v) && tol(v, step.ans);
+  });
+  numDone[ei] = numAns[ei].every(s => s.ok);
+  render();
+}
+
+function submitMC() {
+  if (mcSel.filter(s => s !== null).length < MC.length) return;
+  mcDone = true;
+  render();
+  updateProgress();
+  showResult();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showResult() {
+  const correct = mcSel.filter((s,i) => s === MC[i].c).length;
+  const numScore = numDone.filter(Boolean).length;
+  const total = MC.length + NUM.length;
+  const pct = Math.round((correct + numScore) / total * 100);
+  const msg = pct >= 80 ? 'Ottima padronanza degli argomenti!' : pct >= 60 ? 'Buon risultato, continua a ripassare!' : 'Ripassia i concetti chiave con i materiali.';
+  const banner = document.getElementById('resultBanner');
+  banner.style.display = 'flex';
+  banner.innerHTML = `
+    <div class="result-score-big">${correct + numScore}<span style="font-size:1.5rem;opacity:.5">/${total}</span></div>
+    <div class="result-info">
+      <div class="result-pct">${pct}% corretto</div>
+      <div class="result-msg">${msg}</div>
+    </div>
+    <button class="restart-btn" onclick="resetAll()">↺ Ricomincia</button>`;
+  document.getElementById('submitBtn').style.display = 'none';
+}
+
+function resetAll() {
+  for(let i=0;i<MC.length;i++) mcSel[i]=null;
+  mcDone = false;
+  NUM.forEach((ex,ei) => { ex.steps.forEach((_,si) => { numAns[ei][si]={val:'',checked:false,ok:false}; }); numDone[ei]=false; });
+  document.getElementById('resultBanner').style.display='none';
+  document.getElementById('submitBtn').style.display='';
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+render();
+</script>
+</body>
+</html>
