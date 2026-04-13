@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz — Economia dell'Impresa Vitivinicola</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f7f3ee; min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 2rem 1rem; }
+  .wrap { max-width: 700px; width: 100%; }
+
+  /* Header */
+  .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+  .title { font-size: 13px; font-weight: 600; color: #7a1a2e; letter-spacing: .08em; text-transform: uppercase; }
+  .badge { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: #4a0f1a; color: #f5d38a; font-weight: 600; }
+
+  /* Progress */
+  .progress-bar { height: 4px; background: #e8ddd5; border-radius: 2px; margin-bottom: 1.5rem; }
+  .progress-fill { height: 4px; background: #7a1a2e; border-radius: 2px; transition: width .4s ease; }
+
+  /* Card */
+  .card { background: #fff; border-radius: 14px; border: 1px solid #e8ddd5; padding: 2rem; box-shadow: 0 2px 12px rgba(74,15,26,.06); }
+
+  /* Counter & category */
+  .counter { font-size: 12px; color: #9e8e85; margin-bottom: 0.6rem; }
+  .category { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 5px; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: .05em; }
+  .cat-mat  { background: #fff3d6; color: #7a4f00; }
+  .cat-micro{ background: #e6f1fb; color: #185fa5; }
+  .cat-calc { background: #eaf3de; color: #3b6d11; }
+
+  /* Question */
+  .question { font-size: 17px; font-weight: 600; color: #2c1a10; line-height: 1.55; margin-bottom: 0.5rem; }
+  .formula  { font-family: 'Courier New', monospace; font-size: 13px; color: #5a3a2a; background: #fdf8f3; border: 1px solid #e8ddd5; border-radius: 6px; padding: 8px 14px; margin-bottom: 1.25rem; display: inline-block; }
+
+  /* Options */
+  .opts { display: flex; flex-direction: column; gap: 10px; margin-top: 1.25rem; }
+  .opt { background: #fdf8f3; border: 1.5px solid #e8ddd5; border-radius: 10px; padding: 13px 16px; font-size: 15px; color: #2c1a10; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 12px; transition: border-color .15s, background .15s; }
+  .opt:hover:not(:disabled) { border-color: #7a1a2e; background: #fef6f0; }
+  .opt .letter { font-size: 12px; font-weight: 700; width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid #d0c4bc; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #8a7060; }
+  .opt.correct { border-color: #3b6d11; background: #eaf3de; }
+  .opt.correct .letter { background: #3b6d11; color: #fff; border-color: #3b6d11; }
+  .opt.wrong { border-color: #a32d2d; background: #fcebeb; }
+  .opt.wrong .letter { background: #a32d2d; color: #fff; border-color: #a32d2d; }
+  .opt:disabled { cursor: default; }
+
+  /* Feedback */
+  .feedback { margin-top: 1rem; font-size: 14px; padding: 12px 16px; border-radius: 10px; border-left: 4px solid; line-height: 1.6; display: none; }
+  .fb-ok { background: #eaf3de; border-color: #3b6d11; color: #27500a; }
+  .fb-ko { background: #fcebeb; border-color: #a32d2d; color: #791f1f; }
+
+  /* Next button */
+  .btn-next { margin-top: 1.25rem; padding: 11px 26px; border-radius: 10px; background: #7a1a2e; color: #f5d38a; border: none; font-size: 15px; font-weight: 600; cursor: pointer; display: none; }
+  .btn-next:hover { background: #4a0f1a; }
+
+  /* Result */
+  .result { text-align: center; padding: 1rem 0; }
+  .score-big { font-size: 64px; font-weight: 700; color: #7a1a2e; line-height: 1; margin-bottom: 0.4rem; }
+  .score-sub { font-size: 15px; color: #8a7060; margin-bottom: 1rem; }
+  .stars { font-size: 28px; letter-spacing: 5px; margin-bottom: 1rem; color: #c8901a; }
+  .msg { font-size: 15px; color: #2c1a10; margin-bottom: 2rem; line-height: 1.65; max-width: 500px; margin-left: auto; margin-right: auto; }
+  .recap { background: #fdf8f3; border-radius: 10px; padding: 1.25rem; text-align: left; margin-bottom: 1.5rem; border: 1px solid #e8ddd5; }
+  .recap-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 6px 0; border-bottom: 1px solid #eee; gap: 12px; }
+  .recap-row:last-child { border: none; }
+  .recap-text { color: #5a3a2a; flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .ok { color: #3b6d11; font-weight: 700; flex-shrink: 0; }
+  .ko { color: #a32d2d; font-weight: 700; flex-shrink: 0; }
+  .btn-restart { padding: 11px 30px; border-radius: 10px; background: #7a1a2e; color: #f5d38a; border: none; font-size: 15px; font-weight: 600; cursor: pointer; }
+  .btn-restart:hover { background: #4a0f1a; }
+
+  /* Footer */
+  .footer { text-align: center; margin-top: 1.5rem; font-size: 12px; color: #b0a098; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <span class="title">Economia dell'Impresa Vitivinicola</span>
+    <span class="badge">Quiz</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="pbar" style="width:0%"></div></div>
+  <div class="card" id="quiz-area"></div>
+  <div class="footer">Dott. Antonio Paparella Ph.D. &nbsp;·&nbsp; Matematica Finanziaria & Microeconomia</div>
+</div>
+
+<script>
+const questions = [
+  {
+    cat: "mat", catLabel: "Matematica Finanziaria — Teoria",
+    q: "Cosa rappresenta il saggio di interesse (r)?",
+    opts: [
+      "Il valore finale di un capitale investito",
+      "Il frutto percepito per ogni unità di moneta (1 €) nell'unità di tempo",
+      "La somma di capitale iniziale e interessi",
+      "Il capitale da investire per ottenere un dato interesse"
+    ],
+    ans: 1,
+    fb: "Il saggio (o tasso o ragione) di interesse r esprime il costo d'uso o il frutto di una unità di moneta (1 €) nella unità di tempo, generalmente l'anno."
+  },
+  {
+    cat: "mat", catLabel: "Matematica Finanziaria — Teoria",
+    q: "Cosa si intende per \"montante\"?",
+    opts: [
+      "Solo l'interesse maturato nel periodo",
+      "La differenza tra capitale finale e capitale iniziale",
+      "La somma di capitale iniziale (C₀) e interesse (I), disponibile alla fine del periodo",
+      "Il capitale da investire oggi per avere un euro domani"
+    ],
+    ans: 2,
+    fb: "Il montante C₁ = C₀ + I = C₀(1+r) è la somma di capitale ed interesse disponibile alla fine dell'anno. Il fattore q = 1+r si chiama binomio d'interesse o fattore di capitalizzazione."
+  },
+  {
+    cat: "mat", catLabel: "Matematica Finanziaria — Teoria",
+    q: "Qual è la differenza fondamentale tra interesse semplice e interesse composto?",
+    opts: [
+      "Nell'interesse semplice il tasso è più alto",
+      "Nell'interesse composto gli interessi maturati si aggiungono al capitale e diventano a loro volta fruttiferi",
+      "Nell'interesse semplice gli interessi crescono in modo esponenziale",
+      "Non c'è differenza se il periodo è inferiore a un anno"
+    ],
+    ans: 1,
+    fb: "Con l'interesse composto gli interessi maturati alla fine di ogni periodo si aggiungono al capitale (si capitalizzano) e producono a loro volta interessi nel periodo successivo."
+  },
+  {
+    cat: "mat", catLabel: "Matematica Finanziaria — Teoria",
+    q: "Come si chiama il fattore (1 + r)ⁿ nell'interesse composto?",
+    opts: [
+      "Fattore di sconto o di anticipazione",
+      "Binomio d'interesse",
+      "Fattore di posticipazione ad interesse composto discontinuo",
+      "Tasso di capitalizzazione semplice"
+    ],
+    ans: 2,
+    fb: "Il fattore (1+r)ⁿ, indicato anche con qⁿ, è detto fattore di posticipazione ad interesse composto discontinuo. Il suo inverso 1/(1+r)ⁿ è invece il fattore di anticipazione o fattore di sconto."
+  },
+  {
+    cat: "mat", catLabel: "Matematica Finanziaria — Teoria",
+    q: "Lo sconto commerciale (Sc) si calcola sulla base di quale capitale?",
+    opts: [
+      "Sul capitale iniziale C₀",
+      "Sul montante Cₙ (valore futuro)",
+      "Sulla media tra C₀ e Cₙ",
+      "Sul solo interesse maturato"
+    ],
+    ans: 1,
+    fb: "Lo sconto commerciale Sc = Cₙ × r × n si calcola in base al capitale futuro Cₙ (montante). L'interesse invece si calcola sul capitale presente C₀: questa è la differenza tra le due operazioni."
+  },
+  {
+    cat: "mat", catLabel: "Matematica Finanziaria — Teoria",
+    q: "Cosa rappresenta il \"valore scontato\" (C₀) nell'interesse semplice?",
+    opts: [
+      "Il montante accumulato dopo n anni",
+      "Il valore attuale di un capitale futuro Cₙ, calcolato tramite lo sconto semplice",
+      "L'interesse totale maturato nel periodo",
+      "Il tasso di interesse annuo applicato"
+    ],
+    ans: 1,
+    fb: "Il valore scontato C₀ = Cₙ / (1 + r·n) è il problema inverso del montante: avendo un capitale futuro Cₙ disponibile tra n anni, si calcola il suo valore equivalente oggi."
+  },
+  {
+    cat: "calc", catLabel: "Matematica Finanziaria — Calcolo",
+    q: "Carlo deposita 2.000.000 £ in Buoni Fruttiferi al tasso netto del 3% per 1 anno. Quanti interessi matura?",
+    formula: "I = C₀ × r",
+    opts: ["30.000 £", "60.000 £", "600.000 £", "20.000 £"],
+    ans: 1,
+    fb: "I = C₀ × r = 2.000.000 × 0,03 = 60.000 £"
+  },
+  {
+    cat: "calc", catLabel: "Matematica Finanziaria — Calcolo",
+    q: "Mario vuole garantirsi un prelievo annuo di 120.000 £ con Buoni Fruttiferi al tasso del 3%. Quanto deve depositare?",
+    formula: "C₀ = I / r",
+    opts: ["3.000.000 £", "4.000.000 £", "360.000 £", "1.200.000 £"],
+    ans: 1,
+    fb: "C₀ = I / r = 120.000 / 0,03 = 4.000.000 £"
+  },
+  {
+    cat: "calc", catLabel: "Matematica Finanziaria — Calcolo",
+    q: "Qual è il saggio di interesse che su un capitale di 5.000.000 £ dà 125.000 £ di interessi annui?",
+    formula: "r = I / C₀",
+    opts: ["3%", "2,5%", "4%", "1,5%"],
+    ans: 1,
+    fb: "r = I / C₀ = 125.000 / 5.000.000 = 0,025 = 2,5%"
+  },
+  {
+    cat: "calc", catLabel: "Matematica Finanziaria — Calcolo",
+    q: "Carlo ha depositato 2.000.000 £ in BFP al 3%. Di quanto dispone alla fine del primo anno (montante)?",
+    formula: "C₁ = C₀ × (1 + r)",
+    opts: ["2.060.000 £", "2.030.000 £", "2.006.000 £", "2.600.000 £"],
+    ans: 0,
+    fb: "C₁ = C₀ × (1+r) = 2.000.000 × 1,03 = 2.060.000 £ (capitale + 60.000 £ di interessi)"
+  },
+  {
+    cat: "calc", catLabel: "Matematica Finanziaria — Calcolo",
+    q: "Giovanni deposita 10.000.000 £ al tasso del 4% per 4 mesi. Quale interesse matura (interesse semplice)?",
+    formula: "I = C₀ × r × m/12",
+    opts: ["400.000 £", "133.333 £", "40.000 £", "160.000 £"],
+    ans: 1,
+    fb: "I = 10.000.000 × 0,04 × 4/12 = 10.000.000 × 0,01333 ≈ 133.333 £"
+  },
+  {
+    cat: "calc", catLabel: "Matematica Finanziaria — Calcolo",
+    q: "Qual è il montante di 1.000.000 £ per 90 giorni al saggio del 5% (interesse semplice)?",
+    formula: "Cₙ = C₀ × (1 + r × g/360)",
+    opts: ["1.012.500 £", "1.050.000 £", "1.025.000 £", "1.005.000 £"],
+    ans: 0,
+    fb: "Cₙ = 1.000.000 × (1 + 0,05 × 90/360) = 1.000.000 × 1,0125 = 1.012.500 £"
+  },
+  {
+    cat: "calc", catLabel: "Matematica Finanziaria — Calcolo",
+    q: "Qual è il montante di 8.000 € investiti al 3% per 3 anni con interesse semplice?",
+    formula: "Cₙ = C₀ × (1 + n × r)",
+    opts: ["8.240 €", "8.720 €", "8.300 €", "8.927 €"],
+    ans: 1,
+    fb: "Cₙ = 8.000 × (1 + 3 × 0,03) = 8.000 × 1,09 = 8.720 €"
+  },
+  {
+    cat: "calc", catLabel: "Matematica Finanziaria — Calcolo",
+    q: "Una cambiale di 3.000.000 £ con scadenza fra 7 mesi viene scontata al tasso del 6%. A quanto ammonta lo sconto commerciale?",
+    formula: "Sc = Cₙ × r × m/12",
+    opts: ["180.000 £", "210.000 £", "105.000 £", "175.000 £"],
+    ans: 2,
+    fb: "Sc = 3.000.000 × 0,06 × 7/12 = 3.000.000 × 0,035 = 105.000 £"
+  },
+  {
+    cat: "calc", catLabel: "Matematica Finanziaria — Calcolo",
+    q: "Un possessore di una cambiale di 1.000.000 £ che scade fra 5 mesi vuole scontarla all'8%. Quanta somma riscuote?",
+    formula: "C₀ = Cₙ / (1 + r·n)  oppure  C₀ = Cₙ − Sc",
+    opts: ["960.000 £", "966.667 £", "933.333 £", "950.000 £"],
+    ans: 2,
+    fb: "Sc = 1.000.000 × 0,08 × 5/12 = 33.333 £  →  C₀ = 1.000.000 − 33.333 = 966.667 £. Attenzione: la risposta corretta è 966.667 £ (opzione B).\n\nRicorda: Sc = Cₙ × r × m/12 = 1.000.000 × 0,08 × 5/12 ≈ 33.333 £, quindi la somma riscossa è circa 966.667 £."
+  },
+  {
+    cat: "calc", catLabel: "Matematica Finanziaria — Calcolo",
+    q: "Qual è il montante di 10.000 € al tasso del 5% per 2 anni con interesse composto?",
+    formula: "Cₙ = C₀ × (1 + r)ⁿ",
+    opts: ["11.000 €", "11.025 €", "11.050 €", "11.010 €"],
+    ans: 1,
+    fb: "Cₙ = 10.000 × (1,05)² = 10.000 × 1,1025 = 11.025 €. Con interesse semplice sarebbe stato solo 11.000 €: l'interesse composto è maggiore grazie alla capitalizzazione degli interessi."
+  },
+  {
+    cat: "calc", catLabel: "Matematica Finanziaria — Calcolo",
+    q: "A quanto ammonterà fra 10 anni un capitale di 5.000.000 € al saggio del 4% (interesse composto)?",
+    formula: "Cₙ = C₀ × (1,04)¹⁰  dove  (1,04)¹⁰ ≈ 1,4802",
+    opts: ["7.000.000 €", "7.401.000 €", "7.200.000 €", "7.500.000 €"],
+    ans: 1,
+    fb: "Cₙ = 5.000.000 × (1,04)¹⁰ = 5.000.000 × 1,4802 = 7.401.000 €"
+  },
+  {
+    cat: "calc", catLabel: "Matematica Finanziaria — Calcolo",
+    q: "Qual è il valore attuale (C₀) di 12.100 € disponibili fra 2 anni al tasso del 10% (interesse composto)?",
+    formula: "C₀ = Cₙ / (1 + r)ⁿ",
+    opts: ["11.000 €", "9.900 €", "10.000 €", "10.500 €"],
+    ans: 2,
+    fb: "C₀ = 12.100 / (1,10)² = 12.100 / 1,21 = 10.000 €. Il fattore 1/(1+r)ⁿ è il fattore di anticipazione o di sconto ad interesse composto."
+  },
+  {
+    cat: "micro", catLabel: "Microeconomia",
+    q: "Cosa si intende per costo opportunità del denaro?",
+    opts: [
+      "Il costo fisso sostenuto per produrre un bene",
+      "Il valore della migliore alternativa a cui si rinuncia tenendo il denaro immobilizzato",
+      "Il tasso di inflazione annuo",
+      "Il costo variabile per unità di produzione"
+    ],
+    ans: 1,
+    fb: "La matematica finanziaria serve a confrontare somme di denaro in momenti diversi: rinunciare ad una somma oggi ha un costo superiore alla sola somma, perché il denaro ha un costo opportunità."
+  },
+  {
+    cat: "micro", catLabel: "Microeconomia",
+    q: "Nel lungo periodo, dal punto di vista dei costi di produzione, cosa è vero?",
+    opts: [
+      "Tutti i costi sono fissi",
+      "Tutti i costi sono variabili",
+      "I costi fissi superano quelli variabili",
+      "I costi medi sono sempre decrescenti"
+    ],
+    ans: 1,
+    fb: "Nel lungo periodo non esistono fattori produttivi fissi: tutti i costi diventano variabili, perché l'impresa può modificare ogni input, inclusa la dimensione degli impianti."
+  },
+  {
+    cat: "micro", catLabel: "Microeconomia",
+    q: "Se la domanda di un prodotto è elastica, un aumento del prezzo dell'1% provoca:",
+    opts: [
+      "Una riduzione della quantità domandata inferiore all'1%",
+      "Una riduzione della quantità domandata superiore all'1%",
+      "Nessuna variazione della quantità domandata",
+      "Un aumento della quantità domandata"
+    ],
+    ans: 1,
+    fb: "Con domanda elastica (|ε| > 1), la variazione percentuale della quantità supera in valore assoluto la variazione percentuale del prezzo. Il ricavo totale dell'impresa diminuisce all'aumentare del prezzo."
+  }
+];
+
+let cur = 0, score = 0, answered = false;
+const history = [];
+
+function catClass(c){ return c==='calc'?'cat-calc':c==='micro'?'cat-micro':'cat-mat'; }
+
+function render(){
+  const area = document.getElementById('quiz-area');
+  const pbar = document.getElementById('pbar');
+  pbar.style.width = (cur / questions.length * 100) + '%';
+  if(cur >= questions.length){ showResult(area); return; }
+  const q = questions[cur];
+  const letters = ['A','B','C','D'];
+  area.innerHTML = `
+    <div class="counter">Domanda ${cur+1} di ${questions.length}</div>
+    <span class="category ${catClass(q.cat)}">${q.catLabel}</span>
+    <div class="question">${q.q}</div>
+    ${q.formula ? `<div class="formula">${q.formula}</div>` : ''}
+    <div class="opts">
+      ${q.opts.map((o,i)=>`
+        <button class="opt" id="opt${i}" onclick="pick(${i})">
+          <span class="letter">${letters[i]}</span>${o}
+        </button>`).join('')}
+    </div>
+    <div class="feedback" id="feedback"></div>
+    <button class="btn-next" id="btn-next" onclick="next()">
+      ${cur < questions.length-1 ? 'Prossima domanda →' : 'Vedi il risultato →'}
+    </button>
+  `;
+}
+
+function pick(i){
+  if(answered) return;
+  answered = true;
+  const q = questions[cur];
+  const correct = i === q.ans;
+  if(correct) score++;
+  history.push({ q: q.q, ok: correct });
+  for(let k=0; k<q.opts.length; k++){
+    const btn = document.getElementById('opt'+k);
+    btn.disabled = true;
+    if(k === q.ans) btn.classList.add('correct');
+    else if(k === i && !correct) btn.classList.add('wrong');
+  }
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback ' + (correct ? 'fb-ok' : 'fb-ko');
+  fb.innerHTML = (correct ? '✓ Corretto! ' : '✗ Risposta errata. ') + q.fb;
+  fb.style.display = 'block';
+  document.getElementById('btn-next').style.display = 'inline-block';
+}
+
+function next(){
+  cur++;
+  answered = false;
+  document.getElementById('pbar').style.width = (cur/questions.length*100)+'%';
+  render();
+}
+
+function getMsg(s,t){
+  const p = s/t;
+  if(p>=.90) return '🍷 Eccellente! Conosci la materia alla perfezione. Sei pronto/a per l\'esame!';
+  if(p>=.70) return '👍 Ottimo risultato! Qualche piccolo dettaglio da ripassare, ma la base è solida.';
+  if(p>=.50) return '📖 Risultato discreto. Ti consiglio di ripassare soprattutto le formule di matematica finanziaria.';
+  return '📚 C\'è ancora molto da studiare. Rileggi le slide di matematica finanziaria, in particolare interesse semplice e composto.';
+}
+
+function getStars(s,t){
+  const n = Math.round(s/t*5);
+  return Array.from({length:5},(_,i)=>i<n?'★':'☆').join('');
+}
+
+function showResult(area){
+  document.getElementById('pbar').style.width='100%';
+  const t = questions.length;
+  area.innerHTML = `
+    <div class="result">
+      <div class="score-big">${score}<span style="font-size:30px;color:#b0a098">/${t}</span></div>
+      <div class="score-sub">risposte corrette su ${t}</div>
+      <div class="stars">${getStars(score,t)}</div>
+      <p class="msg">${getMsg(score,t)}</p>
+      <div class="recap">
+        ${history.map((h,i)=>`
+          <div class="recap-row">
+            <span class="recap-text">${i+1}. ${h.q}</span>
+            <span class="${h.ok?'ok':'ko'}">${h.ok?'✓':'✗'}</span>
+          </div>`).join('')}
+      </div>
+      <button class="btn-restart" onclick="restart()">↺ Ricomincia il quiz</button>
+    </div>
+  `;
+}
+
+function restart(){
+  cur=0; score=0; answered=false; history.length=0;
+  document.getElementById('pbar').style.width='0%';
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
