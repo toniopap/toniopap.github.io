@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz — Introduzione & Microeconomia</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f4f8; min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 2rem 1rem; }
+  .wrap { max-width: 700px; width: 100%; }
+
+  /* Header */
+  .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+  .title { font-size: 13px; font-weight: 600; color: #185fa5; letter-spacing: .08em; text-transform: uppercase; }
+  .badge { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: #0c447c; color: #b5d4f4; font-weight: 600; }
+
+  /* Progress */
+  .progress-bar { height: 4px; background: #cfe0f5; border-radius: 2px; margin-bottom: 1.5rem; }
+  .progress-fill { height: 4px; background: #185fa5; border-radius: 2px; transition: width .4s ease; }
+
+  /* Card */
+  .card { background: #fff; border-radius: 14px; border: 1px solid #d4e4f5; padding: 2rem; box-shadow: 0 2px 12px rgba(24,95,165,.07); }
+
+  /* Counter & category */
+  .counter { font-size: 12px; color: #9ab0c8; margin-bottom: 0.6rem; }
+  .category { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 5px; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: .05em; }
+  .cat-intro  { background: #e6f1fb; color: #185fa5; }
+  .cat-micro  { background: #eaf3de; color: #3b6d11; }
+  .cat-micro2 { background: #fff3d6; color: #7a4f00; }
+
+  /* Question */
+  .question { font-size: 17px; font-weight: 600; color: #0c2a45; line-height: 1.55; margin-bottom: 1.25rem; }
+
+  /* Options */
+  .opts { display: flex; flex-direction: column; gap: 10px; }
+  .opt { background: #f5f9fe; border: 1.5px solid #d4e4f5; border-radius: 10px; padding: 13px 16px; font-size: 15px; color: #0c2a45; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 12px; transition: border-color .15s, background .15s; }
+  .opt:hover:not(:disabled) { border-color: #185fa5; background: #e6f1fb; }
+  .opt .letter { font-size: 12px; font-weight: 700; width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid #b5d4f4; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #378add; }
+  .opt.correct { border-color: #3b6d11; background: #eaf3de; }
+  .opt.correct .letter { background: #3b6d11; color: #fff; border-color: #3b6d11; }
+  .opt.wrong { border-color: #a32d2d; background: #fcebeb; }
+  .opt.wrong .letter { background: #a32d2d; color: #fff; border-color: #a32d2d; }
+  .opt:disabled { cursor: default; }
+
+  /* Feedback */
+  .feedback { margin-top: 1rem; font-size: 14px; padding: 12px 16px; border-radius: 10px; border-left: 4px solid; line-height: 1.6; display: none; }
+  .fb-ok { background: #eaf3de; border-color: #3b6d11; color: #27500a; }
+  .fb-ko { background: #fcebeb; border-color: #a32d2d; color: #791f1f; }
+
+  /* Next button */
+  .btn-next { margin-top: 1.25rem; padding: 11px 26px; border-radius: 10px; background: #185fa5; color: #e6f1fb; border: none; font-size: 15px; font-weight: 600; cursor: pointer; display: none; }
+  .btn-next:hover { background: #0c447c; }
+
+  /* Result */
+  .result { text-align: center; padding: 1rem 0; }
+  .score-big { font-size: 64px; font-weight: 700; color: #185fa5; line-height: 1; margin-bottom: 0.4rem; }
+  .score-sub { font-size: 15px; color: #7a9abf; margin-bottom: 1rem; }
+  .stars { font-size: 28px; letter-spacing: 5px; margin-bottom: 1rem; color: #c8901a; }
+  .msg { font-size: 15px; color: #0c2a45; margin-bottom: 2rem; line-height: 1.65; max-width: 500px; margin-left: auto; margin-right: auto; }
+  .recap { background: #f5f9fe; border-radius: 10px; padding: 1.25rem; text-align: left; margin-bottom: 1.5rem; border: 1px solid #d4e4f5; }
+  .recap-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 6px 0; border-bottom: 1px solid #e8f0f8; gap: 12px; }
+  .recap-row:last-child { border: none; }
+  .recap-text { color: #2a4a6a; flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .ok { color: #3b6d11; font-weight: 700; flex-shrink: 0; }
+  .ko { color: #a32d2d; font-weight: 700; flex-shrink: 0; }
+  .btn-restart { padding: 11px 30px; border-radius: 10px; background: #185fa5; color: #e6f1fb; border: none; font-size: 15px; font-weight: 600; cursor: pointer; }
+  .btn-restart:hover { background: #0c447c; }
+
+  /* Footer */
+  .footer { text-align: center; margin-top: 1.5rem; font-size: 12px; color: #9ab0c8; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <span class="title">Economia dell'Impresa Vitivinicola</span>
+    <span class="badge">Quiz</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="pbar" style="width:0%"></div></div>
+  <div class="card" id="quiz-area"></div>
+  <div class="footer">Dott. Antonio Paparella Ph.D. &nbsp;·&nbsp; Introduzione & Microeconomia</div>
+</div>
+
+<script>
+const questions = [
+  {
+    cat: "intro", catLabel: "Introduzione — Concetti base",
+    q: "Come viene definita l'economia secondo le slide del corso?",
+    opts: [
+      "La scienza che studia i comportamenti delle imprese sui mercati finanziari",
+      "Lo studio dei modi in cui gli agenti scelgono di allocare risorse scarse e dell'influenza di tali scelte sulla società",
+      "La disciplina che analizza esclusivamente i fenomeni monetari e bancari",
+      "La scienza che studia la produzione industriale nei paesi sviluppati"
+    ],
+    ans: 1,
+    fb: "L'economia è lo studio dei modi in cui gli agenti scelgono di allocare risorse scarse e dell'influenza di tali scelte sulla società. In sintesi: è la scienza che studia le scelte delle persone di fronte a bisogni illimitati e risorse limitate."
+  },
+  {
+    cat: "intro", catLabel: "Introduzione — Concetti base",
+    q: "Qual è la differenza tra economia positiva ed economia normativa?",
+    opts: [
+      "L'economia positiva riguarda solo i paesi ricchi; quella normativa i paesi poveri",
+      "L'economia positiva descrive ciò che le persone fanno realmente; quella normativa raccomanda ciò che si dovrebbe fare",
+      "L'economia positiva studia il lungo periodo; quella normativa il breve periodo",
+      "Non esiste differenza: sono due nomi per la stessa cosa"
+    ],
+    ans: 1,
+    fb: "L'economia positiva genera descrizioni oggettive e predizioni verificabili dai dati (es. 'se il prezzo sale, la domanda scende'). L'economia normativa consiglia individui e società sulle scelte da compiere (es. 'lo Stato dovrebbe tassare di più i redditi alti')."
+  },
+  {
+    cat: "intro", catLabel: "Introduzione — Concetti base",
+    q: "Qual è la differenza tra microeconomia e macroeconomia?",
+    opts: [
+      "La micro studia le grandi imprese; la macro le piccole imprese",
+      "La micro studia come individui e imprese compiono le loro scelte; la macro studia l'economia nel suo insieme (PIL, occupazione, debito pubblico)",
+      "La micro studia i mercati internazionali; la macro i mercati nazionali",
+      "La micro usa modelli matematici; la macro usa solo statistiche"
+    ],
+    ans: 1,
+    fb: "La microeconomia studia come individui, nuclei familiari e imprese compiono le loro scelte e come queste influiscono su prezzi e allocazione delle risorse. La macroeconomia studia grandezze aggregate come PIL, crescita, occupazione e debito pubblico."
+  },
+  {
+    cat: "intro", catLabel: "Introduzione — I principi",
+    q: "Cosa afferma il Principio 1 della microeconomia secondo il corso?",
+    opts: [
+      "I mercati sono sempre in equilibrio",
+      "Il governo deve intervenire per correggere i fallimenti del mercato",
+      "Scegliere è necessario, perché le risorse sono scarse",
+      "Gli individui massimizzano sempre la loro utilità"
+    ],
+    ans: 2,
+    fb: "Il Principio 1 afferma: 'Le risorse sono scarse'. Una risorsa è scarsa se la quantità disponibile non è sufficiente a soddisfare tutti gli usi che una società vuole farne. Poiché le risorse sono scarse, scegliere tra le alternative è inevitabile."
+  },
+  {
+    cat: "intro", catLabel: "Introduzione — I principi",
+    q: "Cosa si intende per costo opportunità (Principio 2)?",
+    opts: [
+      "Il costo monetario diretto di un bene o servizio",
+      "Il valore della migliore alternativa a cui si rinuncia quando si effettua una scelta",
+      "Il costo sostenuto per sfruttare un'opportunità di mercato",
+      "Il prezzo di mercato meno i sussidi ricevuti"
+    ],
+    ans: 1,
+    fb: "Il costo opportunità è il valore della migliore alternativa a cui si rinuncia quando si effettua una scelta. Rappresenta il beneficio mancato derivante dal non aver intrapreso la seconda scelta migliore. Le persone tendono spesso a non dare un valore monetario al proprio tempo, sottostimando così il vero costo delle loro scelte."
+  },
+  {
+    cat: "intro", catLabel: "Introduzione — I principi",
+    q: "Cosa rappresenta la 'mano invisibile' teorizzata da Adam Smith nel 1776?",
+    opts: [
+      "L'intervento statale necessario per correggere le inefficienze del mercato",
+      "La capacità delle economie di mercato di allineare gli interessi individuali con quelli collettivi della società",
+      "Un meccanismo di controllo dei prezzi da parte delle banche centrali",
+      "La regolamentazione invisibile imposta dalle istituzioni internazionali"
+    ],
+    ans: 1,
+    fb: "Adam Smith scrisse che gli individui, perseguendo i propri interessi, finiscono spesso per fare quelli della società nel suo complesso: sono spinti da una 'mano invisibile' a promuovere un fine che esula dalle proprie intenzioni. Da allora, questa espressione indica la capacità delle economie di mercato di allineare interessi individuali e collettivi."
+  },
+  {
+    cat: "intro", catLabel: "Introduzione — I principi",
+    q: "Quando si dice che un mercato è 'in equilibrio'?",
+    opts: [
+      "Quando i prezzi sono stabiliti per legge dallo Stato",
+      "Quando tutti gli agenti ottimizzano simultaneamente, per cui nessuno può migliorare la propria situazione cambiando comportamento",
+      "Quando la quantità offerta è sempre superiore alla quantità domandata",
+      "Quando le imprese realizzano profitti positivi"
+    ],
+    ans: 1,
+    fb: "In equilibrio tutti gli agenti ottimizzano simultaneamente: nessuno può ottenere un vantaggio cambiando il proprio comportamento. L'esempio delle file al supermercato: quando le code sono tutte uguali, nessuno ha incentivo a spostarsi → equilibrio."
+  },
+  {
+    cat: "micro2", catLabel: "Microeconomia — Surplus e domanda",
+    q: "Come si definisce il surplus del consumatore?",
+    opts: [
+      "Il profitto che ottiene il produttore dalla vendita di un bene",
+      "La differenza tra la disponibilità a pagare del consumatore e il prezzo di mercato effettivamente pagato",
+      "La quantità di beni invenduti rimasti nel magazzino",
+      "La differenza tra il prezzo di mercato e il costo di produzione"
+    ],
+    ans: 1,
+    fb: "Il surplus del consumatore è la differenza fra la disponibilità a pagare (il valore soggettivo che il consumatore attribuisce al bene) e il prezzo pagato per il bene. Rappresenta il beneficio netto che il consumatore ottiene dalla partecipazione al mercato."
+  },
+  {
+    cat: "micro2", catLabel: "Microeconomia — Elasticità",
+    q: "Un bene ha elasticità della domanda rispetto al prezzo pari a 0,4. Come si classifica la sua domanda?",
+    opts: [
+      "Domanda elastica (sensibile al prezzo)",
+      "Domanda con elasticità unitaria",
+      "Domanda inelastica (poco sensibile al prezzo)",
+      "Domanda perfettamente elastica"
+    ],
+    ans: 2,
+    fb: "Con elasticità < 1 la domanda è inelastica: una variazione del prezzo provoca una variazione percentuale della quantità domandata minore in valore assoluto. Elasticità > 1 → domanda elastica; elasticità = 1 → elasticità unitaria; elasticità = 0 → perfettamente inelastica."
+  },
+  {
+    cat: "micro2", catLabel: "Microeconomia — Produzione e costi",
+    q: "Qual è la regola ottimale di produzione per un'impresa in concorrenza perfetta?",
+    opts: [
+      "Produrre fino a che il ricavo totale è massimo",
+      "Produrre fino a che il costo totale medio è minimo",
+      "Produrre fino a che Prezzo = Costo marginale",
+      "Produrre fino a che il costo fisso medio si azzera"
+    ],
+    ans: 2,
+    fb: "L'impresa deve espandere la produzione fin dove Ricavo marginale = Costo marginale. Poiché in concorrenza perfetta il ricavo marginale è uguale al prezzo di mercato, la condizione diventa: Prezzo = Costo marginale. Produrre di più o di meno ridurrebbe il profitto."
+  }
+];
+
+let cur = 0, score = 0, answered = false;
+const history = [];
+
+function catClass(c){ return c==='micro2'?'cat-micro2':c==='micro'?'cat-micro':'cat-intro'; }
+
+function render(){
+  const area = document.getElementById('quiz-area');
+  document.getElementById('pbar').style.width = (cur / questions.length * 100) + '%';
+  if(cur >= questions.length){ showResult(area); return; }
+  const q = questions[cur];
+  const letters = ['A','B','C','D'];
+  area.innerHTML = `
+    <div class="counter">Domanda ${cur+1} di ${questions.length}</div>
+    <span class="category ${catClass(q.cat)}">${q.catLabel}</span>
+    <div class="question">${q.q}</div>
+    <div class="opts">
+      ${q.opts.map((o,i)=>`
+        <button class="opt" id="opt${i}" onclick="pick(${i})">
+          <span class="letter">${letters[i]}</span>${o}
+        </button>`).join('')}
+    </div>
+    <div class="feedback" id="feedback"></div>
+    <button class="btn-next" id="btn-next" onclick="next()">
+      ${cur < questions.length-1 ? 'Prossima domanda →' : 'Vedi il risultato →'}
+    </button>
+  `;
+}
+
+function pick(i){
+  if(answered) return;
+  answered = true;
+  const q = questions[cur];
+  const correct = i === q.ans;
+  if(correct) score++;
+  history.push({ q: q.q, ok: correct });
+  for(let k=0; k<q.opts.length; k++){
+    const btn = document.getElementById('opt'+k);
+    btn.disabled = true;
+    if(k === q.ans) btn.classList.add('correct');
+    else if(k === i && !correct) btn.classList.add('wrong');
+  }
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback ' + (correct ? 'fb-ok' : 'fb-ko');
+  fb.innerHTML = (correct ? '✓ Corretto! ' : '✗ Risposta errata. ') + q.fb;
+  fb.style.display = 'block';
+  document.getElementById('btn-next').style.display = 'inline-block';
+}
+
+function next(){
+  cur++;
+  answered = false;
+  document.getElementById('pbar').style.width = (cur/questions.length*100)+'%';
+  render();
+}
+
+function getMsg(s,t){
+  const p = s/t;
+  if(p>=.90) return '🎓 Ottimo! Conosci perfettamente la parte introduttiva e microeconomica del corso.';
+  if(p>=.70) return '👍 Buon risultato! Ripasssa i principi della microeconomia e sei pronto/a.';
+  if(p>=.50) return '📖 Risultato sufficiente. Rivedi i principi della microeconomia e la differenza tra le varie definizioni chiave.';
+  return '📚 C\'è ancora da lavorare. Rileggi con attenzione le slide di Introduzione e Microeconomia.';
+}
+
+function getStars(s,t){
+  const n = Math.round(s/t*5);
+  return Array.from({length:5},(_,i)=>i<n?'★':'☆').join('');
+}
+
+function showResult(area){
+  document.getElementById('pbar').style.width='100%';
+  const t = questions.length;
+  area.innerHTML = `
+    <div class="result">
+      <div class="score-big">${score}<span style="font-size:30px;color:#7a9abf">/${t}</span></div>
+      <div class="score-sub">risposte corrette su ${t}</div>
+      <div class="stars">${getStars(score,t)}</div>
+      <p class="msg">${getMsg(score,t)}</p>
+      <div class="recap">
+        ${history.map((h,i)=>`
+          <div class="recap-row">
+            <span class="recap-text">${i+1}. ${h.q}</span>
+            <span class="${h.ok?'ok':'ko'}">${h.ok?'✓':'✗'}</span>
+          </div>`).join('')}
+      </div>
+      <button class="btn-restart" onclick="restart()">↺ Ricomincia il quiz</button>
+    </div>
+  `;
+}
+
+function restart(){
+  cur=0; score=0; answered=false; history.length=0;
+  document.getElementById('pbar').style.width='0%';
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
