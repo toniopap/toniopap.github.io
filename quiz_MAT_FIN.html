@@ -87,6 +87,7 @@
 
 
 const questions = [
+  
   {
     cat: "intro", catLabel: "Matematica finanziaria",
     q: "L'azienda vitivinicola  deve decidere come gestire l'etichettatura di 30.000 bottiglie all'anno. <br>Ha due opzioni:<br> <strong>Comprare un’etichettatrice automatica a 12.000 €.</strong> <br>Durata dell'etichettatrice: 15 anni (immaginiamo che la macchina passati i 15 anni non sia più utilizzabile). <br>Costi variabili (Energia + Manutenzione): 215€ all'anno. <br><strong>Chiamare un terzista che porta la propria macchina in azienda.</strong> <br>Costo del servizio: 0,06 € a bottiglia (tutto incluso). <br><br>Considerare un tasso di interesse annuo (costo opportunità del capitale) del 4%.<br>  Qual è l'opzione più conveniente per l'azienda?",
@@ -99,6 +100,67 @@ const questions = [
     fb: "Conviene acquistare il macchinario"
 
   },
+  {
+    cat: "intro", catLabel: "Matematica finanziaria",
+    q: "Calcolarre l'interesse maturato da un capitale di €20.000 investito per 5 mesi al 6%",
+    opts:[
+      "20.500",
+      "21.000",
+      "800",
+      "500"
+    ],
+    ans: 3,
+    fb: "I = C₀ r n → €20.000 * 0.06* 5/12 = 500 €"
+  },
+
+  {
+    cat: "intro", catLabel: "Matematica finanziaria",
+    q: "Si depositano, al tasso del 3%, €25.000 per 4 anni. Quale montante si ottiene?",
+    opts:[
+      "€28.137,72",
+      "€28.120,88",
+      "€30.240,55",
+      "€27.439,45",
+    ],
+    ans: 0,
+    fb: "Cn = C₀ q^n = 25.000 (1+0.03)^4 = 28.137,72 €"
+  },
+  {
+        cat: "intro", catLabel: "Matematica finanziaria",
+    q:"La cantina deve decidere come affinare 10.000 litri di vino rosso di pregio. Le opzioni sono 2: la barrique e la grande botte. <br> Opzione barrique: L'acquisto di circa 50 barriques comporta una spesa di €35.000, hanno durata utile di 5 anni e un costo di manutenzione e pulizia di €800 all'anno. <br> Opzione botte grande: l'investimento iniziale è di €55.000, hanno durata di 25 anni e un costo di manutenzione annua di €300.<br> Per entrambe le opzioni si conti un tasso di interesse del 3%. <br><br> Quale botte conviene comprare?",
+    opts:[
+      "Barrique",
+      "Grande botte",
+    ],
+    ans: 1,
+    fb: "Grande botte"
+  },
+  {
+    cat: "intro", catLabel: "Matematica finanziaria",
+    q: "Nell'arco di 5 anni si effettuno i seguenti depositi al tasso del 3%: €3.000 all'inizio del 1° anno; €15.000 alla fine del primo anno; €22.000 alla fine del 2° anno; €25.000 alla fine del 3° anno; €12.600 all'inizio del 5° anno. Quale somma complessiva sarà accumulata alla fine del 5° anno?",
+    opts:[
+      "€34.267,55",
+      "95.359,03",
+      "€83.900,94",
+      "€179.356,42"
+    ],
+    ans:2,
+    fb: "C5 = 3.000 * q^5 + 15.000 * q^4 + 22.000 * q^3 + 25.000 * q^2 + 12.600 * q^1 = 83.900,94 €"
+  },
+  {
+    cat: "intro", catLabel: "Matematica finanziaria",
+    q:"Quale capitale devo mettere a frutto pe ravere fra 3 anni un montante di €35.000, se il saggio di interesse è del 2%?",
+    opts:[
+      
+      "€15.433,01",
+      "€34.129,98",
+      "€32.981,28",
+      "€18.922,25"
+    ],
+    ans: 2,
+    fb: "C0 = Cn * 1/q^n = 35.000 / (1+0.02)^3 = 32.981,28 €"
+  },
+
 ];
 
 let cur = 0, score = 0, answered = false;
