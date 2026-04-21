@@ -160,7 +160,33 @@ const questions = [
     ans: 2,
     fb: "C0 = Cn * 1/q^n = 35.000 / (1+0.02)^3 = 32.981,28 €"
   },
+    {
+    cat: "intro", catLabel: "Matematica finanziaria",
+    q:"LA signora Anna è beneficiaria di un lascito che comporta la corresponsione di una rendita di €12.000 annui posticipati per 10 anni. Ella chiede che tale rendita venga commutata in un capitale disponibile subito e l'operazione è accordata al tasso del 6%. La somma ricavata viene immobilizzata in un deposito fruttifero di interessi al tasso del 4%. Quale sarà il montante dopo 8 anni?",
 
+    opts:[
+      "€120.567,89",
+      "€117.020,47",
+      "€110.345,67",
+      "€103.482,00",
+    ],
+    ans: 3,
+    fb: "Capitale ricvato dalla commutazione della rendita: C0 = 12.000 * 7,3601 = 88.321,00; Montante dopo 8 anni: C8 = C0 * q^n = 88.321,20 * (1+0.04)^8 = 103.482,00 €"
+    
+  },
+    {
+    cat: "intro", catLabel: "Matematica finanziaria",
+    q:"Si acquista un immobile convenendo il pagamento mediante 3 rate annue anticipate di €70.000 ciascuna. A quale prezzo è stato contratto l'immobile, se il tasso di interesse è del 7%?",
+    
+    opts:[
+      "€196.561,27",
+      "€117.020,47",
+      "€110.345,67",
+      "€103.482,00",
+    ],
+    ans: 0,
+    fb: "S0 = 70.000 * 1,07 * 2.808 = 196.561,27 €"
+  },
 ];
 
 let cur = 0, score = 0, answered = false;
