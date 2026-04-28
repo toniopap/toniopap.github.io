@@ -98,15 +98,15 @@ const questions = [
   },
   {
     cat: "intro", catLabel: "Matematica finanziaria",
-    q: "Una cantina sociale deposita €80.000 in un conto vincolato al tasso del 3,5% annuo composto per 6 anni, con l'obiettivo di finanziare il rinnovo della sala di affinamento.<br><br>Qual è il montante accumulato alla fine del periodo?",
+    q: "Una cantina sociale deposita €80.000 in un conto vincolato al tasso del 3% annuo composto per 6 anni, con l'obiettivo di finanziare il rinnovo della sala di affinamento.<br><br>Qual è il montante accumulato alla fine del periodo?",
     opts: [
-      "€98.340,41",
+      "€95.524,18",
       "€96.800,00",
       "€94.600,00",
       "€102.000,00"
     ],
     ans: 0,
-    fb: "Cn = C₀ · (1+i)ⁿ = 80.000 × (1,035)⁶ = 98.340,41 €"
+    fb: "Cn = C₀ · (1+i)ⁿ = 80.000 × (1,03)⁶ = 95.524,18 €"
   },
   {
     cat: "intro", catLabel: "Matematica finanziaria",
@@ -120,27 +120,18 @@ const questions = [
     ans: 0,
     fb: "C₀ = Cn / (1+i)ⁿ = 120.000 / (1,04)⁴ = 120.000 / 1,16986 = 102.576,15 €"
   },
-  {
-    cat: "intro", catLabel: "Matematica finanziaria",
-    q: "Una cantina deve scegliere come affinare 5.000 litri di vino rosso di pregio.<br><br><strong>Opzione A — Barrique in rovere:</strong> costo €40.000, durata 8 anni, manutenzione €1.200/anno.<br><strong>Opzione B — Serbatoi in acciaio inox:</strong> costo €25.000, durata 20 anni, manutenzione €400/anno.<br><br>Tasso di interesse: 4%. Quale opzione ha il minor costo annuo equivalente?",
-    opts: [
-      "Barrique in rovere",
-      "Serbatoi in acciaio inox"
-    ],
-    ans: 1,
-    fb: "CAE(barrique) = 40.000 / a₈|₄% + 1.200 = 40.000 / 6,7327 + 1.200 = 7.140,64 €/anno<br>CAE(inox) = 25.000 / a₂₀|₄% + 400 = 25.000 / 13,5903 + 400 = 2.239,29 €/anno<br>Conviene l'acciaio inox."
-  },
+  
   {
     cat: "intro", catLabel: "Matematica finanziaria",
     q: "Una cooperativa vitivinicola ha contratto un finanziamento di €150.000 per ammodernare la linea di imbottigliamento. Il prestito prevede il rimborso mediante 5 rate annue posticipate uguali, al tasso del 5% annuo.<br><br>Qual è l'importo di ciascuna rata?",
     opts: [
       "€28.700,00",
-      "€34.647,37",
+      "€34.646,22",
       "€31.200,00",
       "€30.000,00"
     ],
     ans: 1,
-    fb: "R = C₀ / a₅|₅% = 150.000 / [(1 − (1,05)⁻⁵) / 0,05] = 150.000 / 4,3295 = 34.647,37 €"
+    fb: "R = C₀ / a₅|₅% = 150.000 * 0,05 * 1,05^5 / (1,05^5-1) = 150.000 * 0,230975 = 34.646,22 €"
   }
 ];
 
