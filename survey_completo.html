@@ -262,10 +262,10 @@ const SCALES = [
    PRODOTTI
 ========================================================== */
 const FILLERS = [
-  { id: 'yogurt',  name: 'Yogurt Greco',        brand: 'Valsoia Bio', detail: '500g · Naturale',       type: 'yogurt',  hasQR: false },
-  { id: 'pasta',   name: 'Pasta di Gragnano',   brand: 'De Cecco',   detail: '500g · Spaghetti n.12', type: 'pasta',   hasQR: false },
-  { id: 'passata', name: 'Passata di Pomodoro', brand: 'Mutti',      detail: '700g · Rustica',         type: 'passata', hasQR: false },
-  { id: 'olio',    name: 'Olio Extravergine',   brand: 'Monini',     detail: '750ml · Classico',       type: 'olio',    hasQR: false },
+  { id: 'yogurt',  name: 'Yogurt Greco',        brand: 'COOP', detail: '500g · Naturale',       type: 'yogurt',  hasQR: false },
+  { id: 'pasta',   name: 'Pasta di Gragnano',   brand: 'COOP',   detail: '500g · Spaghetti n.12', type: 'pasta',   hasQR: false },
+  { id: 'passata', name: 'Passata di Pomodoro', brand: 'COOP',      detail: '700g · Rustica',         type: 'passata', hasQR: false },
+  { id: 'olio',    name: 'Olio Extravergine',   brand: 'COOP',     detail: '750ml · Classico',       type: 'olio',    hasQR: false },
 ];
 const FOCAL_NO  = { id: 'carne_no_qr', name: 'Fettine di Vitello', brand: 'Linea Natura', detail: '500g · Fresco · IT', type: 'carne', hasQR: false };
 const FOCAL_QR  = { id: 'carne_qr',   name: 'Fettine di Vitello', brand: 'Linea Natura', detail: '500g · Fresco · IT', type: 'carne', hasQR: true  };
@@ -302,7 +302,6 @@ function initSession() {
       has_qr:       p.hasQR,
       shown_at:     null,
       exposure_ms:  null,
-      free_text:    '',
       qr_clicked:   false,
       qr_click_ts:  null,
       responses:    {},
@@ -317,54 +316,13 @@ function initSession() {
    ILLUSTRAZIONI CSS
 ========================================================== */
 function illo(type) {
-  const pack = (bg, border, labelColor, label, nameColor, name, inner, detailColor, detail) => `
-    <div style="width:150px;min-height:180px;background:${bg};border-radius:12px;border:1px solid ${border};
-      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:14px 10px;
-      box-shadow:2px 6px 20px rgba(0,0,0,0.08);">
-      <div style="font-size:9px;font-weight:700;color:${labelColor};letter-spacing:0.07em;text-transform:uppercase;">${label}</div>
-      <div style="font-size:12px;font-weight:600;color:${nameColor};text-align:center;line-height:1.3;">${name}</div>
-      ${inner}
-      <div style="font-size:9px;color:${detailColor};letter-spacing:0.03em;text-align:center;">${detail}</div>
-    </div>`;
 
   const map = {
-    yogurt: pack(
-      '#f0f7ff','#cce0f5','#1a5fa0','Valsoia Bio','#1a3a5c','Yogurt Greco',
-      `<div style="width:70px;height:70px;border-radius:50%;background:#dbeeff;border:1px solid #b8d9f2;
-        display:flex;align-items:center;justify-content:center;font-size:28px;">🥛</div>`,
-      '#5a8ab0','500g · Naturale'
-    ),
-    pasta: pack(
-      '#fdf6e3','#e8d9a0','#8B6914','De Cecco','#4a3200','Pasta di Gragnano',
-      `<div style="display:flex;gap:4px;align-items:flex-end;height:70px;">
-        ${[0,1,2,3,4].map(i=>`<div style="width:6px;height:${40+i*6}px;background:#d4a820;border-radius:3px;opacity:0.85;"></div>`).join('')}
-      </div>`,
-      '#8B7030','500g · Spaghetti n.12'
-    ),
-    passata: pack(
-      '#fff1ee','#f5c4b3','#8B2500','Mutti','#3a0a00','Passata di Pomodoro',
-      `<div style="width:70px;height:70px;border-radius:50%;background:#e85d2a;
-        display:flex;align-items:center;justify-content:center;">
-        <div style="width:44px;height:44px;border-radius:50%;background:#c0392b;opacity:0.85;"></div>
-      </div>`,
-      '#8B3a25','700g · Rustica'
-    ),
-    olio: pack(
-      '#f5f9e8','#c8dc80','#3a6600','Monini','#1a3300','Olio Extravergine',
-      `<div style="width:32px;height:90px;background:#a8c830;border-radius:16px 16px 4px 4px;opacity:0.9;
-        border:1px solid #90b020;"></div>`,
-      '#4a7010','750ml · Classico'
-    ),
-    carne: pack(
-      '#f5f0e8','#ddd8cc','#8B4513','Linea Natura','#2c1a08','Fettine di Vitello',
-      `<div style="width:100px;height:58px;background:#c0392b;border-radius:6px;position:relative;overflow:hidden;">
-        <div style="position:absolute;top:14px;left:8px;width:32px;height:4px;
-          background:rgba(255,255,255,0.22);border-radius:2px;transform:rotate(-14deg);"></div>
-        <div style="position:absolute;top:26px;left:18px;width:20px;height:3px;
-          background:rgba(255,255,255,0.16);border-radius:2px;"></div>
-      </div>`,
-      '#7a6a5a','500g · Fresco · IT'
-    ),
+    yogurt:  `<img src="img/yogurt.jpg"  alt="Yogurt Greco"        style="max-height:190px;max-width:260px;display:block;border-radius:8px;">`,
+    pasta:   `<img src="img/pasta.jpg"   alt="Pasta di Gragnano"   style="max-height:190px;max-width:260px;display:block;border-radius:8px;">`,
+    passata: `<img src="img/passata.jpg" alt="Passata di Pomodoro" style="max-height:190px;max-width:260px;display:block;border-radius:8px;">`,
+    olio:    `<img src="img/olio.jpg"    alt="Olio Extravergine"   style="max-height:190px;max-width:260px;display:block;border-radius:8px;">`,
+    carne:   `<img src="img/carne_.png"   alt="Fettine di Vitello confezionate" style="max-height:190px;max-width:260px;display:block;border-radius:8px;">`,
   };
   return `<div style="display:flex;align-items:center;justify-content:center;height:100%;">${map[type]||map.carne}</div>`;
 }
@@ -455,7 +413,7 @@ function screenScreening() {
 
     <div class="field-group">
       <label class="field-label">Con quale frequenza utilizzi QR code su prodotti alimentari?</label>
-      ${rg('rg-qr','qr_use',["Mai","Raramente (qualche volta l'anno)","Occasionalmente (mensile)","Spesso (settimanale o più)"])}
+      ${rg('rg-qr','qr_use',["Mai","Raramente ","Occasionalmente (mensile)","Spesso (settimanale o più)"])}
     </div>
 
     <div class="field-row">
@@ -525,17 +483,13 @@ function screenStimulus(si) {
       </div>
     </div>
 
-    <div class="section-title">Impressioni generali</div>
-    <p class="question-text">Cosa noti di questo prodotto? Descrivi liberamente le tue prime impressioni.</p>
-    <textarea id="ft-${si}" placeholder="Scrivi qui le tue impressioni (facoltativo)…"
-      oninput="S.stimuli[${si}].free_text=this.value"></textarea>
 
     <div class="section-title">Valuta il prodotto</div>
     ${renderScales(si)}
 
     <div class="wtp-wrap">
       <div class="scale-construct">Disponibilità a pagare</div>
-      <p class="question-text">Qual è il prezzo massimo che pagheresti per 500g di questo prodotto?</p>
+      <p class="question-text">Qual è il prezzo massimo che pagheresti per questo prodotto?</p>
       <div class="wtp-slider-row">
         <span class="wtp-bound">€2</span>
         <input type="range" min="200" max="1200" step="10" value="500"

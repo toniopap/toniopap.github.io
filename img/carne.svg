@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 196" role="img" aria-label="Fettine di Vitello confezionate">
+  <defs>
+    <linearGradient id="trayGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#faf7f2"/>
+      <stop offset="100%" stop-color="#ede6db"/>
+    </linearGradient>
+    <linearGradient id="wrapSheen" x1="0%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%"   stop-color="#ddeeff" stop-opacity="0.42"/>
+      <stop offset="38%"  stop-color="#ffffff"  stop-opacity="0.04"/>
+      <stop offset="72%"  stop-color="#ffffff"  stop-opacity="0.00"/>
+      <stop offset="100%" stop-color="#cce0f8"  stop-opacity="0.28"/>
+    </linearGradient>
+    <clipPath id="trayClip">
+      <rect x="12" y="12" width="256" height="168" rx="12"/>
+    </clipPath>
+  </defs>
+
+  <!-- drop shadow -->
+  <rect x="18" y="18" width="252" height="166" rx="12" fill="#b0a89e" opacity="0.22"/>
+
+  <!-- tray body -->
+  <rect x="12" y="12" width="256" height="168" rx="12" fill="url(#trayGrad)" stroke="#cec6ba" stroke-width="1.4"/>
+
+  <!-- inner tray well -->
+  <rect x="25" y="25" width="230" height="130" rx="7" fill="#ece5da" stroke="#d8d0c4" stroke-width="0.8"/>
+
+  <!-- ── FETTINE DI VITELLO ── -->
+  <g clip-path="url(#trayClip)">
+
+    <!-- Slice 1 — back, rotated left -->
+    <g transform="rotate(-9 140 92)">
+      <ellipse cx="140" cy="92" rx="90" ry="50" fill="#c87a68"/>
+      <ellipse cx="140" cy="92" rx="84" ry="45" fill="#e8a48c"/>
+      <!-- fat streaks -->
+      <path d="M 78,86 Q 108,78 140,83 Q 170,88 198,80" stroke="#f8dfd4" stroke-width="3.2" fill="none" stroke-linecap="round" opacity="0.80"/>
+      <path d="M 90,98 Q 118,93 148,97"               stroke="#f8e2d8" stroke-width="2.2" fill="none" stroke-linecap="round" opacity="0.65"/>
+      <line x1="158" y1="84" x2="190" y2="78"         stroke="#f8e2d8" stroke-width="2"   stroke-linecap="round" opacity="0.55"/>
+    </g>
+
+    <!-- Slice 2 — mid, rotated right -->
+    <g transform="rotate(5 142 102)">
+      <ellipse cx="142" cy="102" rx="89" ry="49" fill="#c07060"/>
+      <ellipse cx="142" cy="102" rx="83" ry="44" fill="#e09484"/>
+      <!-- fat streaks -->
+      <path d="M 76,96 Q 106,89 140,94 Q 172,99 202,91" stroke="#f5ddd0" stroke-width="3"   fill="none" stroke-linecap="round" opacity="0.78"/>
+      <path d="M 88,110 Q 120,104 155,109"              stroke="#f5e0d4" stroke-width="2.2" fill="none" stroke-linecap="round" opacity="0.62"/>
+      <line x1="162" y1="95" x2="196" y2="88"          stroke="#f5ddd0" stroke-width="2"   stroke-linecap="round" opacity="0.52"/>
+    </g>
+
+    <!-- Slice 3 — front, slight rotation -->
+    <g transform="rotate(-3 140 112)">
+      <ellipse cx="140" cy="112" rx="88" ry="48" fill="#b86858"/>
+      <ellipse cx="140" cy="112" rx="82" ry="43" fill="#d88878"/>
+      <!-- fat marbling (richer on top slice so it reads clearly) -->
+      <path d="M 75,105 Q 106,98 140,103 Q 172,108 202,100" stroke="#f5dcd0" stroke-width="3.5" fill="none" stroke-linecap="round" opacity="0.82"/>
+      <path d="M 86,118 Q 116,112 150,117 Q 176,121 200,114" stroke="#f5dcd0" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.70"/>
+      <path d="M 98,130 Q 128,125 162,130"                   stroke="#f5e0d4" stroke-width="2"   fill="none" stroke-linecap="round" opacity="0.58"/>
+      <!-- small fat pocket -->
+      <ellipse cx="114" cy="108" rx="10" ry="6" fill="#f2d8c8" opacity="0.55" transform="rotate(-12 114 108)"/>
+      <ellipse cx="172" cy="116" rx="8"  ry="5" fill="#f2d8c8" opacity="0.48" transform="rotate(8 172 116)"/>
+    </g>
+
+    <!-- plastic wrap sheen -->
+    <rect x="25" y="25" width="230" height="130" rx="7" fill="url(#wrapSheen)"/>
+    <!-- highlight reflection (diagonal streak across wrap) -->
+    <ellipse cx="96" cy="55" rx="70" ry="18" fill="white" opacity="0.11" transform="rotate(-22 96 55)"/>
+  </g>
+
+  <!-- tray rim re-drawn on top to mask meat overflow -->
+  <rect x="12" y="12" width="256" height="168" rx="12" fill="none" stroke="#faf7f2" stroke-width="9" opacity="0.70"/>
+  <rect x="12" y="12" width="256" height="168" rx="12" fill="none" stroke="#cec6ba" stroke-width="1.4"/>
+
+  <!-- label strip -->
+  <rect x="20" y="162" width="240" height="13" rx="3" fill="white" opacity="0.93"/>
+  <rect x="20" y="162" width="240" height="13" rx="3" fill="none" stroke="#d8d0c6" stroke-width="0.5"/>
+  <text x="28"  y="172" font-family="Arial,Helvetica,sans-serif" font-size="7.5" font-weight="800" fill="#7a3810" letter-spacing="0.7">LINEA NATURA</text>
+  <text x="150" y="172" font-family="Arial,Helvetica,sans-serif" font-size="6.5" fill="#6a6058" text-anchor="middle">Fettine di Vitello · 500 g · Fresco · IT</text>
+  <text x="252" y="172" font-family="Arial,Helvetica,sans-serif" font-size="7"   fill="#7a3810" text-anchor="end" font-weight="600">€ 7,95</text>
+</svg>
