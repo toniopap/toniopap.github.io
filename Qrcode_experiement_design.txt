@@ -1,0 +1,51 @@
+L'idea di base, in parole semplici
+Vuoi capire se mettere un QR code su un pacco di carne cambia quello che il consumatore pensa del prodotto — anche prima di aprirlo. E vuoi anche sapere quante persone lo aprono davvero.
+Per farlo, mostri alle persone delle immagini di carne confezionata e gli chiedi cosa ne pensano. La logica è semplice:
+
+Se chi vede la carne CON il QR la giudica più buona, più sicura o più affidabile di chi vede la stessa carne SENZA QR — allora il QR ha un effetto alone (halo effect).
+
+
+Le due domande di ricerca
+Domanda 1 — Halo visivo: il QR, da solo, migliora la percezione del prodotto?
+Domanda 2 — Effetto contenuto: se sì, conta anche cosa c'è dentro il QR, o l'effetto è uguale indipendentemente dal contenuto?
+
+Come funziona il design
+Hai due ingredienti che vuoi manipolare:
+Ingrediente A — presenza del QR → lo stesso partecipante vede sia un prodotto con QR che uno senza. Così confronti direttamente le sue reazioni sulle stesse scale. Questo si chiama fattore within-subjects.
+Ingrediente B — contenuto del QR → ogni partecipante vede un solo tipo di contenuto (tracciabilità, nutrizione, o sostenibilità). Non ha senso farne vedere più di uno perché il confronto lo falsificherebbe. Questo si chiama fattore between-subjects.
+Il risultato è un design misto 2×3:
+                    CONTENUTO DEL QR (between)
+                 ┌─────────────┬─────────────┬──────────────┐
+                 │Tracciabilità│  Nutrizione │Sostenibilità │
+ QR  ┌─ CON QR  │  Gruppo 1a  │  Gruppo 2a  │  Gruppo 3a   │
+     └─ SENZA QR│  Gruppo 1b  │  Gruppo 2b  │  Gruppo 3b   │
+                 └─────────────┴─────────────┴──────────────┘
+         (within: stessa persona vede entrambe le righe)
+
+Il problema e come lo risolvi
+Se mostri prima la carne senza QR e poi quella con QR, la persona capisce subito cosa stai studiando e inconsciamente esagera le differenze. Falso positivo.
+La soluzione è nascondere i due prodotti focali dentro una sequenza di 6 prodotti di categorie diverse (pasta, yogurt, olio…). Il partecipante pensa di valutare il packaging in generale — non sa che stai studiando il QR sulla carne.
+Yogurt → Pasta → CARNE SENZA QR → Passata → CARNE CON QR → Olio
+Metà delle persone vede prima la carne con QR, metà prima quella senza — così puoi anche capire se l'ordine influenza le risposte.
+
+Cosa misuri
+Per ogni prodotto (scala breve, identica per tutti e 6):
+
+Qualità percepita
+Fiducia e sicurezza alimentare
+Trasparenza del produttore
+Intenzione d'acquisto
+Disponibilità a pagare
+
+Solo dopo aver visto tutti i prodotti:
+
+"Cosa ricordi delle immagini?" → vedi se il QR viene menzionato spontaneamente
+"Hai cliccato qualcosa?" → confronti con il dato reale tracciato dal server
+
+Il QR è cliccabile e porta a una landing page con URL univoco per partecipante. Sai esattamente chi ha cliccato, quando, e quanto tempo ha trascorso — senza doverlo chiedere.
+
+Quante persone servono
+Con 3 gruppi di contenuto × 2 sottogruppi di ordine → 6 celle, circa 35 persone per cella → ~210 partecipanti totali. Circa la metà rispetto a un design puramente between-subjects.
+
+Le ipotesi in ordine di priorità
+IpotesiCome la testiH1Il QR da solo migliora qualità percepita, fiducia e WTPt-test paired sulla differenza withinH2Il tipo di contenuto modera l'entità dell'haloInteraction effect nell'ANOVA mistaH3Meno del 30% clicca davvero il QRAnalisi delle proporzioni sul dato tracciatoH4Click dichiarato ≠ click realeConfronto survey vs. server logH5Chi clicca cambia le sue percezioni post-contenutot-test paired pre/post click
