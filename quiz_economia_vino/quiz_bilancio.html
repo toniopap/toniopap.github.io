@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz – Il Bilancio</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-dark: #0F6E56;
+    --green-mid: #1D9E75;
+    --green-light: #E1F5EE;
+    --green-border: #9FE1CB;
+    --red-dark: #A32D2D;
+    --red-light: #FCEBEB;
+    --red-border: #F7C1C1;
+    --amber: #BA7517;
+    --amber-light: #FAEEDA;
+    --bg: #FAFAF8;
+    --surface: #FFFFFF;
+    --text: #1a1a18;
+    --text-muted: #6b6b66;
+    --border: #e2e0d8;
+    --radius: 10px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+  }
+  header {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto 2.5rem;
+  }
+  header .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--green-dark);
+    background: var(--green-light);
+    border: 1px solid var(--green-border);
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 1rem;
+  }
+  header h1 {
+    font-family: 'Lora', serif;
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+  header p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* Progress */
+  .progress-wrap {
+    max-width: 640px;
+    margin: 0 auto 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .progress-track {
+    flex: 1;
+    height: 5px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--green-mid);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+  .progress-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    min-width: 70px;
+    text-align: right;
+  }
+
+  /* Card */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.75rem 2rem;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .q-type-badge {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+  }
+  .q-text {
+    font-family: 'Lora', serif;
+    font-size: 1.05rem;
+    line-height: 1.55;
+    color: var(--text);
+    margin-bottom: 1rem;
+    font-weight: 400;
+  }
+  .q-scenario {
+    background: #F5F5F0;
+    border-left: 3px solid var(--green-mid);
+    border-radius: 0 6px 6px 0;
+    padding: 12px 16px;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--text);
+    margin-bottom: 1.25rem;
+  }
+  .q-hint {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-bottom: 1rem;
+  }
+
+  /* Multiple choice */
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .opt-btn {
+    width: 100%;
+    text-align: left;
+    padding: 11px 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    line-height: 1.4;
+  }
+  .opt-btn:hover:not(:disabled) { border-color: var(--green-mid); background: var(--green-light); }
+  .opt-btn.selected { border-color: var(--green-mid); background: var(--green-light); }
+  .opt-btn.correct { border-color: var(--green-dark); background: var(--green-light); color: var(--green-dark); font-weight: 500; }
+  .opt-btn.wrong { border-color: var(--red-dark); background: var(--red-light); color: var(--red-dark); }
+  .opt-btn:disabled { cursor: default; }
+
+  /* Drag */
+  .source-zone {
+    display: flex; flex-wrap: wrap; gap: 7px;
+    min-height: 52px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px dashed var(--border);
+    margin-bottom: 1rem;
+    background: #F5F5F0;
+  }
+  .drag-cols { display: flex; gap: 12px; }
+  .drag-col { flex: 1; min-width: 0; }
+  .drag-col h4 {
+    font-size: 11px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 6px;
+  }
+  .drop-zone {
+    min-height: 80px;
+    border: 1.5px dashed var(--border);
+    border-radius: 8px;
+    padding: 8px;
+    display: flex; flex-wrap: wrap; gap: 6px; align-content: flex-start;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .drop-zone.over { border-color: var(--green-mid); background: var(--green-light); }
+  .chip {
+    padding: 5px 12px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--surface);
+    font-size: 13px;
+    cursor: grab;
+    color: var(--text);
+    user-select: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    white-space: nowrap;
+  }
+  .chip:hover { border-color: var(--green-mid); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  .chip:active { cursor: grabbing; }
+  .chip.ok  { background: var(--green-light); border-color: var(--green-dark); color: var(--green-dark); cursor: default; }
+  .chip.ko  { background: var(--red-light);   border-color: var(--red-dark);   color: var(--red-dark);   cursor: default; }
+
+  /* Calc */
+  .calc-formula {
+    font-size: 15px; font-weight: 500; color: var(--text-muted);
+    margin-bottom: 1rem; font-family: 'Lora', serif; font-style: italic;
+  }
+  .calc-row {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    font-size: 14px; color: var(--text-muted);
+  }
+  .calc-row label { color: var(--text); font-size: 14px; }
+  .calc-inp {
+    width: 130px; padding: 9px 12px;
+    border: 1px solid var(--border); border-radius: 8px;
+    font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500;
+    text-align: right; color: var(--text); background: var(--surface);
+    transition: border-color 0.15s;
+  }
+  .calc-inp:focus { outline: none; border-color: var(--green-mid); }
+  .calc-inp.ok { border-color: var(--green-dark); color: var(--green-dark); background: var(--green-light); }
+  .calc-inp.ko { border-color: var(--red-dark);   color: var(--red-dark);   background: var(--red-light); }
+
+  /* Feedback */
+  .feedback {
+    margin-top: 1rem; padding: 12px 16px;
+    border-radius: 8px; font-size: 13.5px; line-height: 1.6;
+    display: none;
+  }
+  .feedback.show { display: block; }
+  .feedback.ok { background: var(--green-light); color: var(--green-dark); border: 1px solid var(--green-border); }
+  .feedback.ko { background: var(--red-light);   color: var(--red-dark);   border: 1px solid var(--red-border); }
+
+  /* Nav buttons */
+  .nav {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 1.5rem; padding-top: 1.25rem;
+    border-top: 1px solid var(--border);
+  }
+  .btn-check {
+    padding: 9px 22px;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: var(--surface); color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: border-color 0.15s, background 0.15s;
+  }
+  .btn-check:hover { border-color: var(--green-mid); background: var(--green-light); }
+  .btn-next {
+    margin-left: auto; padding: 9px 22px;
+    border: none; border-radius: 8px;
+    background: var(--green-mid); color: #fff;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: background 0.15s;
+    display: none;
+  }
+  .btn-next:hover { background: var(--green-dark); }
+
+  /* Score */
+  #scoreScreen { display: none; max-width: 640px; margin: 0 auto; text-align: center; padding: 2.5rem 2rem; }
+  .score-big { font-family: 'Lora', serif; font-size: 64px; font-weight: 600; color: var(--green-mid); line-height: 1; }
+  .score-sub { font-size: 15px; color: var(--text-muted); margin: 0.5rem 0 1.5rem; }
+  .score-msg { font-size: 15px; line-height: 1.6; color: var(--text); margin-bottom: 1.5rem; }
+  .score-badge-pill {
+    display: inline-block; padding: 6px 20px;
+    border-radius: 20px; font-size: 13px; font-weight: 500;
+    margin-bottom: 1.75rem;
+  }
+  .btn-restart {
+    padding: 11px 28px; border: none; border-radius: 8px;
+    background: var(--green-mid); color: #fff;
+    font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500;
+    cursor: pointer; transition: background 0.15s;
+  }
+  .btn-restart:hover { background: var(--green-dark); }
+
+  @media (max-width: 500px) {
+    .card { padding: 1.25rem 1rem; }
+    .drag-cols { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="tag">Economia dell'impresa vitivinicola</div>
+  <h1>Quiz – Bilancio </h1>
+  
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-track"><div class="progress-fill" id="prog"></div></div>
+  <div class="progress-label" id="progLabel">0 / 12</div>
+</div>
+
+<div class="card" id="quizCard">
+  <div class="q-type-badge" id="qTypeBadge"></div>
+  <div class="q-text" id="qText"></div>
+  <div class="q-scenario" id="qScenario" style="display:none"></div>
+  <div class="q-hint" id="qHint" style="display:none"></div>
+  <div id="qBody"></div>
+  <div class="feedback" id="feedback"></div>
+  <div class="nav">
+    <button class="btn-check" id="btnCheck" onclick="checkAnswer()">Verifica risposta</button>
+    <button class="btn-next" id="btnNext" onclick="nextQ()">Prossima →</button>
+  </div>
+</div>
+
+<div id="scoreScreen">
+  <div class="score-big" id="scoreNum"></div>
+  <div class="score-sub" id="scoreSub"></div>
+  <div class="score-msg" id="scoreMsg"></div>
+  <div class="score-badge-pill" id="scoreBadge"></div>
+  <br>
+  <button class="btn-restart" onclick="restart()">↺ Ricomincia</button>
+</div>
+
+<script>
+const questions = [
+  {
+    type: "mc",
+    
+    text: "Quale formula esprime correttamente il Prodotto Netto Sociale (PNs)?",
+    opts: [
+      "PNs = PLV – (Sv + Q)",
+      "PNs = PLV – (Sv + Q + Im)",
+      "PNs = PLV – CV",
+      "PNs = Sa + St + Bi + Bf ± T"
+    ],
+    ans: 0,
+    explanation: "Il PNs si ottiene detraendo dalla PLV le spese varie (Sv) e le quote di ammortamento (Q). Sottraendo anche le imposte (Im) si ottiene invece il Prodotto Netto Aziendale (PNa)."
+  },
+  {
+    type: "mc",
+    badge: "Risposta multipla",
+    text: "Cosa rappresenta il Prodotto Netto Aziendale (PNa)?",
+    opts: [
+      "Il valore totale dei prodotti venduti nell'anno",
+      "L'aumento della ricchezza privata ottenuta dall'azienda",
+      "La somma dei salari pagati ai lavoratori fissi",
+      "Il reddito al netto dei soli costi variabili"
+    ],
+    ans: 1,
+    explanation: "Il PNa = PNs – Im = PLV – (Sv + Q + Im). Rappresenta l'aumento della ricchezza privata, poiché è già al netto delle tasse dovute allo Stato."
+  },
+  {
+    type: "mc",
+    badge: "Risposta multipla",
+    text: "Quale tra queste NON è una causa di deprezzamento di un fattore a logorio parziale?",
+    opts: [
+      "L'uso",
+      "Gli agenti fisici naturali",
+      "L'aumento del prezzo di mercato del bene",
+      "L'obsolescenza tecnologica"
+    ],
+    ans: 2,
+    explanation: "Le cause di deprezzamento sono: l'uso, gli agenti fisici, gli eventi eccezionali e l'obsolescenza. Un aumento del prezzo di mercato non determina deprezzamento, anzi incrementerebbe il valore del bene."
+  },
+  {
+    type: "mc",
+    badge: "Risposta multipla",
+    text: "Nella PLV (Produzione Lorda Vendibile), come vengono trattate le variazioni delle scorte?",
+    opts: [
+      "Le variazioni positive si detraggono, quelle negative si aggiungono",
+      "Le variazioni positive si aggiungono, quelle negative si detraggono o si mettono tra i costi",
+      "Le variazioni di scorte non vengono mai incluse nella PLV",
+      "Le scorte vengono sempre escluse dal bilancio consuntivo"
+    ],
+    ans: 1,
+    explanation: "Le variazioni positive delle scorte si includono nell'attivo (PLV), mentre quelle negative si detraggono o si inseriscono tra i costi del passivo. Questo è fondamentale per prodotti come il vino, la cui vendita può essere differita."
+  },
+  {
+    type: "mc",
+    badge: "Risposta multipla",
+    text: "Qual è la differenza fondamentale tra 'deprezzamento' e 'ammortamento'?",
+    opts: [
+      "Sono sinonimi: indicano entrambi la perdita di valore nel tempo",
+      "Il deprezzamento è il fenomeno continuo di perdita di valore; l'ammortamento è la ripartizione contabile di tale perdita nei diversi anni",
+      "L'ammortamento riguarda solo i beni immobili; il deprezzamento quelli mobili",
+      "Il deprezzamento è un costo fisso; l'ammortamento è un costo variabile"
+    ],
+    ans: 1,
+    explanation: "Il deprezzamento è il fenomeno fisico-economico continuo cui è soggetto il bene. L'ammortamento è invece la procedura contabile che ripartisce tale deprezzamento complessivo nei diversi anni di utilizzo."
+  },
+  {
+    type: "mc",
+    badge: "Risposta multipla",
+    text: "Per un imprenditore 'Affittuario capitalista' che NON fornisce lavoro direttivo, quali sono le spese effettive?",
+    opts: [
+      "Sa, St, Bi, Bf",
+      "Sa, Bf",
+      "Sa, St, Bf",
+      "Solo Sa"
+    ],
+    ans: 2,
+    explanation: "L'affittuario capitalista paga il canone d'affitto (Bf), i salari (Sa) e gli stipendi (St), se non fornisce lavoro direttivo. Non percepisce il Bf come reddito. Bi invece fa parte del suo reddito netto insieme al Tornaconto (T)."
+  },
+  {
+    type: "mc",
+    badge: "Risposta multipla",
+    text: "Nel bilancio aziendale, cosa rappresenta il Tornaconto (T)?",
+    opts: [
+      "Il canone d'affitto pagato dal conduttore al proprietario del fondo",
+      "La quota annua di ammortamento dei beni strumentali",
+      "La differenza tra il reddito netto effettivamente conseguito e la somma dei compensi presunti (Sa + St + Bf + Bi)",
+      "Il beneficio fondiario percepito dal proprietario coltivatore diretto"
+    ],
+    ans: 2,
+    explanation: "Il Tornaconto (T) esprime lo scarto tra il reddito netto reale e la somma dei compensi teorici attribuiti ai fattori produttivi (lavoro, capitale, terra, impresa). Un T positivo indica che l'azienda ha remunerato i fattori meglio del dovuto; uno negativo segnala una gestione in perdita relativa."
+  },
+  {
+    type: "drag",
+    badge: "Classificazione",
+    text: "Trascina le voci nella sezione corretta: ATTIVO (PLV) o PASSIVO del bilancio.",
+    hint: "L'attivo comprende i beni e servizi prodotti; il passivo comprende i costi sostenuti.",
+    items: [
+      { label: "Prodotti venduti",            cat: "A" },
+      { label: "Fertilizzanti e antiparassitari", cat: "P" },
+      { label: "Utile lordo di stalla",       cat: "A" },
+      { label: "Quote di ammortamento",       cat: "P" },
+      { label: "Contributi UE / Stato",       cat: "A" },
+      { label: "Canone d'affitto",            cat: "P" },
+      { label: "Servizi forniti a terzi",     cat: "A" },
+      { label: "Noleggi macchinari",          cat: "P" }
+    ],
+    zones: ["A", "P"],
+    zoneLabels: ["Attivo (PLV)", "Passivo (Costi)"]
+  },
+  {
+    type: "drag",
+    badge: "Classificazione",
+    text: "Classifica i seguenti costi come FISSI o VARIABILI.",
+    hint: "I costi fissi non variano al variare della produzione nel breve periodo; i costi variabili invece sì.",
+    items: [
+      { label: "Quote di ammortamento",              cat: "F" },
+      { label: "Carburanti e lubrificanti",          cat: "V" },
+      { label: "Canone di affitto fondiario",        cat: "F" },
+      { label: "Remunerazione lavoratori avventizi", cat: "V" },
+      { label: "Interessi sui capitali fissi",       cat: "F" },
+      { label: "Antiparassitari", cat: "V" },
+      { label: "Imposte",                            cat: "F" },
+      { label: "Sementi e piante",                   cat: "V" }
+    ],
+    zones: ["F", "V"],
+    zoneLabels: ["Costi fissi", "Costi variabili"]
+  },
+  {
+    type: "calc",
+    badge: "Calcolo ammortamento",
+    text: "Calcola la quota annua di ammortamento con il metodo della ripartizione lineare del costo.",
+    scenario: "Un'azienda vitivinicola acquista un trattore a quattro ruote al costo di €42.000. La durata prevista è di 10 anni e il valore residuo al termine è stimato in €2.000.",
+    formula: "q = (V₀ – Vn) / n",
+    hint: "q = (42.000 – 2.000) / 10",
+    expected: 4000,
+    unit: "€",
+    explanation: "q = (42.000 – 2.000) / 10 = 40.000 / 10 = €4.000 per anno. Il costo da ripartire è la differenza tra valore iniziale e valore residuo, divisa per gli anni di vita utile."
+  },
+  {
+    type: "calc",
+    badge: "Calcolo ammortamento",
+    text: "Calcola la quota annua di ammortamento con il metodo della ripartizione lineare del costo.",
+    scenario: "Una cantina acquista un torchio per vinificazione al prezzo di €18.000. Si prevede una durata di 15 anni, al termine dei quali il bene non avrà alcun valore residuo (Vn = 0).",
+    formula: "q = (V₀ – Vn) / n",
+    hint: "q = (18.000 – 0) / 15",
+    expected: 1200,
+    unit: "€",
+    explanation: "q = (18.000 – 0) / 15 = 18.000 / 15 = €1.200 per anno. Quando il valore residuo è zero, si divide semplicemente il costo iniziale per la durata prevista."
+  },
+  {
+    type: "calc",
+    badge: "Calcolo ammortamento",
+    text: "Calcola la quota annua di ammortamento con il metodo percentuale.",
+    scenario: "Un'autoclave in acciaio per la conservazione del vino ha un costo iniziale di €25.000. La percentuale di ammortamento (α) per questo tipo di impianto è del 6,5%.",
+    formula: "q = (α × V₀) / 100",
+    expected: 1625,
+    unit: "€",
+    explanation: "q = (6,5 × 25.000) / 100 = 162.500 / 100 = €1.625 per anno. Il metodo percentuale applica un'aliquota fissa (α) al valore iniziale del bene, ricavata dai manuali tecnici di settore."
+  }
+];
+
+let current = 0, score = 0, checked = false;
+let dragPlaced = {};
+
+function init() {
+  current = 0; score = 0; checked = false;
+  document.getElementById('quizCard').style.display = 'block';
+  document.getElementById('scoreScreen').style.display = 'none';
+  showQ();
+}
+
+function showQ() {
+  checked = false;
+  const q = questions[current];
+  const total = questions.length;
+
+  document.getElementById('prog').style.width = ((current / total) * 100) + '%';
+  document.getElementById('progLabel').textContent = current + ' / ' + total;
+  document.getElementById('qTypeBadge').textContent = q.badge;
+  document.getElementById('qText').textContent = q.text;
+
+  const sc = document.getElementById('qScenario');
+  if (q.scenario) { sc.textContent = q.scenario; sc.style.display = 'block'; }
+  else sc.style.display = 'none';
+
+  const hi = document.getElementById('qHint');
+  if (q.hint) { hi.textContent = '💡 ' + q.hint; hi.style.display = 'block'; }
+  else hi.style.display = 'none';
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback'; fb.textContent = '';
+
+  document.getElementById('btnCheck').style.display = 'inline-block';
+  document.getElementById('btnNext').style.display = 'none';
+
+  const body = document.getElementById('qBody');
+  body.innerHTML = '';
+
+  if (q.type === 'mc') renderMC(q, body);
+  else if (q.type === 'drag') renderDrag(q, body);
+  else if (q.type === 'calc') renderCalc(q, body);
+}
+
+function renderMC(q, body) {
+  const wrap = document.createElement('div');
+  wrap.className = 'options';
+  q.opts.forEach((o, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn'; btn.textContent = o;
+    btn.onclick = () => {
+      if (checked) return;
+      wrap.querySelectorAll('.opt-btn').forEach(b => { b.classList.remove('selected'); });
+      btn.classList.add('selected');
+    };
+    wrap.appendChild(btn);
+  });
+  body.appendChild(wrap);
+}
+
+function renderDrag(q, body) {
+  dragPlaced = {};
+  q.zones.forEach(z => dragPlaced[z] = []);
+
+  const src = document.createElement('div');
+  src.className = 'source-zone'; src.id = 'srcZone';
+  q.items.forEach((it, i) => src.appendChild(makeChip(it.label, i)));
+  addDropBehavior(src, 'src', q);
+  body.appendChild(src);
+
+  const cols = document.createElement('div'); cols.className = 'drag-cols';
+  q.zones.forEach((z, zi) => {
+    const col = document.createElement('div'); col.className = 'drag-col';
+    const h4 = document.createElement('h4'); h4.textContent = q.zoneLabels[zi];
+    const dz = document.createElement('div'); dz.className = 'drop-zone'; dz.dataset.zone = z;
+    addDropBehavior(dz, z, q);
+    col.appendChild(h4); col.appendChild(dz); cols.appendChild(col);
+  });
+  body.appendChild(cols);
+}
+
+function makeChip(label, idx) {
+  const chip = document.createElement('div');
+  chip.className = 'chip'; chip.textContent = label;
+  chip.draggable = true; chip.dataset.idx = idx;
+  chip.addEventListener('dragstart', e => { e.dataTransfer.setData('idx', idx); chip.style.opacity = '0.4'; });
+  chip.addEventListener('dragend', () => { chip.style.opacity = '1'; });
+  return chip;
+}
+
+function addDropBehavior(el, zone, q) {
+  el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('over'); });
+  el.addEventListener('dragleave', () => el.classList.remove('over'));
+  el.addEventListener('drop', e => {
+    e.preventDefault(); el.classList.remove('over');
+    const idx = e.dataTransfer.getData('idx');
+    q.zones.forEach(z => { dragPlaced[z] = dragPlaced[z].filter(x => x != idx); });
+    if (zone !== 'src') dragPlaced[zone].push(idx);
+    refreshDrag(q);
+  });
+}
+
+function refreshDrag(q) {
+  const placed = [];
+  q.zones.forEach(z => dragPlaced[z].forEach(i => placed.push(parseInt(i))));
+  const src = document.getElementById('srcZone');
+  src.innerHTML = '';
+  q.items.forEach((it, i) => { if (!placed.includes(i)) src.appendChild(makeChip(it.label, i)); });
+  q.zones.forEach(z => {
+    const dz = document.querySelector('[data-zone="' + z + '"]');
+    if (!dz) return;
+    dz.innerHTML = '';
+    dragPlaced[z].forEach(idx => dz.appendChild(makeChip(q.items[parseInt(idx)].label, idx)));
+  });
+}
+
+function renderCalc(q, body) {
+  const formula = document.createElement('div');
+  formula.className = 'calc-formula'; formula.textContent = q.formula;
+  body.appendChild(formula);
+
+  const row = document.createElement('div'); row.className = 'calc-row';
+  const lbl = document.createElement('label'); lbl.textContent = 'Quota annua =';
+  const inp = document.createElement('input');
+  inp.type = 'number'; inp.className = 'calc-inp'; inp.id = 'calcInp'; inp.placeholder = '0';
+  const unit = document.createElement('span'); unit.textContent = q.unit; unit.style.fontWeight = '500';
+  row.appendChild(lbl); row.appendChild(inp); row.appendChild(unit);
+  body.appendChild(row);
+}
+
+function checkAnswer() {
+  if (checked) return;
+  const q = questions[current];
+  const fb = document.getElementById('feedback');
+  let correct = false;
+
+  if (q.type === 'mc') {
+    const sel = document.querySelector('.opt-btn.selected');
+    if (!sel) { fb.className = 'feedback show ko'; fb.textContent = 'Seleziona una risposta prima di verificare.'; return; }
+    const idx = Array.from(document.querySelectorAll('.opt-btn')).indexOf(sel);
+    correct = (idx === q.ans);
+    document.querySelectorAll('.opt-btn').forEach((b, i) => {
+      b.disabled = true;
+      if (i === q.ans) b.classList.add('correct');
+      else if (!correct && b === sel) b.classList.add('wrong');
+    });
+  }
+  else if (q.type === 'drag') {
+    const placed = [];
+    q.zones.forEach(z => dragPlaced[z].forEach(i => placed.push(parseInt(i))));
+    if (placed.length < q.items.length) {
+      fb.className = 'feedback show ko'; fb.textContent = 'Posiziona tutti gli elementi prima di verificare.'; return;
+    }
+    let allOk = true;
+    q.zones.forEach(z => {
+      document.querySelector('[data-zone="' + z + '"]').querySelectorAll('.chip').forEach(chip => {
+        const it = q.items[parseInt(chip.dataset.idx)];
+        const ok = it.cat === z;
+        if (!ok) allOk = false;
+        chip.classList.add(ok ? 'ok' : 'ko');
+        chip.draggable = false;
+      });
+    });
+    correct = allOk;
+  }
+  else if (q.type === 'calc') {
+    const inp = document.getElementById('calcInp');
+    if (!inp || inp.value === '') {
+      fb.className = 'feedback show ko'; fb.textContent = 'Inserisci un valore numerico prima di verificare.'; return;
+    }
+    const val = parseFloat(inp.value);
+    correct = Math.abs(val - q.expected) < 0.5;
+    inp.disabled = true;
+    inp.classList.add(correct ? 'ok' : 'ko');
+    if (!correct) {
+      const hint = document.createElement('div');
+      hint.style.cssText = 'margin-top:8px;font-size:13px;color:var(--text-muted)';
+      hint.innerHTML = 'Risposta corretta: <strong style="color:var(--green-dark)">' + q.unit + q.expected.toLocaleString('it-IT') + '</strong>';
+      inp.parentElement.appendChild(hint);
+    }
+  }
+
+  checked = true;
+  if (correct) score++;
+  fb.className = 'feedback show ' + (correct ? 'ok' : 'ko');
+  fb.textContent = (correct ? '✓ Corretto! ' : '✗ Non esatto. ') + q.explanation;
+  document.getElementById('btnCheck').style.display = 'none';
+  const btnNext = document.getElementById('btnNext');
+  btnNext.style.display = 'inline-block';
+  btnNext.textContent = current < questions.length - 1 ? 'Prossima domanda →' : 'Vedi il risultato';
+}
+
+function nextQ() {
+  current++;
+  if (current >= questions.length) showScore();
+  else showQ();
+}
+
+function showScore() {
+  document.getElementById('quizCard').style.display = 'none';
+  document.getElementById('prog').style.width = '100%';
+  document.getElementById('progLabel').textContent = questions.length + ' / ' + questions.length;
+  const ss = document.getElementById('scoreScreen');
+  ss.style.display = 'block';
+  document.getElementById('scoreNum').textContent = score + '/' + questions.length;
+  const pct = Math.round((score / questions.length) * 100);
+  document.getElementById('scoreSub').textContent = pct + '% di risposte corrette';
+  let msg, badge, col;
+  if (pct >= 90) {
+    msg = 'Risultato eccellente! Hai una padronanza ottima degli argomenti sul bilancio aziendale vitivinicolo.';
+    badge = '🏆 Esperto di bilancio'; col = 'var(--green-dark)'; bgCol = 'var(--green-light)';
+  } else if (pct >= 70) {
+    msg = 'Buon risultato! Conosci bene gli argomenti, ma qualche concetto merita ancora un po\' di attenzione.';
+    badge = '👍 Ben preparato'; col = 'var(--amber)'; bgCol = 'var(--amber-light)';
+  } else if (pct >= 50) {
+    msg = 'Sufficiente. Ti consiglio di ripassare la struttura dell\'attivo e del passivo, le formule di PNs/PNa e i metodi di ammortamento.';
+    badge = '📖 Da ripassare'; col = '#D85A30'; bgCol = '#FAECE7';
+  } else {
+    msg = 'Continua a studiare il capitolo sul bilancio. Rileggi le slide su PLV, quote di ammortamento e classificazione dei costi.';
+    badge = '📚 Ripasso necessario'; col = 'var(--red-dark)'; bgCol = 'var(--red-light)';
+  }
+  document.getElementById('scoreMsg').textContent = msg;
+  const pill = document.getElementById('scoreBadge');
+  pill.textContent = badge;
+  pill.style.background = bgCol; pill.style.color = col;
+  pill.style.border = '1px solid ' + col;
+}
+
+function restart() { init(); }
+init();
+</script>
+</body>
+</html>
