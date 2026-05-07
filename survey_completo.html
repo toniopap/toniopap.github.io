@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Questionario – Abitudini Alimentari</title>
+  <title>Studio sulle Preferenze Alimentari</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -27,7 +27,7 @@
     body { font-family: var(--font); background: var(--bg-ter); color: var(--text-pri); min-height: 100vh; padding: 2rem 1rem 6rem; font-size: 15px; line-height: 1.6; }
     .screen-center { display: flex; align-items: flex-start; justify-content: center; padding-top: 1rem; }
     .welcome-card { background: var(--bg); border: 0.5px solid var(--border-lo); border-radius: var(--r-lg); padding: 2.5rem 2rem; max-width: 640px; width: 100%; }
-    .form-wrap { max-width: 660px; margin: 0 auto; }
+    .form-wrap, .stim-wrap { max-width: 660px; margin: 0 auto; }
     h1 { font-size: 22px; font-weight: 600; margin: 0.6rem 0 1rem; line-height: 1.3; }
     h2 { font-size: 18px; font-weight: 600; margin: 0.5rem 0 0.5rem; }
     .sub { font-size: 14px; color: var(--text-sec); margin-bottom: 1.2rem; line-height: 1.5; }
@@ -55,6 +55,8 @@
     .field-label { display: block; font-size: 14px; font-weight: 500; color: var(--text-pri); margin-bottom: 8px; line-height: 1.4; }
     select { width: 100%; padding: 9px 12px; font-size: 14px; font-family: var(--font); color: var(--text-pri); background: var(--bg); border: 0.5px solid var(--border-mid); border-radius: var(--r-md); height: 40px; cursor: pointer; transition: border-color 0.15s; }
     select:focus { outline: none; border-color: var(--border-hi); }
+    textarea { width: 100%; padding: 9px 12px; font-size: 14px; font-family: var(--font); color: var(--text-pri); background: var(--bg); border: 0.5px solid var(--border-mid); border-radius: var(--r-md); min-height: 76px; resize: vertical; line-height: 1.5; transition: border-color 0.15s; }
+    textarea:focus { outline: none; border-color: var(--border-hi); }
     input[type=number], input[type=text] { width: 100%; padding: 9px 12px; font-size: 14px; font-family: var(--font); color: var(--text-pri); background: var(--bg); border: 0.5px solid var(--border-mid); border-radius: var(--r-md); transition: border-color 0.15s; }
     input[type=number]:focus, input[type=text]:focus { outline: none; border-color: var(--border-hi); }
     .radio-group { display: flex; flex-direction: column; gap: 6px; }
@@ -65,6 +67,7 @@
     .scale-item:last-child { border-bottom: none; }
     .scale-construct { font-size: 11px; font-weight: 600; color: var(--text-ter); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 3px; }
     .scale-question { font-size: 14px; color: var(--text-pri); margin-bottom: 8px; line-height: 1.4; }
+    .question-text { font-size: 15px; color: var(--text-pri); margin-bottom: 8px; line-height: 1.45; }
     .likert-labels { display: flex; justify-content: space-between; margin-bottom: 5px; }
     .likert-label { font-size: 11px; color: var(--text-ter); max-width: 120px; line-height: 1.3; }
     .likert-label:last-child { text-align: right; }
@@ -78,6 +81,8 @@
     .progress-track { height: 3px; background: var(--border-lo); border-radius: 2px; }
     .progress-fill { height: 3px; background: var(--text-sec); border-radius: 2px; transition: width 0.4s ease; }
     .nav-row { display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 0.5px solid var(--border-lo); }
+    .nav-hint { font-size: 13px; color: var(--text-ter); transition: color 0.2s; }
+    .nav-hint.complete { color: var(--text-success); }
     .btn-primary { padding: 10px 26px; font-size: 14px; font-weight: 600; font-family: var(--font); background: var(--text-pri); color: var(--bg); border: none; border-radius: var(--r-md); cursor: pointer; transition: opacity 0.15s; }
     .btn-primary:disabled { opacity: 0.28; cursor: not-allowed; }
     .btn-primary:not(:disabled):hover { opacity: 0.78; }
@@ -87,6 +92,20 @@
     .check-label { display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; padding: 9px 12px; background: var(--bg); border: 0.5px solid var(--border-mid); border-radius: var(--r-md); margin-bottom: 5px; transition: background 0.12s; }
     .check-label:hover { background: var(--bg-sec); }
     .check-label input[type=checkbox] { cursor: pointer; accent-color: var(--text-pri); flex-shrink: 0; }
+    /* Stimulus card */
+    .stimulus-card { background: var(--bg); border: 0.5px solid var(--border-lo); border-radius: var(--r-lg); overflow: hidden; margin-bottom: 1.5rem; }
+    .stimulus-img { width: 100%; height: 240px; display: flex; align-items: center; justify-content: center; background: var(--bg-sec); position: relative; }
+    .stimulus-meta { padding: 1rem 1.25rem; border-top: 0.5px solid var(--border-lo); }
+    .stimulus-hint { font-size: 14px; color: var(--text-sec); line-height: 1.5; }
+    .qr-note { display: inline-block; margin-top: 5px; font-size: 12px; color: var(--text-info); cursor: pointer; }
+    .qr-badge { position: absolute; bottom: 14px; right: 14px; width: 50px; height: 50px; background: white; border-radius: 8px; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.14s, box-shadow 0.14s; text-decoration: none; }
+    .qr-badge:hover { transform: scale(1.06); box-shadow: 0 2px 12px rgba(0,0,0,0.12); }
+    /* WTP slider */
+    .wtp-wrap { margin-top: 1.5rem; }
+    .wtp-slider-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+    .wtp-bound { font-size: 13px; color: var(--text-ter); white-space: nowrap; }
+    input[type=range] { flex: 1; accent-color: var(--text-pri); cursor: pointer; height: 20px; }
+    .wtp-value { font-size: 16px; font-weight: 600; color: var(--text-pri); min-width: 60px; text-align: right; }
     #toast { position: fixed; bottom: 24px; right: 24px; z-index: 1000; background: var(--bg); border: 0.5px solid var(--border-mid); border-radius: var(--r-md); padding: 12px 16px; font-size: 13px; color: var(--text-pri); box-shadow: 0 4px 20px rgba(0,0,0,0.10); opacity: 0; pointer-events: none; transition: opacity 0.2s; max-width: 290px; }
     #toast.show { opacity: 1; }
   </style>
@@ -96,77 +115,87 @@
 <div id="toast"></div>
 <script>
 /* ================================================================
-   STATO GLOBALE
+   CONFIGURAZIONE ESPERIMENTO
 ================================================================ */
-let S = {};
-let checkDone = null;
-
-function initSession() {
-  S = {
-    pid: 'P' + Date.now().toString(36).toUpperCase(),
-    started_at: new Date().toISOString(),
-    screening: {},
-    section_b: {},
-    fcq: {},
-    isd: {},
-    trust: {},
-    section_d: {},
-    demographics: { health: [] },
-    completed_at: null,
-  };
-}
+const STUDY_URL  = 'https://tuostudio.it/qr';
+const CONDITIONS = ['tracciabilita', 'nutrizione', 'sostenibilita'];
+const ORDERS     = ['A', 'B'];
 
 /* ================================================================
-   DEFINIZIONI SCALE
+   PRODOTTI (esperimento packaging)
+================================================================ */
+const FILLERS = [
+  { id: 'yogurt',  name: 'Yogurt Greco',        brand: 'COOP', detail: '500g · Naturale',         type: 'yogurt',  hasQR: false },
+  { id: 'pasta',   name: 'Pasta di Gragnano',   brand: 'COOP', detail: '500g · Spaghetti n.12',   type: 'pasta',   hasQR: false },
+  { id: 'passata', name: 'Passata di Pomodoro', brand: 'COOP', detail: '700g · Rustica',           type: 'passata', hasQR: false },
+  { id: 'olio',    name: 'Olio Extravergine',   brand: 'COOP', detail: '750ml · Classico',         type: 'olio',    hasQR: false },
+];
+const FOCAL_NO = { id: 'carne_no_qr', name: 'Fettine di Vitello', brand: 'Linea Natura', detail: '500g · Fresco · IT', type: 'carne', hasQR: false };
+const FOCAL_QR = { id: 'carne_qr',   name: 'Fettine di Vitello', brand: 'Linea Natura', detail: '500g · Fresco · IT', type: 'carne', hasQR: true  };
+
+/* ================================================================
+   SCALE STIMOLI (per ciascuno dei 6 prodotti)
+================================================================ */
+const PROD_SCALES = [
+  { id: 'q_quality1', label: 'Qualità percepita',     q: 'Questo prodotto mi sembra di alta qualità.'                        },
+  { id: 'q_quality2', label: 'Qualità percepita',     q: 'Mi aspetto che questo prodotto sia fresco.'                        },
+  { id: 'q_safety',   label: 'Sicurezza alimentare',  q: 'Questo prodotto mi sembra sicuro da consumare.'                    },
+  { id: 'q_trust',    label: 'Fiducia',               q: 'Mi fido della provenienza di questo prodotto.'                     },
+  { id: 'q_transp',   label: 'Trasparenza',           q: 'Il produttore sembra voler essere trasparente con il consumatore.' },
+  { id: 'q_intent',   label: "Intenzione d'acquisto", q: "Sarei propenso/a ad acquistare questo prodotto."                   },
+];
+
+/* ================================================================
+   SCALE QUESTIONARIO
 ================================================================ */
 const FCQ_ITEMS = [
-  { id:'fcq1', q:'…sia sano.' },
-  { id:'fcq2', q:'…sia un modo per gestire il mio umore (es. mettermi di buon umore o per affrontare lo stress)' },
-  { id:'fcq3',          q:'…sia comodo (nell\'acquisto e nella preparazione)' },
-  { id:'fcq4',   q:'…mi offra sensazioni piacevoli (es. consistenza, aspetto, odore e sapore)' },
-  { id:'fcq5',   q:'…sia naturale' },
-  { id:'fcq6',               q:'…sia economicamente conveniente.' },
-  { id:'fcq7',   q:'…mi aiuti a controllare il peso.' },
-  { id:'fcq8',          q:'…mi sia familiare.' },
-  { id:'fcq9',  q:'…sia rispettoso dell\'ambiente.' },
+  { id:'fcq1',  q:'…sia sano.' },
+  { id:'fcq2',  q:'…sia un modo per gestire il mio umore (es. mettermi di buon umore o per affrontare lo stress)' },
+  { id:'fcq3',  q:"…sia comodo (nell'acquisto e nella preparazione)" },
+  { id:'fcq4',  q:'…mi offra sensazioni piacevoli (es. consistenza, aspetto, odore e sapore)' },
+  { id:'fcq5',  q:'…sia naturale' },
+  { id:'fcq6',  q:'…sia economicamente conveniente.' },
+  { id:'fcq7',  q:'…mi aiuti a controllare il peso.' },
+  { id:'fcq8',  q:'…mi sia familiare.' },
+  { id:'fcq9',  q:"…sia rispettoso dell'ambiente." },
   { id:'fcq10', q:'…sia rispettoso degli animali.' },
   { id:'fcq11', q:'…sia prodotto nel rispetto del commercio equo.' },
 ];
 
 const ISD_ITEMS = [
   { id:'isd1',  q:'Di fronte a questioni controverse, preferisco cercare prima su Google piuttosto che pensarci da solo/a.' },
-  { id:'isd2',  q:'Non prendo nota se so che posso cercare l\'informazione su Internet.' },
+  { id:'isd2',  q:"Non prendo nota se so che posso cercare l'informazione su Internet." },
   { id:'isd3',  q:'Quando mi viene posta una domanda complessa, di solito cerco di estrarne le parole chiave.' },
-  { id:'isd4',  q:'Quando qualcuno non è d\'accordo con me, di solito cerco la risposta su Internet.' },
+  { id:'isd4',  q:"Quando qualcuno non è d'accordo con me, di solito cerco la risposta su Internet." },
   { id:'isd5',  q:'Penso che non sia necessario ricordare qualcosa se possiamo trovarlo tramite una ricerca su Internet.' },
   { id:'isd6',  q:'Quando qualcuno mi fa una domanda, cerco su Internet se non riesco a rispondere immediatamente.' },
   { id:'isd7',  q:'Riesco a estrarre rapidamente parole chiave da una frase per una potenziale ricerca su Internet.' },
   { id:'isd8',  q:'Mi innervosisco se non riesco a trovare una risposta a una domanda complessa tramite ricerca su Internet.' },
   { id:'isd9',  q:'Penso che la ricerca su Internet possa soddisfare i bisogni quotidiani, inclusi l\'apprendimento e il modo di vivere.' },
   { id:'isd10', q:'Di solito inizio a cercare online inconsapevolmente quando sono inattivo/a.' },
-  { id:'isd11', q:'Non sono sicuro/a della risposta nella mia memoria se non riesco a verificarla tramite ricerca su Internet.' },
+  { id:'isd11', q:"Non sono sicuro/a della risposta nella mia memoria se non riesco a verificarla tramite ricerca su Internet." },
   { id:'isd12', q:'Penso che si possano trovare informazioni affidabili tramite la ricerca su Internet.' },
 ];
 
 const TRUST_ITEMS = [
-  { id:'gov1', group:'Fiducia nel governo',        q:'Il governo si prende cura della sicurezza del nostro cibo.' },
-  { id:'gov2', group:'Fiducia nel governo',        q:'Il governo presta particolare attenzione alla sicurezza alimentare.' },
-  { id:'gov3', group:'Fiducia nel governo',        q:'Il governo ha le competenze per controllare la sicurezza alimentare.' },
-  { id:'gov4', group:'Fiducia nel governo',        q:'Il governo ha le conoscenze sufficienti per garantire la sicurezza dei prodotti alimentari.' },
-  { id:'gov5', group:'Fiducia nel governo',        q:'Il governo è onesto riguardo alla sicurezza alimentare.' },
-  { id:'gov6', group:'Fiducia nel governo',        q:'Il governo è sufficientemente trasparente riguardo alla sicurezza alimentare.' },
-  { id:'far1', group:'Fiducia negli agricoltori',  q:'Gli agricoltori si prendono cura della sicurezza del nostro cibo.' },
-  { id:'far2', group:'Fiducia negli agricoltori',  q:'Gli agricoltori prestano particolare attenzione alla sicurezza alimentare.' },
-  { id:'far3', group:'Fiducia negli agricoltori',  q:'Gli agricoltori hanno le competenze per controllare la sicurezza alimentare.' },
-  { id:'far4', group:'Fiducia negli agricoltori',  q:'Gli agricoltori hanno le conoscenze sufficienti per garantire la sicurezza dei prodotti alimentari.' },
-  { id:'far5', group:'Fiducia negli agricoltori',  q:'Gli agricoltori sono onesti riguardo alla sicurezza alimentare.' },
-  { id:'far6', group:'Fiducia negli agricoltori',  q:'Gli agricoltori sono sufficientemente trasparenti riguardo alla sicurezza alimentare.' },
-  { id:'mfr1', group:'Fiducia nell\'industria alimentare',     q:'Le industrie alimentari si prendono cura della sicurezza del nostro cibo.' },
-  { id:'mfr2', group:'Fiducia nell\'industria alimentare',     q:'Le industrie alimentari prestano particolare attenzione alla sicurezza alimentare.' },
-  { id:'mfr3', group:'Fiducia nell\'industria alimentare',     q:'Le industrie alimentari hanno le competenze per controllare la sicurezza alimentare.' },
-  { id:'mfr4', group:'Fiducia nell\'industria alimentare',     q:'Le industrie alimentari hanno le conoscenze sufficienti per garantire la sicurezza dei prodotti alimentari.' },
-  { id:'mfr5', group:'Fiducia nell\'industria alimentare',     q:'Le industrie alimentari sono oneste riguardo alla sicurezza alimentare.' },
-  { id:'mfr6', group:'Fiducia nell\'industria alimentare',     q:'Le industrie alimentari sono sufficientemente trasparenti riguardo alla sicurezza alimentare.' },
+  { id:'gov1', group:'Fiducia nel governo',              q:'Il governo si prende cura della sicurezza del nostro cibo.' },
+  { id:'gov2', group:'Fiducia nel governo',              q:'Il governo presta particolare attenzione alla sicurezza alimentare.' },
+  { id:'gov3', group:'Fiducia nel governo',              q:'Il governo ha le competenze per controllare la sicurezza alimentare.' },
+  { id:'gov4', group:'Fiducia nel governo',              q:'Il governo ha le conoscenze sufficienti per garantire la sicurezza dei prodotti alimentari.' },
+  { id:'gov5', group:'Fiducia nel governo',              q:"Il governo è onesto riguardo alla sicurezza alimentare." },
+  { id:'gov6', group:'Fiducia nel governo',              q:'Il governo è sufficientemente trasparente riguardo alla sicurezza alimentare.' },
+  { id:'far1', group:'Fiducia negli agricoltori',        q:'Gli agricoltori si prendono cura della sicurezza del nostro cibo.' },
+  { id:'far2', group:'Fiducia negli agricoltori',        q:'Gli agricoltori prestano particolare attenzione alla sicurezza alimentare.' },
+  { id:'far3', group:'Fiducia negli agricoltori',        q:'Gli agricoltori hanno le competenze per controllare la sicurezza alimentare.' },
+  { id:'far4', group:'Fiducia negli agricoltori',        q:'Gli agricoltori hanno le conoscenze sufficienti per garantire la sicurezza dei prodotti alimentari.' },
+  { id:'far5', group:'Fiducia negli agricoltori',        q:"Gli agricoltori sono onesti riguardo alla sicurezza alimentare." },
+  { id:'far6', group:'Fiducia negli agricoltori',        q:'Gli agricoltori sono sufficientemente trasparenti riguardo alla sicurezza alimentare.' },
+  { id:'mfr1', group:"Fiducia nell'industria alimentare", q:"Le industrie alimentari si prendono cura della sicurezza del nostro cibo." },
+  { id:'mfr2', group:"Fiducia nell'industria alimentare", q:'Le industrie alimentari prestano particolare attenzione alla sicurezza alimentare.' },
+  { id:'mfr3', group:"Fiducia nell'industria alimentare", q:'Le industrie alimentari hanno le competenze per controllare la sicurezza alimentare.' },
+  { id:'mfr4', group:"Fiducia nell'industria alimentare", q:'Le industrie alimentari hanno le conoscenze sufficienti per garantire la sicurezza dei prodotti alimentari.' },
+  { id:'mfr5', group:"Fiducia nell'industria alimentare", q:"Le industrie alimentari sono oneste riguardo alla sicurezza alimentare." },
+  { id:'mfr6', group:"Fiducia nell'industria alimentare", q:'Le industrie alimentari sono sufficientemente trasparenti riguardo alla sicurezza alimentare.' },
 ];
 
 const CNS_ITEMS = [
@@ -180,20 +209,20 @@ const CNS_ITEMS = [
 ];
 
 const TAM_ITEMS = [
-  { id:'pi1',  group:'Informazioni percepite',    q:'Il QR code per la tracciabilità alimentare mostra molte informazioni che mi aspettavo.' },
-  { id:'pi2',  group:'Informazioni percepite',    q:'Il QR code per la tracciabilità alimentare fornisce informazioni dettagliate sugli alimenti.' },
-  { id:'pi3',  group:'Informazioni percepite',    q:'Il QR code per la tracciabilità alimentare fornisce informazioni utili per le mie decisioni d\'acquisto.' },
-  { id:'pu1',  group:'Utilità percepita',         q:'Il QR code per la tracciabilità alimentare ha per me un grande valore.' },
-  { id:'pu2',  group:'Utilità percepita',         q:'Trovo il QR code per la tracciabilità alimentare utile nella mia vita.' },
-  { id:'pu3',  group:'Utilità percepita',         q:'Usare il QR code per la tracciabilità alimentare mi fa risparmiare tempo.' },
-  { id:'peu1', group:'Facilità d\'uso percepita', q:'È facile imparare a usare il QR code per la tracciabilità alimentare.' },
-  { id:'peu2', group:'Facilità d\'uso percepita', q:'Il QR code per la tracciabilità alimentare è facile da usare.' },
-  { id:'peu3', group:'Facilità d\'uso percepita', q:'Il QR code per la tracciabilità alimentare è facile da capire.' },
-  { id:'att1', group:'Atteggiamento',             q:'Sono favorevole al QR code per la tracciabilità alimentare.' },
-  { id:'att2', group:'Atteggiamento',             q:'Usare il QR code per la tracciabilità alimentare è una buona idea.' },
-  { id:'att3', group:'Atteggiamento',             q:'Ha senso usare il QR code per la tracciabilità alimentare.' },
-  { id:'bi1',  group:'Intenzione d\'uso',         q:'Utilizzerò il QR code per la tracciabilità alimentare in futuro.' },
-  { id:'bi2',  group:'Intenzione d\'uso',         q:'Raccomanderò l\'uso del QR code per la tracciabilità alimentare ai miei amici.' },
+  { id:'pi1',  q:'Il QR code per la tracciabilità alimentare mostra molte informazioni che mi aspettavo.' },
+  { id:'pi2',  q:'Il QR code per la tracciabilità alimentare fornisce informazioni dettagliate sugli alimenti.' },
+  { id:'pi3',  q:"Il QR code per la tracciabilità alimentare fornisce informazioni utili per le mie decisioni d'acquisto." },
+  { id:'pu1',  q:'Il QR code per la tracciabilità alimentare ha per me un grande valore.' },
+  { id:'pu2',  q:'Trovo il QR code per la tracciabilità alimentare utile nella mia vita.' },
+  { id:'pu3',  q:'Usare il QR code per la tracciabilità alimentare mi fa risparmiare tempo.' },
+  { id:'peu1', q:'È facile imparare a usare il QR code per la tracciabilità alimentare.' },
+  { id:'peu2', q:'Il QR code per la tracciabilità alimentare è facile da usare.' },
+  { id:'peu3', q:'Il QR code per la tracciabilità alimentare è facile da capire.' },
+  { id:'att1', q:'Sono favorevole al QR code per la tracciabilità alimentare.' },
+  { id:'att2', q:'Usare il QR code per la tracciabilità alimentare è una buona idea.' },
+  { id:'att3', q:'Ha senso usare il QR code per la tracciabilità alimentare.' },
+  { id:'bi1',  q:'Utilizzerò il QR code per la tracciabilità alimentare in futuro.' },
+  { id:'bi2',  q:"Raccomanderò l'uso del QR code per la tracciabilità alimentare ai miei amici." },
 ];
 
 const MAVEN_ITEMS = [
@@ -211,13 +240,87 @@ const ENJOY_ITEMS = [
 ];
 
 /* ================================================================
+   STATO GLOBALE
+================================================================ */
+let S = {};
+let checkDone = null;
+
+function initSession() {
+  const condition = CONDITIONS[Math.floor(Math.random() * 3)];
+  const order     = ORDERS[Math.floor(Math.random() * 2)];
+  const pid       = 'P' + Date.now().toString(36).toUpperCase();
+
+  const fA  = order === 'A' ? FOCAL_NO : FOCAL_QR;
+  const fB  = order === 'A' ? FOCAL_QR : FOCAL_NO;
+  const seq = [FILLERS[0], FILLERS[1], fA, FILLERS[2], fB, FILLERS[3]];
+
+  S = {
+    pid,
+    participant_id: pid,
+    condition,
+    order,
+    started_at: new Date().toISOString(),
+    sequence: seq,
+    screening: {},
+    section_b: {},
+    fcq: {},
+    isd: {},
+    trust: {},
+    stimuli: seq.map(p => ({
+      stimulus_id:  p.id,
+      has_qr:       p.hasQR,
+      shown_at:     null,
+      exposure_ms:  null,
+      qr_clicked:   false,
+      qr_click_ts:  null,
+      responses:    {},
+      wtp:          500,
+    })),
+    post:         {},
+    section_d:    {},
+    demographics: { health: [] },
+    completed_at: null,
+  };
+}
+
+/* ================================================================
+   ILLUSTRAZIONI PRODOTTI
+================================================================ */
+function illo(type) {
+  const map = {
+    yogurt:  `<img src="img/yogurt.jpg"   alt="Yogurt Greco"        style="max-height:190px;max-width:260px;display:block;border-radius:8px;">`,
+    pasta:   `<img src="img/pasta.jpg"    alt="Pasta di Gragnano"   style="max-height:190px;max-width:260px;display:block;border-radius:8px;">`,
+    passata: `<img src="img/passata.jpg"  alt="Passata di Pomodoro" style="max-height:190px;max-width:260px;display:block;border-radius:8px;">`,
+    olio:    `<img src="img/olio.jpg"     alt="Olio Extravergine"   style="max-height:190px;max-width:260px;display:block;border-radius:8px;">`,
+    carne:   `<img src="img/carne_.png"   alt="Fettine di Vitello"  style="max-height:190px;max-width:260px;display:block;border-radius:8px;">`,
+  };
+  return `<div style="display:flex;align-items:center;justify-content:center;height:100%;">${map[type] || map.carne}</div>`;
+}
+
+const QR_SVG = `<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" width="34" height="34" fill="#1a1a18">
+  <rect x="2"  y="2"  width="12" height="12" fill="none" stroke="#1a1a18" stroke-width="2" rx="1"/>
+  <rect x="5"  y="5"  width="6"  height="6"  rx="0.5"/>
+  <rect x="18" y="2"  width="12" height="12" fill="none" stroke="#1a1a18" stroke-width="2" rx="1"/>
+  <rect x="21" y="5"  width="6"  height="6"  rx="0.5"/>
+  <rect x="2"  y="18" width="12" height="12" fill="none" stroke="#1a1a18" stroke-width="2" rx="1"/>
+  <rect x="5"  y="21" width="6"  height="6"  rx="0.5"/>
+  <rect x="18" y="18" width="4"  height="4"  rx="0.5"/>
+  <rect x="24" y="18" width="4"  height="4"  rx="0.5"/>
+  <rect x="18" y="24" width="4"  height="4"  rx="0.5"/>
+  <rect x="24" y="24" width="6"  height="6"  rx="0.5"/>
+</svg>`;
+
+/* ================================================================
    UTILITY – RENDER HELPERS
 ================================================================ */
-function progressBar(section, total) {
-  const pct = Math.round((section / total) * 100);
+const TOTAL_SECTIONS = 12;
+
+function progressBar(section, label) {
+  const pct = Math.round((section / TOTAL_SECTIONS) * 100);
+  const lbl = label || `Sezione ${section} di ${TOTAL_SECTIONS}`;
   return `<div class="progress-bar-wrap">
     <div class="progress-meta">
-      <span class="progress-label">Sezione ${section} di ${total}</span>
+      <span class="progress-label">${lbl}</span>
       <span class="progress-label">${pct}%</span>
     </div>
     <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
@@ -228,7 +331,7 @@ function radioGroup(groupId, opts, storeKey, subKey, extra) {
   extra = extra || '';
   return `<div class="radio-group" id="${groupId}">
     ${opts.map(o => `<button class="radio-btn"
-      onclick="onRadio('${groupId}','${storeKey}','${subKey}','${o.replace(/'/g, "\\'")}',this)${extra}">${o}</button>`).join('')}
+      onclick="onRadio('${groupId}','${storeKey}','${subKey}','${o.replace(/'/g,"\\'")}',this)${extra}">${o}</button>`).join('')}
   </div>`;
 }
 
@@ -270,8 +373,26 @@ function renderLikert0(items, storeKey) {
     </div>`).join('');
 }
 
+function renderProdScales(si) {
+  return PROD_SCALES.map(s => `
+    <div class="scale-item">
+      <div class="scale-construct">${s.label}</div>
+      <p class="scale-question">${s.q}</p>
+      <div class="likert-labels">
+        <span class="likert-label">Per niente d'accordo</span>
+        <span class="likert-label">Completamente d'accordo</span>
+      </div>
+      <div class="likert-buttons" id="btns-${si}-${s.id}">
+        ${[1,2,3,4,5,6,7].map(v =>
+          `<button class="lk-btn" onclick="onStimulusLikert(${si},'${s.id}',${v},this)">${v}</button>`
+        ).join('')}
+      </div>
+    </div>`
+  ).join('');
+}
+
 /* ================================================================
-   EVENT HANDLERS
+   EVENT HANDLERS – QUESTIONARIO
 ================================================================ */
 function onRadio(groupId, storeKey, subKey, val, btn) {
   document.querySelectorAll('#' + groupId + ' .radio-btn').forEach(b => b.classList.remove('selected'));
@@ -301,16 +422,72 @@ function onHealthCheck(cb) {
 }
 
 /* ================================================================
+   EVENT HANDLERS – STIMOLI
+================================================================ */
+function onStimulusLikert(si, id, val, btn) {
+  document.querySelectorAll(`#btns-${si}-${id} .lk-btn`).forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  S.stimuli[si].responses[id] = val;
+  checkStimulusDone(si);
+}
+
+function checkStimulusDone(si) {
+  const done = PROD_SCALES.every(s => S.stimuli[si].responses[s.id] !== undefined);
+  const btn  = document.getElementById(`btn-sn-${si}`);
+  const hint = document.getElementById(`nh-${si}`);
+  if (!btn) return;
+  btn.disabled = !done;
+  if (hint) {
+    hint.textContent = done ? 'Tutto completato, puoi procedere.' : 'Completa tutte le risposte per continuare';
+    hint.className   = 'nav-hint' + (done ? ' complete' : '');
+  }
+  if (done) S.stimuli[si].exposure_ms = Date.now() - (S.stimuli[si].shown_at || Date.now());
+}
+
+function onQrClick(si) {
+  const ts = Date.now();
+  S.stimuli[si].qr_clicked  = true;
+  S.stimuli[si].qr_click_ts = ts;
+  const note = document.getElementById(`qr-note-${si}`);
+  if (note) {
+    note.textContent = '✓ QR aperto alle ' + new Date(ts).toLocaleTimeString('it-IT');
+    note.style.color = 'var(--text-success)';
+  }
+  showToast('Click sul QR registrato.');
+  saveData();
+}
+
+/* ================================================================
+   EVENT HANDLERS – POST-EXPOSURE
+================================================================ */
+function onRadioPost(groupId, key, val, btn) {
+  document.querySelectorAll(`#${groupId} .radio-btn`).forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  S.post[key] = val;
+}
+
+function togglePostQR(val) {
+  const block = document.getElementById('post-qr-block');
+  if (block) block.style.display = val === 'Sì' ? 'block' : 'none';
+}
+
+function onPostLikert(key, val, btn) {
+  document.querySelectorAll('#btns-post-util .lk-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  S.post[key] = val;
+}
+
+/* ================================================================
    SCREENS
 ================================================================ */
 function screenWelcome() {
   return `<div class="screen-center"><div class="welcome-card">
     <div class="study-badge">Ricerca Accademica – UniNA Federico II</div>
-    <h1>Questionario sulle Abitudini Alimentari</h1>
-    <p class="welcome-text">Gentile partecipante, stiamo conducendo, presso il <strong>Dipartimento di Medicina Veterinaria e Produzioni Animali dell'Università Federico II di Napoli</strong>, una ricerca sulle abitudini alimentari. La compilazione richiede circa <strong>15 minuti</strong>.</p>
-    <p class="welcome-text">Non esistono risposte giuste o sbagliate: conta solo la tua opinione sulla base delle tue esperienze e situazione personale.</p>
+    <h1>Studio sulle Preferenze Alimentari</h1>
+    <p class="welcome-text">Gentile partecipante, stiamo conducendo, presso il <strong>Dipartimento di Medicina Veterinaria e Produzioni Animali dell'Università Federico II di Napoli</strong>, una ricerca sulle abitudini alimentari e sulle preferenze dei consumatori rispetto al packaging di prodotti alimentari confezionati.</p>
+    <p class="welcome-text">Ti mostreremo alcune immagini di prodotti e ti chiederemo di esprimere le tue opinioni. Non esistono risposte giuste o sbagliate. La compilazione richiede circa <strong>20 minuti</strong>.</p>
     <div class="info-row">
-      <div class="info-item"><span>⏱</span><span>~15 minuti</span></div>
+      <div class="info-item"><span>⏱</span><span>~20 minuti</span></div>
       <div class="info-item"><span>🔒</span><span>Completamente anonimo</span></div>
       <div class="info-item"><span>🎓</span><span>Uso scientifico</span></div>
     </div>
@@ -343,7 +520,7 @@ function screenWelcome() {
       <input type="checkbox" id="consent" onchange="document.getElementById('btn-start').disabled=!this.checked">
       <span>Ho letto l'informativa sulla privacy e il consenso informato. <strong>ACCONSENTO</strong> al trattamento dei miei dati personali nell'ambito di questa ricerca nei termini e modi indicati.</span>
     </label>
-    <button class="btn-primary" id="btn-start" disabled onclick="goTo('screening')">Inizia il questionario →</button>
+    <button class="btn-primary" id="btn-start" disabled onclick="goTo('screening')">Inizia →</button>
   </div></div>`;
 }
 
@@ -363,7 +540,7 @@ function screenScreening() {
     if (btn) btn.disabled = !ok;
   };
   return `<div class="form-wrap">
-    ${progressBar(1, 10)}
+    ${progressBar(1)}
     <div class="section-header">
       <div class="study-badge">Domande di screening</div>
       <h2>Qualche informazione iniziale</h2>
@@ -380,8 +557,8 @@ function screenScreening() {
       <label class="field-label">A.2 È responsabile della spesa nella sua famiglia?</label>
       ${radioGroup('rg-responsible',
         ['Completamente responsabile','Parzialmente responsabile','Non responsabile'],
-        'screening', 'responsible',
-        ';var w=document.getElementById(\'screenout-warn\');if(w)w.style.display=S.screening.responsible===\'Non responsabile\'?\'block\':\'none\''
+        'screening','responsible',
+        ";var w=document.getElementById('screenout-warn');if(w)w.style.display=S.screening.responsible==='Non responsabile'?'block':'none'"
       )}
       <div id="screenout-warn" class="warn-box" style="display:none">
         ⚠ Attenzione: i partecipanti non responsabili della spesa non soddisfano i criteri di partecipazione.
@@ -390,8 +567,8 @@ function screenScreening() {
 
     <div class="field-group">
       <label class="field-label">A.3 Sei vegetariano/a o vegano/a?</label>
-      ${radioGroup('rg-veg', ['Sì','No'], 'screening', 'vegetarian',
-        ';var w=document.getElementById(\'screenout-warn2\');if(w)w.style.display=S.screening.vegetarian===\'Sì\'?\'block\':\'none\''
+      ${radioGroup('rg-veg',['Sì','No'],'screening','vegetarian',
+        ";var w=document.getElementById('screenout-warn2');if(w)w.style.display=S.screening.vegetarian==='Sì'?'block':'none'"
       )}
       <div id="screenout-warn2" class="warn-box" style="display:none">
         ⚠ Attenzione: i partecipanti vegetariani o vegani non soddisfano i criteri di partecipazione.
@@ -401,8 +578,7 @@ function screenScreening() {
     <div class="nav-row">
       <span></span>
       <button class="btn-primary" id="btn-scr-next" disabled
-        onclick="S.screening.responsible==='Non responsabile'?goTo('screenout'):S.screening.vegetarian==='Sì'?goTo('screenout'):goTo('sectionB')"> 
-   
+        onclick="S.screening.responsible==='Non responsabile'||S.screening.vegetarian==='Sì'?goTo('screenout'):goTo('sectionB')">
         Avanti →
       </button>
     </div>
@@ -412,36 +588,36 @@ function screenScreening() {
 function screenSectionB() {
   checkDone = function() {
     const ok = S.section_b.cooking && S.section_b.shopping_freq && S.section_b.meat_freq
-            && S.section_b.meat_weekly && S.section_b.online_freq;
+            && S.section_b.meat_weekly && S.section_b.online_freq && S.section_b.qr_use;
     const btn = document.getElementById('btn-b-next');
     if (btn) btn.disabled = !ok;
   };
   return `<div class="form-wrap">
-    ${progressBar(2, 10)}
+    ${progressBar(2)}
     <div class="section-header">
       <div class="study-badge">Sezione B</div>
-      <h2>Abitudini di acquisto e consumo di carne</h2>
+      <h2>Abitudini di acquisto e consumo</h2>
     </div>
 
     <div class="field-group">
       <label class="field-label">1. In che misura è responsabile della cucina e della preparazione dei pasti?</label>
       ${radioGroup('rg-cooking',
         ['Per niente responsabile','Poco responsabile','Moderatamente responsabile','Abbastanza responsabile','Pienamente responsabile'],
-        'section_b', 'cooking')}
+        'section_b','cooking')}
     </div>
 
     <div class="field-group">
       <label class="field-label">2. Con quale frequenza fa la spesa alimentare?</label>
       ${radioGroup('rg-shopping',
         ['Più volte alla settimana','Una volta alla settimana','Due volte al mese','Una volta al mese o meno'],
-        'section_b', 'shopping_freq')}
+        'section_b','shopping_freq')}
     </div>
 
     <div class="field-group">
-      <label class="field-label">3. Con quale frequenza acquista la carne rossa?</label>
+      <label class="field-label">3. Con quale frequenza acquista la carne rossa confezionata?</label>
       ${radioGroup('rg-meatfreq',
         ['Più volte alla settimana','Una volta alla settimana','Due volte al mese','Una volta al mese o meno','Meno di una volta al mese'],
-        'section_b', 'meat_freq')}
+        'section_b','meat_freq')}
     </div>
 
     <div class="field-group">
@@ -450,15 +626,22 @@ function screenSectionB() {
         ['Più di tre volte al giorno','Due-tre volte al giorno','Una volta al giorno',
          '4-5 volte a settimana','3 volte alla settimana','2 volte a settimana',
          'Una volta alla settimana','2-3 volte al mese','Una volta al mese','Raramente o mai'],
-        'section_b', 'meat_weekly')}
+        'section_b','meat_weekly')}
     </div>
 
     <div class="field-group">
       <label class="field-label">5. Con quale frequenza, nell'ultimo anno, hai fatto acquisti online per farti consegnare cibo o generi alimentari?</label>
       ${radioGroup('rg-online',
-        ['Una o più volte a settimana','1-3 volte al mese','Dalle 4 alle 11 volte nell\'ultimo anno',
-         '1-3 volte nell\'ultimo anno','Mai o quasi mai'],
-        'section_b', 'online_freq')}
+        ['Una o più volte a settimana','1-3 volte al mese',"Dalle 4 alle 11 volte nell'ultimo anno",
+         "1-3 volte nell'ultimo anno",'Mai o quasi mai'],
+        'section_b','online_freq')}
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">6. Con quale frequenza utilizzi QR code su prodotti alimentari?</label>
+      ${radioGroup('rg-qruse',
+        ['Mai','Raramente','Occasionalmente (mensile)','Spesso (settimanale o più)'],
+        'section_b','qr_use')}
     </div>
 
     <div class="nav-row">
@@ -475,14 +658,13 @@ function screenFCQ() {
     if (btn) btn.disabled = !ok;
   };
   return `<div class="form-wrap">
-    ${progressBar(3, 10)}
+    ${progressBar(3)}
     <div class="section-header">
       <div class="study-badge">Sezione C – Importanza delle caratteristiche del cibo</div>
       <h2>Per me è importante che il cibo che mangio abitualmente…</h2>
-      <p class="sub">
-        <strong>1</strong> = Per niente importante &nbsp;·&nbsp; <strong>7</strong> = Molto importante</p>
+      <p class="sub"><strong>1</strong> = Per niente importante &nbsp;·&nbsp; <strong>7</strong> = Molto importante</p>
     </div>
-    ${renderLikert(FCQ_ITEMS, 'fcq', 7, 'Per niente importante', 'Molto importante')}
+    ${renderLikert(FCQ_ITEMS,'fcq',7,'Per niente importante','Molto importante')}
     <div class="nav-row">
       <span></span>
       <button class="btn-primary" id="btn-fcq-next" disabled onclick="goTo('isd')">Avanti →</button>
@@ -497,14 +679,14 @@ function screenISD() {
     if (btn) btn.disabled = !ok;
   };
   return `<div class="form-wrap">
-    ${progressBar(4, 10)}
+    ${progressBar(4)}
     <div class="section-header">
       <div class="study-badge">Sezione C – Utilizzo di Internet per la ricerca di informazioni</div>
       <h2>Quanto spesso ti comporti come descritto nelle seguenti affermazioni?</h2>
       <p class="sub">
         <strong>0</strong> = Mai &nbsp;·&nbsp; <strong>1</strong> = Raramente &nbsp;·&nbsp; <strong>2</strong> = A volte &nbsp;·&nbsp; <strong>3</strong> = Spesso &nbsp;·&nbsp; <strong>4</strong> = Sempre</p>
     </div>
-    ${renderLikert0(ISD_ITEMS, 'isd')}
+    ${renderLikert0(ISD_ITEMS,'isd')}
     <div class="nav-row">
       <span></span>
       <button class="btn-primary" id="btn-isd-next" disabled onclick="goTo('trust')">Avanti →</button>
@@ -519,16 +701,136 @@ function screenTrust() {
     if (btn) btn.disabled = !ok;
   };
   return `<div class="form-wrap">
-    ${progressBar(5, 10)}
+    ${progressBar(5)}
     <div class="section-header">
-      <div class="study-badge">Sezione C – Attitudini (3/3)</div>
-      <h2>Fiducia nella sicurezza alimentare</h2>
+      <div class="study-badge">Sezione C – Fiducia nelle istituzioni alimentari</div>
+      <h2>Indica quanto sei d'accordo con le seguenti affermazioni</h2>
       <p class="sub"><strong>1</strong> = Per niente d'accordo &nbsp;·&nbsp; <strong>5</strong> = Completamente d'accordo</p>
     </div>
-    ${renderLikert(TRUST_ITEMS, 'trust', 5, "Per niente d'accordo", "Completamente d'accordo", true)}
+    ${renderLikert(TRUST_ITEMS,'trust',5,"Per niente d'accordo","Completamente d'accordo",true)}
     <div class="nav-row">
       <span></span>
-      <button class="btn-primary" id="btn-trust-next" disabled onclick="goTo('qr_basic')">Avanti →</button>
+      <button class="btn-primary" id="btn-trust-next" disabled onclick="goToStimulus(0)">Avanti →</button>
+    </div>
+  </div>`;
+}
+
+function screenStimulus(si) {
+  const prod  = S.sequence[si];
+  const total = S.sequence.length;
+  const pct   = Math.round(((5 + (si + 1) / total) / TOTAL_SECTIONS) * 100);
+  const qrUrl = `${STUDY_URL}/${S.condition}?pid=${S.participant_id}&sid=${prod.id}`;
+
+  return `<div class="stim-wrap">
+    <div class="progress-bar-wrap">
+      <div class="progress-meta">
+        <span class="progress-label">Sezione 6 di ${TOTAL_SECTIONS} · Prodotto ${si+1} di ${total}</span>
+        <span class="progress-label">${pct}%</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+    </div>
+
+    <div class="section-header">
+      <div class="study-badge">Sezione D – Valutazione prodotti</div>
+      <h2>Osserva il prodotto e rispondi alle domande</h2>
+    </div>
+
+    <div class="stimulus-card">
+      <div class="stimulus-img">
+        ${illo(prod.type)}
+        ${prod.hasQR ? `
+          <a class="qr-badge" href="${qrUrl}" target="_blank" rel="noopener"
+             title="Clicca per maggiori informazioni" onclick="onQrClick(${si})">
+            ${QR_SVG}
+          </a>` : ''}
+      </div>
+      <div class="stimulus-meta">
+        <p class="stimulus-hint">Osserva attentamente questo prodotto e rispondi alle domande qui sotto.</p>
+        ${prod.hasQR
+          ? `<span class="qr-note" id="qr-note-${si}">↗ Clicca sul QR per maggiori informazioni sul prodotto</span>`
+          : ''}
+      </div>
+    </div>
+
+    <div class="section-title">Valuta il prodotto</div>
+    ${renderProdScales(si)}
+
+    <div class="wtp-wrap">
+      <div class="scale-construct">Disponibilità a pagare</div>
+      <p class="question-text">Qual è il prezzo massimo che pagheresti per questo prodotto?</p>
+      <div class="wtp-slider-row">
+        <span class="wtp-bound">€2</span>
+        <input type="range" min="200" max="1200" step="10" value="500"
+          oninput="S.stimuli[${si}].wtp=+this.value;document.getElementById('wtp-d-${si}').textContent='€'+(this.value/100).toFixed(2).replace('.',',')">
+        <span class="wtp-bound">€12</span>
+        <span class="wtp-value" id="wtp-d-${si}">€5,00</span>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <span class="nav-hint" id="nh-${si}">Completa tutte le risposte per continuare</span>
+      <button class="btn-primary" id="btn-sn-${si}" disabled
+        onclick="${si < total - 1 ? `goToStimulus(${si+1})` : `goTo('post')`}">
+        ${si < total - 1 ? 'Prodotto successivo →' : 'Sezione successiva →'}
+      </button>
+    </div>
+  </div>`;
+}
+
+function screenPost() {
+  return `<div class="form-wrap">
+    ${progressBar(7)}
+    <div class="section-header">
+      <div class="study-badge">Sezione D – Post-valutazione</div>
+      <h2>Qualche domanda sui prodotti che hai appena visto</h2>
+      <p class="sub">Rispondi liberamente, senza riesaminare le immagini precedenti.</p>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Ripensando ai prodotti che hai appena visto, cosa ricordi? Descrivi liberamente.</label>
+      <textarea placeholder="Scrivi qui…" style="min-height:100px"
+        oninput="S.post.memory_text=this.value"></textarea>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Hai notato un codice QR su uno dei prodotti?</label>
+      <div class="radio-group" id="rg-noticed">
+        ${['Sì','No','Non ricordo'].map(o => `<button class="radio-btn"
+          onclick="onRadioPost('rg-noticed','noticed','${o}',this);togglePostQR('${o}')">${o}</button>`).join('')}
+      </div>
+    </div>
+
+    <div id="post-qr-block" style="display:none">
+      <div class="field-group">
+        <label class="field-label">Hai cliccato sul codice QR?</label>
+        <div class="radio-group" id="rg-clicked">
+          ${['Sì','No'].map(o => `<button class="radio-btn"
+            onclick="onRadioPost('rg-clicked','clicked','${o}',this)">${o}</button>`).join('')}
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Cosa ti aspettavi di trovare cliccando il QR?</label>
+        <textarea placeholder="Es: informazioni sull'origine, ingredienti, ricette…"
+          oninput="S.post.qr_expected=this.value"></textarea>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Quanto ritieni utile avere un QR code su prodotti alimentari confezionati?</label>
+      <div class="likert-labels">
+        <span class="likert-label">Per niente utile</span>
+        <span class="likert-label">Molto utile</span>
+      </div>
+      <div class="likert-buttons" id="btns-post-util">
+        ${[1,2,3,4,5,6,7].map(v =>
+          `<button class="lk-btn" onclick="onPostLikert('qr_usefulness',${v},this)">${v}</button>`
+        ).join('')}
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <span></span>
+      <button class="btn-primary" onclick="goTo('qr_basic')">Avanti →</button>
     </div>
   </div>`;
 }
@@ -542,9 +844,9 @@ function screenQRBasic() {
     if (btn) btn.disabled = !ok;
   };
   return `<div class="form-wrap">
-    ${progressBar(6, 10)}
+    ${progressBar(8)}
     <div class="section-header">
-      <div class="study-badge">Sezione D – QR Code (1/4)</div>
+      <div class="study-badge">Sezione E – QR Code (1/4)</div>
       <h2>Tracciabilità e codici QR</h2>
     </div>
 
@@ -574,9 +876,9 @@ function screenQRBasic() {
 
     <div class="field-group" style="margin-top:1.5rem">
       <label class="field-label">Quante volte hai utilizzato un codice QR nell'ultimo anno?</label>
-      ${radioGroup('rg-qruse',
+      ${radioGroup('rg-qruse2',
         ['Meno di 5 volte','5–10 volte','Più di 10 volte'],
-        'section_d', 'qr_usage')}
+        'section_d','qr_usage')}
     </div>
 
     <div class="nav-row">
@@ -593,13 +895,13 @@ function screenCNS() {
     if (btn) btn.disabled = !ok;
   };
   return `<div class="form-wrap">
-    ${progressBar(7, 10)}
+    ${progressBar(9)}
     <div class="section-header">
-      <div class="study-badge">Sezione D – QR Code (2/4)</div>
-      <h2>Ricerca di novità nei prodotti</h2>
+      <div class="study-badge">Sezione E – QR Code (2/4)</div>
+      <h2>Indica quanto sei d'accordo con le seguenti affermazioni</h2>
       <p class="sub"><strong>1</strong> = Completamente d'accordo &nbsp;·&nbsp; <strong>7</strong> = Per niente d'accordo</p>
     </div>
-    ${renderLikert(CNS_ITEMS, 'section_d', 7, "Completamente d'accordo", "Per niente d'accordo")}
+    ${renderLikert(CNS_ITEMS,'section_d',7,"Completamente d'accordo","Per niente d'accordo")}
     <div class="nav-row">
       <span></span>
       <button class="btn-primary" id="btn-cns-next" disabled onclick="goTo('tam')">Avanti →</button>
@@ -614,13 +916,13 @@ function screenTAM() {
     if (btn) btn.disabled = !ok;
   };
   return `<div class="form-wrap">
-    ${progressBar(8, 10)}
+    ${progressBar(10)}
     <div class="section-header">
-      <div class="study-badge">Sezione D – QR Code (3/4)</div>
-      <h2>Percezione del QR code per la tracciabilità alimentare</h2>
+      <div class="study-badge">Sezione E – QR Code (3/4)</div>
+      <h2>Indica quanto sei d'accordo con le seguenti affermazioni</h2>
       <p class="sub"><strong>1</strong> = Per niente d'accordo &nbsp;·&nbsp; <strong>5</strong> = Completamente d'accordo</p>
     </div>
-    ${renderLikert(TAM_ITEMS, 'section_d', 5, "Per niente d'accordo", "Completamente d'accordo", true)}
+    ${renderLikert(TAM_ITEMS,'section_d',5,"Per niente d'accordo","Completamente d'accordo",true)}
     <div class="nav-row">
       <span></span>
       <button class="btn-primary" id="btn-tam-next" disabled onclick="goTo('mavenism')">Avanti →</button>
@@ -635,16 +937,16 @@ function screenMavenism() {
     if (btn) btn.disabled = !ok;
   };
   return `<div class="form-wrap">
-    ${progressBar(9, 10)}
+    ${progressBar(11)}
     <div class="section-header">
-      <div class="study-badge">Sezione D – QR Code (4/4)</div>
+      <div class="study-badge">Sezione E – QR Code (4/4)</div>
       <h2>Esperienza con i codici QR</h2>
       <p class="sub"><strong>1</strong> = Per niente d'accordo &nbsp;·&nbsp; <strong>5</strong> = Completamente d'accordo</p>
     </div>
     <div class="section-title">Condivisione di informazioni sui prodotti</div>
-    ${renderLikert(MAVEN_ITEMS, 'section_d', 5, "Per niente d'accordo", "Completamente d'accordo")}
+    ${renderLikert(MAVEN_ITEMS,'section_d',5,"Per niente d'accordo","Completamente d'accordo")}
     <div class="section-title" style="margin-top:1.5rem">Piacere nell'uso dei codici QR</div>
-    ${renderLikert(ENJOY_ITEMS, 'section_d', 5, "Per niente d'accordo", "Completamente d'accordo")}
+    ${renderLikert(ENJOY_ITEMS,'section_d',5,"Per niente d'accordo","Completamente d'accordo")}
     <div class="nav-row">
       <span></span>
       <button class="btn-primary" id="btn-mav-next" disabled onclick="goTo('demographics')">Avanti →</button>
@@ -681,7 +983,7 @@ function screenDemographics() {
   const healthOpts = ['Malattie cardiache','Colesterolo alto','Diabete','Ipertensione','Sovrappeso','Nessuno dei precedenti'];
 
   return `<div class="form-wrap">
-    ${progressBar(10, 10)}
+    ${progressBar(12)}
     <div class="section-header">
       <div class="study-badge">Informazioni socio-demografiche</div>
       <h2>Alcune informazioni su di te</h2>
@@ -690,7 +992,7 @@ function screenDemographics() {
 
     <div class="field-group">
       <label class="field-label">1. Sesso alla nascita</label>
-      ${radioGroup('rg-gender', ['Femmina','Maschio','Preferisco non rispondere'], 'demographics', 'gender')}
+      ${radioGroup('rg-gender',['Femmina','Maschio','Preferisco non rispondere'],'demographics','gender')}
     </div>
 
     <div class="field-group">
@@ -700,7 +1002,7 @@ function screenDemographics() {
 
     <div class="field-group">
       <label class="field-label">3. Tipo di zona in cui vive</label>
-      ${radioGroup('rg-area', ['Area urbana','Area suburbana','Area rurale'], 'demographics', 'area')}
+      ${radioGroup('rg-area',['Area urbana','Area suburbana','Area rurale'],'demographics','area')}
     </div>
 
     <div class="field-group">
@@ -725,8 +1027,8 @@ function screenDemographics() {
       </div>
       <div class="field-group">
         <label class="field-label">8. Hai figli?</label>
-        ${radioGroup('rg-children', ['Sì','No'], 'demographics', 'children',
-          ';document.getElementById(\'children-block\').style.display=S.demographics.children===\'Sì\'?\'block\':\'none\'')}
+        ${radioGroup('rg-children',['Sì','No'],'demographics','children',
+          ";document.getElementById('children-block').style.display=S.demographics.children==='Sì'?'block':'none'")}
       </div>
     </div>
 
@@ -767,7 +1069,7 @@ function screenDemographics() {
       <label class="field-label">14. Segue attualmente una dieta specifica?</label>
       ${radioGroup('rg-diet',
         ['No','Sì, sto cercando di perdere peso','Sì, un altro tipo di dieta'],
-        'demographics', 'diet')}
+        'demographics','diet')}
     </div>
 
     <div class="nav-row">
@@ -785,6 +1087,7 @@ function screenEnd() {
     <div class="debrief-box">
       <div class="debrief-title">Informativa post-studio</div>
       <p>Questo studio analizza le abitudini alimentari dei consumatori italiani e il loro rapporto con i codici QR per la tracciabilità dei prodotti agro-alimentari, nell'ambito di una ricerca dell'Università Federico II di Napoli.</p>
+      <p style="margin-top:8px">In particolare, una parte dello studio analizzava l'effetto dei <strong>codici QR</strong> sulla percezione dei prodotti alimentari confezionati — non solo il loro contenuto informativo, ma anche il semplice fatto di essere presenti sul packaging. Le tue risposte contribuiranno a capire meglio come i segnali visivi influenzano le scelte dei consumatori.</p>
       <p style="margin-top:8px">Per informazioni: <a href="mailto:alessia.lombardi@unina.it">alessia.lombardi@unina.it</a></p>
     </div>
     <button class="btn-secondary" onclick="downloadData()">⬇ Scarica i tuoi dati (JSON)</button>
@@ -803,6 +1106,7 @@ const SCREENS = {
   fcq:          screenFCQ,
   isd:          screenISD,
   trust:        screenTrust,
+  post:         screenPost,
   qr_basic:     screenQRBasic,
   cns:          screenCNS,
   tam:          screenTAM,
@@ -822,6 +1126,14 @@ function goTo(screen) {
   window.scrollTo(0, 0);
 }
 
+function goToStimulus(si) {
+  checkDone = null;
+  if (si >= S.sequence.length) { goTo('post'); return; }
+  S.stimuli[si].shown_at = Date.now();
+  document.getElementById('app').innerHTML = screenStimulus(si);
+  window.scrollTo(0, 0);
+}
+
 /* ================================================================
    SALVATAGGIO DATI
 ================================================================ */
@@ -838,6 +1150,18 @@ function downloadData() {
 }
 
 /* ================================================================
+   TOAST
+================================================================ */
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+/* ================================================================
    BOOTSTRAP
 ================================================================ */
 initSession();
@@ -850,15 +1174,22 @@ if (new URLSearchParams(location.search).has('dev')) {
   const DEV_SCREENS = [
     ['welcome','Welcome'],['screening','A – Screening'],['screenout','Screenout'],
     ['sectionB','B – Acquisti'],['fcq','C1 – FCQ'],['isd','C2 – ISD'],
-    ['trust','C3 – Trust'],['qr_basic','D1 – QR Basic'],['cns','D2 – CNS'],
-    ['tam','D3 – TAM'],['mavenism','D4 – Mavenism'],['demographics','Dati demo'],['end','Fine'],
+    ['trust','C3 – Trust'],
+    ...Array.from({length:6},(_,i) => [`__stim${i}`,`D – Prodotto ${i+1}`]),
+    ['post','D – Post'],['qr_basic','E1 – QR Basic'],['cns','E2 – CNS'],
+    ['tam','E3 – TAM'],['mavenism','E4 – Maven'],['demographics','Dati demo'],['end','Fine'],
   ];
   const nav = document.createElement('div');
   nav.style.cssText = 'position:fixed;bottom:12px;left:50%;transform:translateX(-50%);z-index:9999;background:#1a1a18;border-radius:10px;padding:8px 10px;display:flex;flex-wrap:wrap;gap:5px;max-width:95vw;box-shadow:0 4px 20px rgba(0,0,0,0.35)';
   nav.innerHTML = '<span style="color:#9a9a94;font-size:11px;font-weight:600;letter-spacing:.07em;align-self:center;margin-right:4px">DEV</span>' +
-    DEV_SCREENS.map(([id, label]) =>
-      `<button onclick="initSession();goTo('${id}')" style="padding:4px 10px;font-size:12px;font-family:var(--font);background:#2e2e2b;color:#f0ede8;border:0.5px solid rgba(255,255,255,0.15);border-radius:6px;cursor:pointer;white-space:nowrap">${label}</button>`
-    ).join('');
+    DEV_SCREENS.map(([id, label]) => {
+      const isStim = id.startsWith('__stim');
+      const si = isStim ? parseInt(id.replace('__stim','')) : null;
+      const action = isStim
+        ? `initSession();goToStimulus(${si})`
+        : `initSession();goTo('${id}')`;
+      return `<button onclick="${action}" style="padding:4px 10px;font-size:12px;font-family:var(--font);background:#2e2e2b;color:#f0ede8;border:0.5px solid rgba(255,255,255,0.15);border-radius:6px;cursor:pointer;white-space:nowrap">${label}</button>`;
+    }).join('');
   document.body.appendChild(nav);
 }
 </script>
