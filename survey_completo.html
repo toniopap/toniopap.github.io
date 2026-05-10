@@ -5,16 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Studio sulle Preferenze Alimentari</title>
   <style>
+    /* ================================================================
+       RESET E VARIABILI CSS
+       Sistema di design token: colori, bordi e raggi definiti come
+       variabili CSS e sovrascritti automaticamente in dark mode.
+    ================================================================ */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
+      /* Tre livelli di sfondo (bg < bg-sec < bg-ter = sfondo pagina) */
       --bg: #ffffff; --bg-sec: #f6f5f2; --bg-ter: #eeedea;
       --bg-success: #eaf3de;
+      /* Testo: primario (corpo), secondario (sub), terziario (label piccole) */
       --text-pri: #1a1a18; --text-sec: #5c5c58; --text-ter: #9a9a94;
       --text-success: #2d7a4f; --text-info: #1a5fa0;
+      /* Bordi a tre livelli di visibilità */
       --border-lo: rgba(0,0,0,0.09); --border-mid: rgba(0,0,0,0.17); --border-hi: rgba(0,0,0,0.28);
       --r-md: 8px; --r-lg: 12px;
       --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
     }
+    /* Sovrascrittura automatica per dark mode di sistema */
     @media (prefers-color-scheme: dark) {
       :root {
         --bg: #1c1c1a; --bg-sec: #252523; --bg-ter: #2e2e2b;
@@ -24,21 +33,36 @@
         --border-lo: rgba(255,255,255,0.08); --border-mid: rgba(255,255,255,0.15); --border-hi: rgba(255,255,255,0.26);
       }
     }
+
+    /* ================================================================
+       LAYOUT GLOBALE E CONTENITORI
+    ================================================================ */
     body { font-family: var(--font); background: var(--bg-ter); color: var(--text-pri); min-height: 100vh; padding: 2rem 1rem 6rem; font-size: 15px; line-height: 1.6; }
+    /* .screen-center: centramento verticale per le schermate welcome/end */
     .screen-center { display: flex; align-items: flex-start; justify-content: center; padding-top: 1rem; }
     .welcome-card { background: var(--bg); border: 0.5px solid var(--border-lo); border-radius: var(--r-lg); padding: 2.5rem 2rem; max-width: 640px; width: 100%; }
+    /* .form-wrap / .stim-wrap: contenitori centrati per i form e gli stimoli */
     .form-wrap, .stim-wrap { max-width: 660px; margin: 0 auto; }
+
+    /* ================================================================
+       TIPOGRAFIA
+    ================================================================ */
     h1 { font-size: 22px; font-weight: 600; margin: 0.6rem 0 1rem; line-height: 1.3; }
     h2 { font-size: 18px; font-weight: 600; margin: 0.5rem 0 0.5rem; }
     .sub { font-size: 14px; color: var(--text-sec); margin-bottom: 1.2rem; line-height: 1.5; }
     .section-header { margin-bottom: 1.5rem; }
     .section-title { font-size: 11px; font-weight: 600; color: var(--text-ter); letter-spacing: 0.09em; text-transform: uppercase; margin: 1.75rem 0 0.9rem; }
+    /* Badge colorato in testa a ogni sezione (es. "Sezione C – FCQ") */
     .study-badge { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; background: var(--bg-sec); color: var(--text-ter); padding: 4px 10px; border-radius: 20px; margin-bottom: 0.4rem; }
     .study-badge.ok { background: var(--bg-success); color: var(--text-success); }
     .welcome-text { font-size: 15px; color: var(--text-sec); margin-bottom: 1rem; line-height: 1.65; }
     .welcome-text strong { color: var(--text-pri); }
     .info-row { display: flex; gap: 1.5rem; margin: 1.2rem 0; flex-wrap: wrap; }
     .info-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-sec); }
+
+    /* ================================================================
+       COMPONENTI INFORMATIVI (box GDPR, consenso)
+    ================================================================ */
     .debrief-box { background: var(--bg-sec); border-radius: var(--r-md); padding: 1rem 1.25rem; margin: 1rem 0; font-size: 13px; color: var(--text-sec); line-height: 1.6; }
     .debrief-box p { margin-top: 6px; }
     .debrief-box p:first-child { margin-top: 0; }
@@ -49,6 +73,10 @@
     .debrief-box li { margin-bottom: 3px; }
     .consent-label { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: var(--text-sec); line-height: 1.5; background: var(--bg-sec); border-radius: var(--r-md); padding: 12px; margin-bottom: 1.25rem; cursor: pointer; }
     .consent-label input[type=checkbox] { margin-top: 2px; flex-shrink: 0; cursor: pointer; accent-color: var(--text-pri); }
+
+    /* ================================================================
+       CAMPI DEL FORM (input, select, textarea)
+    ================================================================ */
     .field-group { margin-bottom: 1.4rem; }
     .field-row { display: flex; gap: 1rem; flex-wrap: wrap; }
     .field-row .field-group { flex: 1; min-width: 160px; }
@@ -59,6 +87,13 @@
     textarea:focus { outline: none; border-color: var(--border-hi); }
     input[type=number], input[type=text] { width: 100%; padding: 9px 12px; font-size: 14px; font-family: var(--font); color: var(--text-pri); background: var(--bg); border: 0.5px solid var(--border-mid); border-radius: var(--r-md); transition: border-color 0.15s; }
     input[type=number]:focus, input[type=text]:focus { outline: none; border-color: var(--border-hi); }
+
+    /* ================================================================
+       BOTTONI RADIO E SCALA LIKERT
+       .radio-btn: opzioni a scelta singola (stile button, non <input>)
+       .lk-btn:    punti della scala Likert in griglia orizzontale
+       La classe .selected colora il bottone scelto in nero/bianco invertito.
+    ================================================================ */
     .radio-group { display: flex; flex-direction: column; gap: 6px; }
     .radio-btn { text-align: left; padding: 10px 14px; font-size: 14px; font-family: var(--font); color: var(--text-pri); background: var(--bg); border: 0.5px solid var(--border-mid); border-radius: var(--r-md); cursor: pointer; transition: all 0.12s; }
     .radio-btn:hover { background: var(--bg-sec); border-color: var(--border-hi); }
@@ -75,11 +110,19 @@
     .lk-btn { flex: 1; height: 36px; border: 0.5px solid var(--border-mid); border-radius: var(--r-md); background: var(--bg); cursor: pointer; font-size: 13px; font-family: var(--font); color: var(--text-sec); transition: all 0.12s; }
     .lk-btn:hover { border-color: var(--border-hi); background: var(--bg-sec); }
     .lk-btn.selected { background: var(--text-pri); color: var(--bg); border-color: var(--text-pri); font-weight: 600; }
+
+    /* ================================================================
+       BARRA DI AVANZAMENTO
+    ================================================================ */
     .progress-bar-wrap { margin-bottom: 1.75rem; }
     .progress-meta { display: flex; justify-content: space-between; margin-bottom: 7px; }
     .progress-label { font-size: 12px; color: var(--text-ter); letter-spacing: 0.07em; text-transform: uppercase; }
     .progress-track { height: 3px; background: var(--border-lo); border-radius: 2px; }
     .progress-fill { height: 3px; background: var(--text-sec); border-radius: 2px; transition: width 0.4s ease; }
+
+    /* ================================================================
+       NAVIGAZIONE E BOTTONI PRINCIPALI
+    ================================================================ */
     .nav-row { display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 0.5px solid var(--border-lo); }
     .nav-hint { font-size: 13px; color: var(--text-ter); transition: color 0.2s; }
     .nav-hint.complete { color: var(--text-success); }
@@ -92,7 +135,12 @@
     .check-label { display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; padding: 9px 12px; background: var(--bg); border: 0.5px solid var(--border-mid); border-radius: var(--r-md); margin-bottom: 5px; transition: background 0.12s; }
     .check-label:hover { background: var(--bg-sec); }
     .check-label input[type=checkbox] { cursor: pointer; accent-color: var(--text-pri); flex-shrink: 0; }
-    /* Stimulus card */
+
+    /* ================================================================
+       CARD STIMULUS E QR BADGE
+       Il .qr-badge è posizionato in sovrimpressione sull'immagine
+       solo quando il prodotto ha hasQR=true.
+    ================================================================ */
     .stimulus-card { background: var(--bg); border: 0.5px solid var(--border-lo); border-radius: var(--r-lg); overflow: hidden; margin-bottom: 1.5rem; }
     .stimulus-img { width: 100%; height: 240px; display: flex; align-items: center; justify-content: center; background: var(--bg-sec); position: relative; }
     .stimulus-meta { padding: 1rem 1.25rem; border-top: 0.5px solid var(--border-lo); }
@@ -100,29 +148,79 @@
     .qr-note { display: inline-block; margin-top: 5px; font-size: 12px; color: var(--text-info); cursor: pointer; }
     .qr-badge { position: absolute; bottom: 14px; right: 14px; width: 50px; height: 50px; background: white; border-radius: 8px; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.14s, box-shadow 0.14s; text-decoration: none; }
     .qr-badge:hover { transform: scale(1.06); box-shadow: 0 2px 12px rgba(0,0,0,0.12); }
-    /* WTP slider */
+
+    /* ================================================================
+       SLIDER DISPONIBILITÀ A PAGARE (WTP – Willingness To Pay)
+       Range 200–1200 centesimi (€2–€12), step 10 ct.
+    ================================================================ */
     .wtp-wrap { margin-top: 1.5rem; }
     .wtp-slider-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
     .wtp-bound { font-size: 13px; color: var(--text-ter); white-space: nowrap; }
     input[type=range] { flex: 1; accent-color: var(--text-pri); cursor: pointer; height: 20px; }
     .wtp-value { font-size: 16px; font-weight: 600; color: var(--text-pri); min-width: 60px; text-align: right; }
+
+    /* ================================================================
+       TOAST – notifica temporanea sovrapposta (3 secondi)
+    ================================================================ */
     #toast { position: fixed; bottom: 24px; right: 24px; z-index: 1000; background: var(--bg); border: 0.5px solid var(--border-mid); border-radius: var(--r-md); padding: 12px 16px; font-size: 13px; color: var(--text-pri); box-shadow: 0 4px 20px rgba(0,0,0,0.10); opacity: 0; pointer-events: none; transition: opacity 0.2s; max-width: 290px; }
     #toast.show { opacity: 1; }
   </style>
 </head>
 <body>
+<!-- Contenitore unico: ogni schermata viene iniettata qui tramite innerHTML -->
 <div id="app"></div>
+<!-- Notifica toast sovrapposta, mostrata/nascosta da showToast() -->
 <div id="toast"></div>
 <script>
 /* ================================================================
-   CONFIGURAZIONE ESPERIMENTO
+   STRUTTURA DEL FILE JS
+   ─────────────────────────────────────────────────────────────────
+   1.  CONFIGURAZIONE ESPERIMENTO  – URL, condizioni, ordini
+   2.  PRODOTTI                    – filler + prodotto focale con/senza QR
+   3.  SCALE STIMOLI               – item valutati per ogni prodotto
+   4.  SCALE QUESTIONARIO          – strumenti psicometrici:
+         FCQ   Food Choice Questionnaire
+         ISD   Internet Search Dependence
+         TRUST Fiducia nelle istituzioni alimentari
+         CNS   Consumer Need for Stimulation
+         TAM   Technology Acceptance Model (QR)
+         MAVEN Market Maven scale
+         ENJOY Perceived Enjoyment (QR)
+   5.  STATO GLOBALE               – oggetto S + initSession()
+   6.  ILLUSTRAZIONI PRODOTTI      – illo() + QR_SVG inline
+   7.  UTILITY / RENDER HELPERS    – progressBar, radioGroup, renderLikert*
+   8.  EVENT HANDLERS QUESTIONARIO – onRadio, onLikert, onHealthCheck
+   9.  EVENT HANDLERS STIMOLI      – onStimulusLikert, checkStimulusDone, onQrClick
+   10. EVENT HANDLERS POST         – onRadioPost, togglePostQR, onPostLikert
+   11. SCREENS                     – funzioni che restituiscono HTML di ogni schermata
+   12. NAVIGAZIONE                 – SCREENS map, goTo(), goToStimulus()
+   13. SALVATAGGIO DATI            – saveData() (localStorage), downloadData()
+   14. TOAST                       – showToast()
+   15. BOOTSTRAP                   – initSession() + goTo('welcome')
+   16. DEV NAV                     – barra di salto rapido (solo con ?dev nell'URL)
+================================================================ */
+
+/* ================================================================
+   1. CONFIGURAZIONE ESPERIMENTO
+   ─────────────────────────────────────────────────────────────────
+   STUDY_URL  : base URL della landing page raggiunta scansionando il QR.
+   CONDITIONS : tre varianti del contenuto QR (tracciabilità / nutrizione /
+                sostenibilità); assegnata casualmente a ogni partecipante.
+   ORDERS     : ordine del prodotto focale nella sequenza.
+                'A' = prima senza QR poi con QR; 'B' = inverso.
 ================================================================ */
 const STUDY_URL  = 'https://tuostudio.it/qr';
 const CONDITIONS = ['tracciabilita', 'nutrizione', 'sostenibilita'];
 const ORDERS     = ['A', 'B'];
 
 /* ================================================================
-   PRODOTTI (esperimento packaging)
+   2. PRODOTTI (esperimento packaging)
+   ─────────────────────────────────────────────────────────────────
+   FILLERS   : 4 prodotti distrattori senza QR (yogurt, pasta, passata, olio).
+   FOCAL_NO  : prodotto focale (fettine di vitello) SENZA QR → controllo.
+   FOCAL_QR  : stessa referenza CON QR → trattamento.
+   Sequenza finale: filler[0], filler[1], focale_X, filler[2], focale_Y, filler[3]
+   dove X/Y dipendono dall'ordine A o B assegnato alla sessione.
 ================================================================ */
 const FILLERS = [
   { id: 'yogurt',  name: 'Yogurt Greco',        brand: 'COOP', detail: '500g · Naturale',         type: 'yogurt',  hasQR: false },
@@ -134,7 +232,11 @@ const FOCAL_NO = { id: 'carne_no_qr', name: 'Fettine di Vitello', brand: 'Linea 
 const FOCAL_QR = { id: 'carne_qr',   name: 'Fettine di Vitello', brand: 'Linea Natura', detail: '500g · Fresco · IT', type: 'carne', hasQR: true  };
 
 /* ================================================================
-   SCALE STIMOLI (per ciascuno dei 6 prodotti)
+   3. SCALE STIMOLI
+   ─────────────────────────────────────────────────────────────────
+   Per ogni prodotto della sequenza vengono somministrate 6 domande
+   Likert 1–7 che misurano: qualità percepita (2 item), sicurezza
+   alimentare, fiducia nella provenienza, trasparenza e intenzione d'acquisto.
 ================================================================ */
 const PROD_SCALES = [
   { id: 'q_quality1', label: 'Qualità percepita',     q: 'Questo prodotto mi sembra di alta qualità.'                        },
@@ -146,8 +248,14 @@ const PROD_SCALES = [
 ];
 
 /* ================================================================
-   SCALE QUESTIONARIO
+   4. SCALE QUESTIONARIO
+   ─────────────────────────────────────────────────────────────────
+   Strumenti psicometrici validati usati come covariate/moderatori.
 ================================================================ */
+
+/* FCQ – Food Choice Questionnaire (Steptoe et al., 1995)
+   11 item che misurano l'importanza attribuita a varie caratteristiche
+   del cibo nelle scelte alimentari quotidiane. Scala Likert 1–7. */
 const FCQ_ITEMS = [
   { id:'fcq1',  q:'…sia sano.' },
   { id:'fcq2',  q:'…sia un modo per gestire il mio umore (es. mettermi di buon umore o per affrontare lo stress)' },
@@ -162,6 +270,9 @@ const FCQ_ITEMS = [
   { id:'fcq11', q:'…sia prodotto nel rispetto del commercio equo.' },
 ];
 
+/* ISD – Internet Search Dependence scale
+   12 item sulla tendenza a delegare a Internet la ricerca di informazioni
+   e la memorizzazione di conoscenze. Scala 0–4 (Mai → Sempre). */
 const ISD_ITEMS = [
   { id:'isd1',  q:'Di fronte a questioni controverse, preferisco cercare prima su Google piuttosto che pensarci da solo/a.' },
   { id:'isd2',  q:"Non prendo nota se so che posso cercare l'informazione su Internet." },
@@ -177,6 +288,9 @@ const ISD_ITEMS = [
   { id:'isd12', q:'Penso che si possano trovare informazioni affidabili tramite la ricerca su Internet.' },
 ];
 
+/* TRUST – Fiducia nelle istituzioni del sistema alimentare
+   18 item organizzati in 3 gruppi da 6 (governo, agricoltori, industria).
+   Ogni gruppo misura competenza, onestà e trasparenza. Scala 1–5. */
 const TRUST_ITEMS = [
   { id:'gov1', group:'Fiducia nel governo',              q:'Il governo si prende cura della sicurezza del nostro cibo.' },
   { id:'gov2', group:'Fiducia nel governo',              q:'Il governo presta particolare attenzione alla sicurezza alimentare.' },
@@ -198,6 +312,9 @@ const TRUST_ITEMS = [
   { id:'mfr6', group:"Fiducia nell'industria alimentare", q:'Le industrie alimentari sono sufficientemente trasparenti riguardo alla sicurezza alimentare.' },
 ];
 
+/* CNS – Consumer Need for Stimulation
+   7 item che misurano la propensione a cercare novità tra prodotti e marchi.
+   Scala 1–7 invertita: 1 = Completamente d'accordo. */
 const CNS_ITEMS = [
   { id:'cns1', q:'Cerco spesso informazioni su nuovi prodotti e marchi.' },
   { id:'cns2', q:'Mi piace frequentare posti dove posso essere esposto/a a informazioni su nuovi prodotti e marchi.' },
@@ -208,6 +325,14 @@ const CNS_ITEMS = [
   { id:'cns7', q:'Approfitto della prima opportunità disponibile per scoprire prodotti nuovi e diversi.' },
 ];
 
+/* TAM – Technology Acceptance Model applicato ai QR code alimentari
+   14 item su 5 sottoscale:
+     PI  = Perceived Information (informazioni attese)
+     PU  = Perceived Usefulness (utilità percepita)
+     PEU = Perceived Ease of Use (facilità d'uso)
+     ATT = Attitude (atteggiamento)
+     BI  = Behavioral Intention (intenzione d'uso futura)
+   Scala 1–5. */
 const TAM_ITEMS = [
   { id:'pi1',  q:'Il QR code per la tracciabilità alimentare mostra molte informazioni che mi aspettavo.' },
   { id:'pi2',  q:'Il QR code per la tracciabilità alimentare fornisce informazioni dettagliate sugli alimenti.' },
@@ -225,6 +350,9 @@ const TAM_ITEMS = [
   { id:'bi2',  q:"Raccomanderò l'uso del QR code per la tracciabilità alimentare ai miei amici." },
 ];
 
+/* MAVEN_ITEMS – Market Maven scale
+   5 item che misurano la tendenza a condividere spontaneamente
+   informazioni su prodotti con altri consumatori. Scala 1–5. */
 const MAVEN_ITEMS = [
   { id:'mm1', q:'Mi piace presentare nuovi marchi e prodotti ai miei amici.' },
   { id:'mm2', q:'Mi piace aiutare le persone fornendo loro informazioni su molti tipi di prodotti.' },
@@ -233,6 +361,8 @@ const MAVEN_ITEMS = [
   { id:'mm5', q:'I miei amici mi considerano una buona fonte di informazioni sui nuovi prodotti, ma non necessariamente un esperto in un prodotto specifico.' },
 ];
 
+/* ENJOY_ITEMS – Perceived Enjoyment nell'uso dei QR code
+   3 item su piacere/interesse/divertimento associati ai QR. Scala 1–5. */
 const ENJOY_ITEMS = [
   { id:'pe1', q:'Usare i codici QR può essere divertente.' },
   { id:'pe2', q:'Usare i codici QR può essere interessante.' },
@@ -240,16 +370,28 @@ const ENJOY_ITEMS = [
 ];
 
 /* ================================================================
-   STATO GLOBALE
+   5. STATO GLOBALE
+   ─────────────────────────────────────────────────────────────────
+   S         : unico oggetto che accumula tutte le risposte della sessione.
+               Serializzato in JSON al termine e salvato in localStorage.
+   checkDone : puntatore alla funzione di validazione della schermata
+               corrente; viene azzerato a ogni cambio di schermata.
 ================================================================ */
 let S = {};
 let checkDone = null;
 
+/* initSession()
+   Inizializza una nuova sessione sperimentale:
+   – assegna casualmente condizione (tipo di QR) e ordine dei prodotti
+   – genera un participant ID univoco basato sul timestamp (base-36)
+   – costruisce la sequenza dei 6 prodotti interleaving filler e focali
+   – prepara S con tutte le sotto-strutture pronte a ricevere risposte */
 function initSession() {
   const condition = CONDITIONS[Math.floor(Math.random() * 3)];
   const order     = ORDERS[Math.floor(Math.random() * 2)];
   const pid       = 'P' + Date.now().toString(36).toUpperCase();
 
+  /* Ordine A: prima senza QR (posizione 3), poi con QR (posizione 5); B è inverso */
   const fA  = order === 'A' ? FOCAL_NO : FOCAL_QR;
   const fB  = order === 'A' ? FOCAL_QR : FOCAL_NO;
   const seq = [FILLERS[0], FILLERS[1], fA, FILLERS[2], fB, FILLERS[3]];
@@ -261,31 +403,39 @@ function initSession() {
     order,
     started_at: new Date().toISOString(),
     sequence: seq,
-    screening: {},
-    section_b: {},
-    fcq: {},
-    isd: {},
-    trust: {},
+    screening: {},          // risposte sezione A (screening)
+    section_b: {},          // risposte sezione B (abitudini d'acquisto)
+    fcq: {},                // risposte FCQ
+    isd: {},                // risposte ISD
+    trust: {},              // risposte scala fiducia
     stimuli: seq.map(p => ({
       stimulus_id:  p.id,
       has_qr:       p.hasQR,
-      shown_at:     null,
-      exposure_ms:  null,
+      shown_at:     null,   // timestamp ms di quando la card è stata mostrata
+      exposure_ms:  null,   // durata esposizione ms (calcolata al completamento scale)
       qr_clicked:   false,
       qr_click_ts:  null,
-      responses:    {},
-      wtp:          500,
+      responses:    {},     // risposte PROD_SCALES per questo prodotto
+      wtp:          500,    // WTP in centesimi (default €5,00)
     })),
-    post:         {},
-    section_d:    {},
+    post:         {},       // risposte post-esposizione
+    section_d:    {},       // risposte sezioni E (QR basic, CNS, TAM, Maven, Enjoy)
     demographics: { health: [] },
     completed_at: null,
   };
 }
 
 /* ================================================================
-   ILLUSTRAZIONI PRODOTTI
+   6. ILLUSTRAZIONI PRODOTTI
+   ─────────────────────────────────────────────────────────────────
+   illo()  : restituisce il tag <img> per il tipo di prodotto indicato.
+   QR_SVG  : icona SVG inline di un QR fittizio per il badge cliccabile.
 ================================================================ */
+
+/* illo(type)
+   Parametro type: 'yogurt' | 'pasta' | 'passata' | 'olio' | 'carne'
+   Restituisce l'HTML dell'immagine centrata nel contenitore .stimulus-img.
+   Se il tipo non è riconosciuto usa 'carne' come fallback. */
 function illo(type) {
   const map = {
     yogurt:  `<img src="img/yogurt.jpg"   alt="Yogurt Greco"        style="max-height:190px;max-width:260px;display:block;border-radius:8px;">`,
@@ -297,6 +447,7 @@ function illo(type) {
   return `<div style="display:flex;align-items:center;justify-content:center;height:100%;">${map[type] || map.carne}</div>`;
 }
 
+/* SVG di un QR code stilizzato usato come icona del badge cliccabile sul prodotto focale */
 const QR_SVG = `<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" width="34" height="34" fill="#1a1a18">
   <rect x="2"  y="2"  width="12" height="12" fill="none" stroke="#1a1a18" stroke-width="2" rx="1"/>
   <rect x="5"  y="5"  width="6"  height="6"  rx="0.5"/>
@@ -311,10 +462,19 @@ const QR_SVG = `<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" widt
 </svg>`;
 
 /* ================================================================
-   UTILITY – RENDER HELPERS
+   7. UTILITY – RENDER HELPERS
+   ─────────────────────────────────────────────────────────────────
+   Funzioni che generano HTML riutilizzabile per barra di avanzamento,
+   bottoni radio e griglie Likert in vari formati.
 ================================================================ */
+
+/* Numero totale di sezioni (denominatore per il calcolo della percentuale) */
 const TOTAL_SECTIONS = 12;
 
+/* progressBar(section, label)
+   Restituisce l'HTML della barra di avanzamento orizzontale.
+   – section : numero sezione corrente (1–TOTAL_SECTIONS)
+   – label   : etichetta opzionale; default "Sezione X di TOTAL_SECTIONS" */
 function progressBar(section, label) {
   const pct = Math.round((section / TOTAL_SECTIONS) * 100);
   const lbl = label || `Sezione ${section} di ${TOTAL_SECTIONS}`;
@@ -327,6 +487,13 @@ function progressBar(section, label) {
   </div>`;
 }
 
+/* radioGroup(groupId, opts, storeKey, subKey, extra)
+   Genera un gruppo di bottoni radio implementati come <button> (non <input>).
+   – groupId  : id del contenitore (serve a onRadio per deselezionare gli altri)
+   – opts     : array di stringhe – etichette delle opzioni
+   – storeKey : chiave di primo livello in S (es. 'screening')
+   – subKey   : chiave di secondo livello (es. 'responsible')
+   – extra    : JS opzionale da eseguire dopo il click (es. mostrare un avviso) */
 function radioGroup(groupId, opts, storeKey, subKey, extra) {
   extra = extra || '';
   return `<div class="radio-group" id="${groupId}">
@@ -335,6 +502,14 @@ function radioGroup(groupId, opts, storeKey, subKey, extra) {
   </div>`;
 }
 
+/* renderLikert(items, storeKey, n, lowLabel, highLabel, showGroups)
+   Genera la griglia Likert standard per una lista di item.
+   – items     : array { id, q, [label], [group] }
+   – storeKey  : chiave di primo livello in S
+   – n         : numero di punti scala (es. 5 o 7)
+   – lowLabel  : etichetta estremo sinistro
+   – highLabel : etichetta estremo destro
+   – showGroups: se true, inserisce un'intestazione quando item.group cambia */
 function renderLikert(items, storeKey, n, lowLabel, highLabel, showGroups) {
   let lastGroup = null;
   return items.map(item => {
@@ -359,6 +534,10 @@ function renderLikert(items, storeKey, n, lowLabel, highLabel, showGroups) {
   }).join('');
 }
 
+/* renderLikert0(items, storeKey)
+   Variante di renderLikert per scale 0–4 (usata per ISD).
+   Mostra valori [0,1,2,3,4] con etichette "Mai (0)" / "Sempre (4)"
+   e prefisso numerico ordinale prima del testo della domanda. */
 function renderLikert0(items, storeKey) {
   return items.map((item, idx) => `
     <div class="scale-item">
@@ -373,6 +552,11 @@ function renderLikert0(items, storeKey) {
     </div>`).join('');
 }
 
+/* renderProdScales(si)
+   Genera la griglia Likert 1–7 per le 6 domande di PROD_SCALES
+   relative al prodotto all'indice si della sequenza.
+   L'id dei bottoni include si per evitare collisioni tra prodotti diversi
+   (es. "btns-0-q_quality1" vs "btns-1-q_quality1"). */
 function renderProdScales(si) {
   return PROD_SCALES.map(s => `
     <div class="scale-item">
@@ -392,8 +576,16 @@ function renderProdScales(si) {
 }
 
 /* ================================================================
-   EVENT HANDLERS – QUESTIONARIO
+   8. EVENT HANDLERS – QUESTIONARIO
+   ─────────────────────────────────────────────────────────────────
+   Gestiscono l'interazione con i controlli delle sezioni standard
+   del questionario (prima e dopo la parte sperimentale).
 ================================================================ */
+
+/* onRadio(groupId, storeKey, subKey, val, btn)
+   Aggiorna la selezione visiva (classe 'selected') sul bottone cliccato,
+   deseleziona gli altri nel gruppo, salva val in S[storeKey][subKey]
+   e chiama checkDone() per aggiornare il pulsante "Avanti". */
 function onRadio(groupId, storeKey, subKey, val, btn) {
   document.querySelectorAll('#' + groupId + ' .radio-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
@@ -401,6 +593,10 @@ function onRadio(groupId, storeKey, subKey, val, btn) {
   if (typeof checkDone === 'function') checkDone();
 }
 
+/* onLikert(storeKey, id, val, btn)
+   Analogo a onRadio per i bottoni Likert: deseleziona gli altri
+   bottoni del gruppo (identificato da "btns-<id>"), seleziona quello
+   cliccato e salva il valore numerico in S[storeKey][id]. */
 function onLikert(storeKey, id, val, btn) {
   document.querySelectorAll('#btns-' + id + ' .lk-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
@@ -408,6 +604,11 @@ function onLikert(storeKey, id, val, btn) {
   if (typeof checkDone === 'function') checkDone();
 }
 
+/* onHealthCheck(cb)
+   Gestisce la logica di esclusività della checkbox "Nessuno dei precedenti":
+   se selezionata, deseleziona tutte le altre; se viene selezionata un'altra
+   opzione, deseleziona "Nessuno dei precedenti".
+   Aggiorna S.demographics.health con l'array dei valori attualmente checked. */
 function onHealthCheck(cb) {
   if (cb.value === 'Nessuno dei precedenti' && cb.checked) {
     document.querySelectorAll('.health-cb').forEach(c => { if (c.value !== 'Nessuno dei precedenti') c.checked = false; });
@@ -422,8 +623,15 @@ function onHealthCheck(cb) {
 }
 
 /* ================================================================
-   EVENT HANDLERS – STIMOLI
+   9. EVENT HANDLERS – STIMOLI
+   ─────────────────────────────────────────────────────────────────
+   Gestiscono le interazioni sulla schermata di valutazione prodotto:
+   risposta alle scale Likert e click sul badge QR.
 ================================================================ */
+
+/* onStimulusLikert(si, id, val, btn)
+   Salva la risposta alla domanda di scala id per il prodotto si.
+   Dopo ogni risposta chiama checkStimulusDone per aggiornare il pulsante. */
 function onStimulusLikert(si, id, val, btn) {
   document.querySelectorAll(`#btns-${si}-${id} .lk-btn`).forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
@@ -431,6 +639,11 @@ function onStimulusLikert(si, id, val, btn) {
   checkStimulusDone(si);
 }
 
+/* checkStimulusDone(si)
+   Verifica se tutti e 6 gli item di PROD_SCALES hanno una risposta per il prodotto si.
+   – Abilita/disabilita il pulsante "Avanti" (#btn-sn-<si>)
+   – Aggiorna il testo dell'hint di navigazione (#nh-<si>)
+   – Se completato, registra il tempo di esposizione (ms dall'apertura della card) */
 function checkStimulusDone(si) {
   const done = PROD_SCALES.every(s => S.stimuli[si].responses[s.id] !== undefined);
   const btn  = document.getElementById(`btn-sn-${si}`);
@@ -444,6 +657,11 @@ function checkStimulusDone(si) {
   if (done) S.stimuli[si].exposure_ms = Date.now() - (S.stimuli[si].shown_at || Date.now());
 }
 
+/* onQrClick(si)
+   Registra il click sul badge QR del prodotto si:
+   – imposta qr_clicked=true e qr_click_ts nel record stimolo
+   – aggiorna la nota testuale sotto il prodotto con l'orario del click
+   – mostra un toast di conferma e salva in localStorage */
 function onQrClick(si) {
   const ts = Date.now();
   S.stimuli[si].qr_clicked  = true;
@@ -458,19 +676,31 @@ function onQrClick(si) {
 }
 
 /* ================================================================
-   EVENT HANDLERS – POST-EXPOSURE
+   10. EVENT HANDLERS – POST-EXPOSURE
+   ─────────────────────────────────────────────────────────────────
+   Gestiscono i controlli della schermata "post" (dopo aver visto
+   tutti i prodotti): domande di memoria e percezione del QR.
 ================================================================ */
+
+/* onRadioPost(groupId, key, val, btn)
+   Variante di onRadio per la sezione post-esposizione; salva in S.post. */
 function onRadioPost(groupId, key, val, btn) {
   document.querySelectorAll(`#${groupId} .radio-btn`).forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
   S.post[key] = val;
 }
 
+/* togglePostQR(val)
+   Mostra o nasconde il blocco di domande QR (#post-qr-block)
+   in base alla risposta a "Hai notato un codice QR?". */
 function togglePostQR(val) {
   const block = document.getElementById('post-qr-block');
   if (block) block.style.display = val === 'Sì' ? 'block' : 'none';
 }
 
+/* onPostLikert(key, val, btn)
+   Gestisce il click sulla scala di utilità del QR in sezione post.
+   Salva il valore in S.post[key]. */
 function onPostLikert(key, val, btn) {
   document.querySelectorAll('#btns-post-util .lk-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
@@ -478,8 +708,22 @@ function onPostLikert(key, val, btn) {
 }
 
 /* ================================================================
-   SCREENS
+   11. SCREENS
+   ─────────────────────────────────────────────────────────────────
+   Ogni funzione screen* restituisce una stringa HTML che goTo()
+   inietta in #app tramite innerHTML. Non producono side-effects
+   diretti sul DOM; se la schermata ha un criterio di completamento,
+   imposta la funzione checkDone usata dagli event handler.
+
+   Flusso:
+   welcome → screening → [screenout | sectionB → fcq → isd → trust]
+   → stimulus(0) → … → stimulus(5) → post → qr_basic → cns
+   → tam → mavenism → demographics → end
 ================================================================ */
+
+/* screenWelcome()
+   Pagina iniziale: presentazione dello studio, informativa GDPR scrollabile,
+   consenso informato e pulsante "Inizia" disabilitato fino al checkbox. */
 function screenWelcome() {
   return `<div class="screen-center"><div class="welcome-card">
     <div class="study-badge">Ricerca Accademica – UniNA Federico II</div>
@@ -524,6 +768,9 @@ function screenWelcome() {
   </div></div>`;
 }
 
+/* screenScreenout()
+   Schermata di uscita per partecipanti non idonei (non responsabili
+   della spesa o vegetariani/vegani). */
 function screenScreenout() {
   return `<div class="screen-center"><div class="welcome-card">
     <div class="study-badge">Questionario non applicabile</div>
@@ -533,6 +780,11 @@ function screenScreenout() {
   </div></div>`;
 }
 
+/* screenScreening()
+   Sezione A – tre domande di screening (età, responsabilità spesa, dieta).
+   Mostra avvisi inline se il partecipante non è idoneo.
+   checkDone: abilita "Avanti" solo quando tutte e tre le domande hanno risposta.
+   Il click su "Avanti" reindirizza a 'screenout' se i criteri non sono soddisfatti. */
 function screenScreening() {
   checkDone = function() {
     const ok = S.screening.age && S.screening.responsible && S.screening.vegetarian;
@@ -585,6 +837,10 @@ function screenScreening() {
   </div>`;
 }
 
+/* screenSectionB()
+   Sezione B – 6 domande su abitudini d'acquisto e consumo alimentare
+   (responsabilità cucina, frequenza spesa, consumo carne, acquisti online, uso QR).
+   checkDone: abilita "Avanti" solo quando tutte e 6 le domande hanno risposta. */
 function screenSectionB() {
   checkDone = function() {
     const ok = S.section_b.cooking && S.section_b.shopping_freq && S.section_b.meat_freq
@@ -651,6 +907,9 @@ function screenSectionB() {
   </div>`;
 }
 
+/* screenFCQ()
+   Sezione C1 – Food Choice Questionnaire (11 item, scala 1–7).
+   checkDone: abilita "Avanti" quando tutti gli item FCQ hanno risposta. */
 function screenFCQ() {
   checkDone = function() {
     const ok = FCQ_ITEMS.every(i => S.fcq[i.id] !== undefined);
@@ -672,6 +931,9 @@ function screenFCQ() {
   </div>`;
 }
 
+/* screenISD()
+   Sezione C2 – Internet Search Dependence (12 item, scala 0–4).
+   Usa renderLikert0 per la scala con zero come valore minimo. */
 function screenISD() {
   checkDone = function() {
     const ok = ISD_ITEMS.every(i => S.isd[i.id] !== undefined);
@@ -694,6 +956,9 @@ function screenISD() {
   </div>`;
 }
 
+/* screenTrust()
+   Sezione C3 – scala fiducia nelle istituzioni (18 item, scala 1–5).
+   Gli item sono raggruppati visivamente per istituzione (gov/far/mfr). */
 function screenTrust() {
   checkDone = function() {
     const ok = TRUST_ITEMS.every(i => S.trust[i.id] !== undefined);
@@ -715,10 +980,18 @@ function screenTrust() {
   </div>`;
 }
 
+/* screenStimulus(si)
+   Sezione D – schermata di valutazione per il prodotto all'indice si.
+   Mostra: immagine prodotto (con badge QR cliccabile se hasQR=true),
+   6 scale Likert 1–7, slider WTP (€2–€12).
+   Il timestamp di apertura viene registrato in goToStimulus().
+   Parametro: si – indice 0-based del prodotto in S.sequence. */
 function screenStimulus(si) {
   const prod  = S.sequence[si];
   const total = S.sequence.length;
   const pct   = Math.round(((5 + (si + 1) / total) / TOTAL_SECTIONS) * 100);
+  /* URL QR: include condizione, pid e sid per tracciare quale partecipante
+     ha scansionato quale prodotto nella landing page esterna */
   const qrUrl = `${STUDY_URL}/${S.condition}?pid=${S.participant_id}&sid=${prod.id}`;
 
   return `<div class="stim-wrap">
@@ -758,6 +1031,7 @@ function screenStimulus(si) {
     <div class="wtp-wrap">
       <div class="scale-construct">Disponibilità a pagare</div>
       <p class="question-text">Qual è il prezzo massimo che pagheresti per questo prodotto?</p>
+      <!-- range 200–1200 centesimi (€2–€12); il valore è diviso per 100 al momento della visualizzazione -->
       <div class="wtp-slider-row">
         <span class="wtp-bound">€2</span>
         <input type="range" min="200" max="1200" step="10" value="500"
@@ -777,6 +1051,10 @@ function screenStimulus(si) {
   </div>`;
 }
 
+/* screenPost()
+   Sezione D post-esposizione – domande di memoria e percezione del QR
+   dopo la visione di tutti i prodotti. Il pulsante "Avanti" è sempre
+   abilitato (nessun checkDone): le risposte sono facoltative. */
 function screenPost() {
   return `<div class="form-wrap">
     ${progressBar(7)}
@@ -800,6 +1078,7 @@ function screenPost() {
       </div>
     </div>
 
+    <!-- blocco visibile solo se risponde "Sì" alla domanda sul QR -->
     <div id="post-qr-block" style="display:none">
       <div class="field-group">
         <label class="field-label">Hai cliccato sul codice QR?</label>
@@ -835,6 +1114,10 @@ function screenPost() {
   </div>`;
 }
 
+/* screenQRBasic()
+   Sezione E1 – tre domande sull'importanza della tracciabilità, utilità
+   del sistema blockchain/QR e frequenza d'uso dei QR nell'ultimo anno.
+   checkDone: abilita "Avanti" quando tutte e tre le risposte sono presenti. */
 function screenQRBasic() {
   checkDone = function() {
     const ok = S.section_d.traceability_imp !== undefined
@@ -888,6 +1171,9 @@ function screenQRBasic() {
   </div>`;
 }
 
+/* screenCNS()
+   Sezione E2 – Consumer Need for Stimulation (7 item, scala 1–7 invertita).
+   Misura la propensione a cercare attivamente informazioni su nuovi prodotti. */
 function screenCNS() {
   checkDone = function() {
     const ok = CNS_ITEMS.every(i => S.section_d[i.id] !== undefined);
@@ -909,6 +1195,9 @@ function screenCNS() {
   </div>`;
 }
 
+/* screenTAM()
+   Sezione E3 – Technology Acceptance Model per QR alimentari (14 item, scala 1–5).
+   Sottoscale PI, PU, PEU, ATT, BI raggruppate visivamente dal campo item.group. */
 function screenTAM() {
   checkDone = function() {
     const ok = TAM_ITEMS.every(i => S.section_d[i.id] !== undefined);
@@ -930,6 +1219,10 @@ function screenTAM() {
   </div>`;
 }
 
+/* screenMavenism()
+   Sezione E4 – Market Maven scale (5 item) + Perceived Enjoyment QR (3 item).
+   Entrambe le scale usano Likert 1–5.
+   checkDone: abilita "Avanti" quando tutti e 8 gli item hanno risposta. */
 function screenMavenism() {
   checkDone = function() {
     const ok = [...MAVEN_ITEMS, ...ENJOY_ITEMS].every(i => S.section_d[i.id] !== undefined);
@@ -954,6 +1247,13 @@ function screenMavenism() {
   </div>`;
 }
 
+/* screenDemographics()
+   Sezione finale – 14 domande socio-demografiche.
+   Contiene tre helper interni per generare input HTML senza ripetizioni:
+   – selHtml()  : <select> collegato a S.demographics[key]
+   – numInput() : <input type=number> (peso, altezza, n° componenti)
+   – txtInput() : <input type=text> (età dei figli)
+   Il blocco figli (#children-block) è visibile solo se il partecipante ha figli. */
 function screenDemographics() {
   checkDone = function() {
     const d = S.demographics;
@@ -1032,6 +1332,7 @@ function screenDemographics() {
       </div>
     </div>
 
+    <!-- mostrato solo se "Hai figli?" = Sì -->
     <div id="children-block" style="display:none">
       <div class="field-row">
         <div class="field-group">
@@ -1079,6 +1380,10 @@ function screenDemographics() {
   </div>`;
 }
 
+/* screenEnd()
+   Schermata finale: ringraziamento, debriefing dello studio (rivela
+   l'obiettivo reale: analisi dell'effetto del QR sulla percezione)
+   e pulsante per scaricare i dati personali come JSON. */
 function screenEnd() {
   return `<div class="screen-center"><div class="welcome-card">
     <div class="study-badge ok">Completato</div>
@@ -1096,8 +1401,15 @@ function screenEnd() {
 }
 
 /* ================================================================
-   NAVIGAZIONE
+   12. NAVIGAZIONE
+   ─────────────────────────────────────────────────────────────────
+   SCREENS mappa nomi-schermata → funzioni screen*.
+   goTo() e goToStimulus() sono gli unici punti di ingresso per
+   cambiare schermata: azzerano checkDone, iniettano HTML in #app
+   e riportano la pagina in cima.
 ================================================================ */
+
+/* Registro di tutte le schermate (nome → funzione generatrice) */
 const SCREENS = {
   welcome:      screenWelcome,
   screening:    screenScreening,
@@ -1115,6 +1427,9 @@ const SCREENS = {
   end:          screenEnd,
 };
 
+/* goTo(screen)
+   Naviga alla schermata denominata (chiave di SCREENS).
+   Se screen === 'end' registra completed_at e salva prima del render. */
 function goTo(screen) {
   checkDone = null;
   if (screen === 'end') {
@@ -1126,6 +1441,10 @@ function goTo(screen) {
   window.scrollTo(0, 0);
 }
 
+/* goToStimulus(si)
+   Naviga alla schermata prodotto all'indice si.
+   Registra shown_at per misurare il tempo di esposizione successivamente.
+   Se si >= lunghezza della sequenza, reindirizza a 'post'. */
 function goToStimulus(si) {
   checkDone = null;
   if (si >= S.sequence.length) { goTo('post'); return; }
@@ -1135,12 +1454,23 @@ function goToStimulus(si) {
 }
 
 /* ================================================================
-   SALVATAGGIO DATI
+   13. SALVATAGGIO DATI
+   ─────────────────────────────────────────────────────────────────
+   I dati rimangono nel browser (localStorage) per tutta la sessione.
+   Non c'è backend: il trasferimento all'ente di ricerca avviene tramite
+   il download manuale del file JSON nella schermata finale.
 ================================================================ */
+
+/* saveData()
+   Serializza S in JSON e lo salva in localStorage con chiave 'survey_<pid>'.
+   Il try/catch ignora silenziosamente errori (es. modalità privata, storage pieno). */
 function saveData() {
   try { localStorage.setItem('survey_' + S.pid, JSON.stringify(S)); } catch(e) {}
 }
 
+/* downloadData()
+   Crea un Blob JSON e lo scarica come file 'survey_<pid>.json' tramite
+   un link <a> temporaneo. Revoca l'object URL dopo il click per liberare memoria. */
 function downloadData() {
   const blob = new Blob([JSON.stringify(S, null, 2)], {type: 'application/json'});
   const url  = URL.createObjectURL(blob);
@@ -1150,8 +1480,13 @@ function downloadData() {
 }
 
 /* ================================================================
-   TOAST
+   14. TOAST – notifica temporanea
 ================================================================ */
+
+/* showToast(msg)
+   Mostra msg nel pannello #toast per 3 secondi poi lo nasconde.
+   Cancella il timeout precedente prima di impostarne uno nuovo,
+   così click rapidi in successione resettano il conto alla rovescia. */
 function showToast(msg) {
   const t = document.getElementById('toast');
   if (!t) return;
@@ -1162,13 +1497,18 @@ function showToast(msg) {
 }
 
 /* ================================================================
-   BOOTSTRAP
+   15. BOOTSTRAP – avvio applicazione
 ================================================================ */
 initSession();
 goTo('welcome');
 
 /* ================================================================
-   DEV NAV (solo con ?dev nell'URL)
+   16. DEV NAV (solo con ?dev nell'URL)
+   ─────────────────────────────────────────────────────────────────
+   Barra di navigazione rapida fissa in basso, visibile solo in sviluppo.
+   Permette di saltare a qualsiasi schermata senza compilare il questionario.
+   Ogni click chiama initSession() per reinizializzare S e garantire
+   che stimuli[si] esista quando si naviga direttamente a uno stimolo.
 ================================================================ */
 if (new URLSearchParams(location.search).has('dev')) {
   const DEV_SCREENS = [
@@ -1185,6 +1525,7 @@ if (new URLSearchParams(location.search).has('dev')) {
     DEV_SCREENS.map(([id, label]) => {
       const isStim = id.startsWith('__stim');
       const si = isStim ? parseInt(id.replace('__stim','')) : null;
+      /* reinizializza sempre la sessione per evitare stati inconsistenti */
       const action = isStim
         ? `initSession();goToStimulus(${si})`
         : `initSession();goTo('${id}')`;
