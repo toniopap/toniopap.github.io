@@ -239,7 +239,7 @@ const FOCAL_QR = { id: 'carne_qr',   name: 'Fettine di Vitello', brand: 'Linea N
    alimentare, fiducia nella provenienza, trasparenza e intenzione d'acquisto.
 ================================================================ */
 const PROD_SCALES = [
-  { id: 'q_quality1', label: 'Qualità percepita',     q: 'Questo prodotto mi sembra di alta qualità.'                        },
+  { id: 'q_quality1', label: 'Qualità percepita',     q: 'Mi aspetto che questo prodotto sia buono.'                        },
   { id: 'q_quality2', label: 'Qualità percepita',     q: 'Mi aspetto che questo prodotto sia fresco.'                        },
   { id: 'q_safety',   label: 'Sicurezza alimentare',  q: 'Questo prodotto mi sembra sicuro da consumare.'                    },
   { id: 'q_trust',    label: 'Fiducia',               q: 'Mi fido della provenienza di questo prodotto.'                     },
@@ -384,17 +384,17 @@ let checkDone = null;
    Inizializza una nuova sessione sperimentale:
    – assegna casualmente condizione (tipo di QR) e ordine dei prodotti
    – genera un participant ID univoco basato sul timestamp (base-36)
-   – costruisce la sequenza dei 6 prodotti interleaving filler e focali
+   – costruisce la sequenza dei 4 prodotti interleaving filler e focali
    – prepara S con tutte le sotto-strutture pronte a ricevere risposte */
 function initSession() {
   const condition = CONDITIONS[Math.floor(Math.random() * 3)];
   const order     = ORDERS[Math.floor(Math.random() * 2)];
   const pid       = 'P' + Date.now().toString(36).toUpperCase();
 
-  /* Ordine A: prima senza QR (posizione 3), poi con QR (posizione 5); B è inverso */
+  /* Ordine A: prima senza QR (posizione 2), poi con QR (posizione 4); B è inverso */
   const fA  = order === 'A' ? FOCAL_NO : FOCAL_QR;
   const fB  = order === 'A' ? FOCAL_QR : FOCAL_NO;
-  const seq = [FILLERS[0], FILLERS[1], fA, FILLERS[2], fB, FILLERS[3]];
+  const seq = [FILLERS[0], fA, FILLERS[2], fB];
 
   S = {
     pid,
@@ -1033,8 +1033,8 @@ function screenStimulus(si) {
       <p class="question-text">Qual è il prezzo massimo che pagheresti per questo prodotto?</p>
       <!-- range 200–1200 centesimi (€2–€12); il valore è diviso per 100 al momento della visualizzazione -->
       <div class="wtp-slider-row">
-        <span class="wtp-bound">€2</span>
-        <input type="range" min="200" max="1200" step="10" value="500"
+        <span class="wtp-bound">€0</span>
+        <input type="range" min="0" max="1200" step="10" value="500"
           oninput="S.stimuli[${si}].wtp=+this.value;document.getElementById('wtp-d-${si}').textContent='€'+(this.value/100).toFixed(2).replace('.',',')">
         <span class="wtp-bound">€12</span>
         <span class="wtp-value" id="wtp-d-${si}">€5,00</span>
@@ -1061,14 +1061,9 @@ function screenPost() {
     <div class="section-header">
       <div class="study-badge">Sezione D – Post-valutazione</div>
       <h2>Qualche domanda sui prodotti che hai appena visto</h2>
-      <p class="sub">Rispondi liberamente, senza riesaminare le immagini precedenti.</p>
+      
     </div>
 
-    <div class="field-group">
-      <label class="field-label">Ripensando ai prodotti che hai appena visto, cosa ricordi? Descrivi liberamente.</label>
-      <textarea placeholder="Scrivi qui…" style="min-height:100px"
-        oninput="S.post.memory_text=this.value"></textarea>
-    </div>
 
     <div class="field-group">
       <label class="field-label">Hai notato un codice QR su uno dei prodotti?</label>
@@ -1091,6 +1086,22 @@ function screenPost() {
         <label class="field-label">Cosa ti aspettavi di trovare cliccando il QR?</label>
         <textarea placeholder="Es: informazioni sull'origine, ingredienti, ricette…"
           oninput="S.post.qr_expected=this.value"></textarea>
+      </div>
+    </div>
+
+    <!-- manipulation check: la risposta corretta dipende da S.condition (tracciabilita / nutrizione / sostenibilita) -->
+    <div class="field-group">
+      <label class="field-label">Il codice QR presente su uno dei prodotti rimandava a informazioni su:</label>
+      
+      <div class="radio-group" id="rg-manip">
+        ${[
+          'La tracciabilità e la provenienza del prodotto (filiera, allevamento, territorio)',
+          'La composizione nutrizionale e i benefici per la salute',
+          'La sostenibilità ambientale e l\'impatto ecologico',
+          'Le offerte promozionali e il prezzo del prodotto',
+          'Ricette e consigli di utilizzo in cucina',
+        ].map(o => `<button class="radio-btn"
+          onclick="onRadioPost('rg-manip','manip_check','${o.replace(/'/g,"\\'")}',this)">${o}</button>`).join('')}
       </div>
     </div>
 
@@ -1135,25 +1146,25 @@ function screenQRBasic() {
 
     <div class="field-group">
       <label class="field-label">Quanto è importante per te la tracciabilità e la trasparenza nella scelta di prodotti alimentari?</label>
-      <p class="sub" style="margin-bottom:8px"><strong>1</strong> = Per niente importante &nbsp;·&nbsp; <strong>5</strong> = Molto importante</p>
+      <p class="sub" style="margin-bottom:8px"><strong>1</strong> = Per niente importante &nbsp;·&nbsp; <strong>9</strong> = Molto importante</p>
       <div class="likert-labels">
         <span class="likert-label">Per niente importante</span>
         <span class="likert-label">Molto importante</span>
       </div>
       <div class="likert-buttons" id="btns-traceability_imp">
-        ${[1,2,3,4,5].map(v => `<button class="lk-btn" onclick="onLikert('section_d','traceability_imp',${v},this)">${v}</button>`).join('')}
+        ${[1,2,3,4,5,6,7,8,9].map(v => `<button class="lk-btn" onclick="onLikert('section_d','traceability_imp',${v},this)">${v}</button>`).join('')}
       </div>
     </div>
 
     <div class="field-group" style="margin-top:1.5rem">
       <label class="field-label">Quanto ritieni utile un sistema di etichettatura basato su blockchain/QR per aumentare la fiducia nei prodotti agro-alimentari?</label>
-      <p class="sub" style="margin-bottom:8px"><strong>1</strong> = Per niente utile &nbsp;·&nbsp; <strong>5</strong> = Molto utile</p>
+      <p class="sub" style="margin-bottom:8px"><strong>1</strong> = Per niente utile &nbsp;·&nbsp; <strong>9</strong> = Molto utile</p>
       <div class="likert-labels">
         <span class="likert-label">Per niente utile</span>
         <span class="likert-label">Molto utile</span>
       </div>
       <div class="likert-buttons" id="btns-blockchain_useful">
-        ${[1,2,3,4,5].map(v => `<button class="lk-btn" onclick="onLikert('section_d','blockchain_useful',${v},this)">${v}</button>`).join('')}
+        ${[1,2,3,4,5,6,7,8,9].map(v => `<button class="lk-btn" onclick="onLikert('section_d','blockchain_useful',${v},this)">${v}</button>`).join('')}
       </div>
     </div>
 
@@ -1211,7 +1222,7 @@ function screenTAM() {
       <h2>Indica quanto sei d'accordo con le seguenti affermazioni</h2>
       <p class="sub"><strong>1</strong> = Per niente d'accordo &nbsp;·&nbsp; <strong>5</strong> = Completamente d'accordo</p>
     </div>
-    ${renderLikert(TAM_ITEMS,'section_d',5,"Per niente d'accordo","Completamente d'accordo",true)}
+    ${renderLikert(TAM_ITEMS,'section_d',5,"Per niente d'accordo","Completamente d'accordo")}
     <div class="nav-row">
       <span></span>
       <button class="btn-primary" id="btn-tam-next" disabled onclick="goTo('mavenism')">Avanti →</button>
@@ -1515,7 +1526,7 @@ if (new URLSearchParams(location.search).has('dev')) {
     ['welcome','Welcome'],['screening','A – Screening'],['screenout','Screenout'],
     ['sectionB','B – Acquisti'],['fcq','C1 – FCQ'],['isd','C2 – ISD'],
     ['trust','C3 – Trust'],
-    ...Array.from({length:6},(_,i) => [`__stim${i}`,`D – Prodotto ${i+1}`]),
+    ...Array.from({length:4},(_,i) => [`__stim${i}`,`D – Prodotto ${i+1}`]),
     ['post','D – Post'],['qr_basic','E1 – QR Basic'],['cns','E2 – CNS'],
     ['tam','E3 – TAM'],['mavenism','E4 – Maven'],['demographics','Dati demo'],['end','Fine'],
   ];

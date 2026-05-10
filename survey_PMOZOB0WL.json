@@ -1,0 +1,94 @@
+{
+  "pid": "PMOZOB0WL",
+  "participant_id": "PMOZOB0WL",
+  "condition": "sostenibilita",
+  "order": "A",
+  "started_at": "2026-05-10T11:12:07.509Z",
+  "sequence": [
+    {
+      "id": "yogurt",
+      "name": "Yogurt Greco",
+      "brand": "COOP",
+      "detail": "500g · Naturale",
+      "type": "yogurt",
+      "hasQR": false
+    },
+    {
+      "id": "carne_no_qr",
+      "name": "Fettine di Vitello",
+      "brand": "Linea Natura",
+      "detail": "500g · Fresco · IT",
+      "type": "carne",
+      "hasQR": false
+    },
+    {
+      "id": "passata",
+      "name": "Passata di Pomodoro",
+      "brand": "COOP",
+      "detail": "700g · Rustica",
+      "type": "passata",
+      "hasQR": false
+    },
+    {
+      "id": "carne_qr",
+      "name": "Fettine di Vitello",
+      "brand": "Linea Natura",
+      "detail": "500g · Fresco · IT",
+      "type": "carne",
+      "hasQR": true
+    }
+  ],
+  "screening": {},
+  "section_b": {},
+  "fcq": {},
+  "isd": {},
+  "trust": {},
+  "stimuli": [
+    {
+      "stimulus_id": "yogurt",
+      "has_qr": false,
+      "shown_at": null,
+      "exposure_ms": null,
+      "qr_clicked": false,
+      "qr_click_ts": null,
+      "responses": {},
+      "wtp": 500
+    },
+    {
+      "stimulus_id": "carne_no_qr",
+      "has_qr": false,
+      "shown_at": null,
+      "exposure_ms": null,
+      "qr_clicked": false,
+      "qr_click_ts": null,
+      "responses": {},
+      "wtp": 500
+    },
+    {
+      "stimulus_id": "passata",
+      "has_qr": false,
+      "shown_at": null,
+      "exposure_ms": null,
+      "qr_clicked": false,
+      "qr_click_ts": null,
+      "responses": {},
+      "wtp": 500
+    },
+    {
+      "stimulus_id": "carne_qr",
+      "has_qr": true,
+      "shown_at": null,
+      "exposure_ms": null,
+      "qr_clicked": false,
+      "qr_click_ts": null,
+      "responses": {},
+      "wtp": 500
+    }
+  ],
+  "post": {},
+  "section_d": {},
+  "demographics": {
+    "health": []
+  },
+  "completed_at": "2026-05-10T11:12:07.509Z"
+}
