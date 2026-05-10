@@ -146,8 +146,22 @@
     .stimulus-meta { padding: 1rem 1.25rem; border-top: 0.5px solid var(--border-lo); }
     .stimulus-hint { font-size: 14px; color: var(--text-sec); line-height: 1.5; }
     .qr-note { display: inline-block; margin-top: 5px; font-size: 12px; color: var(--text-info); cursor: pointer; }
-    .qr-badge { position: absolute; bottom: 14px; right: 14px; width: 50px; height: 50px; background: white; border-radius: 8px; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.14s, box-shadow 0.14s; text-decoration: none; }
+    .qr-badge { position: absolute; bottom: 14px; right: 14px; width: 50px; height: 50px; background: white; border-radius: 8px; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.14s, box-shadow 0.14s; appearance: none; padding: 0; }
     .qr-badge:hover { transform: scale(1.06); box-shadow: 0 2px 12px rgba(0,0,0,0.12); }
+
+    /* ================================================================
+       MODAL QR INLINE
+       Overlay che mostra la pagina del prodotto in un iframe senza
+       lasciare il survey. Nascosto di default, aperto da openQRModal().
+    ================================================================ */
+    #qr-modal { display: none; position: fixed; inset: 0; z-index: 2000; background: rgba(0,0,0,0.70); align-items: flex-start; justify-content: center; padding: 0.75rem; }
+    #qr-modal.open { display: flex; }
+    .qr-modal-inner { width: 100%; max-width: 980px; height: 92vh; background: #fff; border-radius: var(--r-lg); overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 8px 40px rgba(0,0,0,0.35); margin-top: 0.5rem; }
+    .qr-modal-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; background: var(--text-pri); flex-shrink: 0; gap: 1rem; }
+    .qr-modal-bar p { color: var(--bg); font-size: 13px; opacity: 0.80; }
+    #btn-close-qr { color: var(--bg); background: none; border: 0.5px solid rgba(255,255,255,0.40); border-radius: var(--r-md); padding: 7px 16px; font-size: 13px; font-family: var(--font); font-weight: 600; cursor: pointer; white-space: nowrap; transition: background 0.15s; }
+    #btn-close-qr:hover { background: rgba(255,255,255,0.12); }
+    #qr-iframe { flex: 1; border: none; width: 100%; }
 
     /* ================================================================
        SLIDER DISPONIBILITÀ A PAGARE (WTP – Willingness To Pay)
@@ -171,6 +185,16 @@
 <div id="app"></div>
 <!-- Notifica toast sovrapposta, mostrata/nascosta da showToast() -->
 <div id="toast"></div>
+<!-- Modal QR inline: aperto da openQRModal(), chiuso da closeQRModal() -->
+<div id="qr-modal">
+  <div class="qr-modal-inner">
+    <div class="qr-modal-bar">
+      <p>Leggi le informazioni sul prodotto, poi chiudi per continuare il questionario.</p>
+      <button id="btn-close-qr" onclick="closeQRModal()">✕ Chiudi e torna al questionario</button>
+    </div>
+    <iframe id="qr-iframe" src="" title="Informazioni prodotto"></iframe>
+  </div>
+</div>
 <script>
 /* ================================================================
    STRUTTURA DEL FILE JS
@@ -215,7 +239,7 @@ const ORDERS     = ['A', 'B'];
 
 /* GAS_URL: incollare qui l'URL del Web App dopo il deploy su Google Apps Script.
    Lasciare stringa vuota durante sviluppo locale (submitData() non farà nulla). */
-const GAS_URL = '';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbxTW0bXcez_8_s0YgsMhinEBM3yao6oqIeskYHHnj78LVSAHM1iWKbhmvcbWWN4YDbN/exec';
 
 /* ================================================================
    2. PRODOTTI (esperimento packaging)
@@ -662,21 +686,37 @@ function checkStimulusDone(si) {
 }
 
 /* onQrClick(si)
-   Registra il click sul badge QR del prodotto si:
-   – imposta qr_clicked=true e qr_click_ts nel record stimolo
-   – aggiorna la nota testuale sotto il prodotto con l'orario del click
-   – mostra un toast di conferma e salva in localStorage */
+   Registra il click sul badge QR del prodotto si, aggiorna la nota
+   testuale e apre il modal inline con la pagina della condizione. */
 function onQrClick(si) {
   const ts = Date.now();
   S.stimuli[si].qr_clicked  = true;
   S.stimuli[si].qr_click_ts = ts;
   const note = document.getElementById(`qr-note-${si}`);
   if (note) {
-    note.textContent = '✓ QR aperto alle ' + new Date(ts).toLocaleTimeString('it-IT');
+    note.textContent = '✓ Informazioni aperte — chiudi il pannello per continuare';
     note.style.color = 'var(--text-success)';
   }
-  showToast('Click sul QR registrato.');
   saveData();
+  openQRModal();
+}
+
+/* openQRModal()
+   Carica la pagina della condizione sperimentale (es. V3_Nutraceutiche.html)
+   nell'iframe e mostra il modal. Blocca lo scroll del body. */
+function openQRModal() {
+  document.getElementById('qr-iframe').src = S.condition + '.html';
+  document.getElementById('qr-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+/* closeQRModal()
+   Nasconde il modal, scarica l'iframe (src='') per liberare memoria
+   e ripristina lo scroll del body. */
+function closeQRModal() {
+  document.getElementById('qr-modal').classList.remove('open');
+  document.getElementById('qr-iframe').src = '';
+  document.body.style.overflow = '';
 }
 
 /* ================================================================
@@ -994,9 +1034,9 @@ function screenStimulus(si) {
   const prod  = S.sequence[si];
   const total = S.sequence.length;
   const pct   = Math.round(((5 + (si + 1) / total) / TOTAL_SECTIONS) * 100);
-  /* URL QR: include condizione, pid e sid per tracciare quale partecipante
-     ha scansionato quale prodotto nella landing page esterna */
-  const qrUrl = `${STUDY_URL}/${S.condition}?pid=${S.participant_id}&sid=${prod.id}`;
+  /* qrUrl non è più usato per navigazione (il modal carica S.condition + '.html'),
+     ma viene conservato per eventuale logging futuro */
+  // const qrUrl = `${STUDY_URL}/${S.condition}?pid=${S.participant_id}&sid=${prod.id}`;
 
   return `<div class="stim-wrap">
     <div class="progress-bar-wrap">
@@ -1016,10 +1056,10 @@ function screenStimulus(si) {
       <div class="stimulus-img">
         ${illo(prod.type)}
         ${prod.hasQR ? `
-          <a class="qr-badge" href="${qrUrl}" target="_blank" rel="noopener"
+          <button class="qr-badge"
              title="Clicca per maggiori informazioni" onclick="onQrClick(${si})">
             ${QR_SVG}
-          </a>` : ''}
+          </button>` : ''}
       </div>
       <div class="stimulus-meta">
         <p class="stimulus-hint">Osserva attentamente questo prodotto e rispondi alle domande qui sotto.</p>
