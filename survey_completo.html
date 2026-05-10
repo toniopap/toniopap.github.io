@@ -151,7 +151,7 @@
 
     /* ================================================================
        SLIDER DISPONIBILITÀ A PAGARE (WTP – Willingness To Pay)
-       Range 200–1200 centesimi (€2–€12), step 10 ct.
+       Range 0–1200 centesimi (€0–€12), step 10 ct.
     ================================================================ */
     .wtp-wrap { margin-top: 1.5rem; }
     .wtp-slider-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
@@ -209,9 +209,13 @@
    ORDERS     : ordine del prodotto focale nella sequenza.
                 'A' = prima senza QR poi con QR; 'B' = inverso.
 ================================================================ */
-const STUDY_URL  = 'https://tuostudio.it/qr';
-const CONDITIONS = ['tracciabilita', 'nutrizione', 'sostenibilita'];
+const STUDY_URL  = 'https://toniopap.github.io/';
+const CONDITIONS = ['V3_Nutraceutiche', 'V4_Pascolo', 'V5_Maturazione']; // etichette per le tre varianti del QR code
 const ORDERS     = ['A', 'B'];
+
+/* GAS_URL: incollare qui l'URL del Web App dopo il deploy su Google Apps Script.
+   Lasciare stringa vuota durante sviluppo locale (submitData() non farà nulla). */
+const GAS_URL = '';
 
 /* ================================================================
    2. PRODOTTI (esperimento packaging)
@@ -332,7 +336,7 @@ const CNS_ITEMS = [
      PEU = Perceived Ease of Use (facilità d'uso)
      ATT = Attitude (atteggiamento)
      BI  = Behavioral Intention (intenzione d'uso futura)
-   Scala 1–5. */
+   Scala 1–9. */
 const TAM_ITEMS = [
   { id:'pi1',  q:'Il QR code per la tracciabilità alimentare mostra molte informazioni che mi aspettavo.' },
   { id:'pi2',  q:'Il QR code per la tracciabilità alimentare fornisce informazioni dettagliate sugli alimenti.' },
@@ -1220,9 +1224,9 @@ function screenTAM() {
     <div class="section-header">
       <div class="study-badge">Sezione E – QR Code (3/4)</div>
       <h2>Indica quanto sei d'accordo con le seguenti affermazioni</h2>
-      <p class="sub"><strong>1</strong> = Per niente d'accordo &nbsp;·&nbsp; <strong>5</strong> = Completamente d'accordo</p>
+      <p class="sub"><strong>1</strong> = Per niente d'accordo &nbsp;·&nbsp; <strong>9</strong> = Completamente d'accordo</p>
     </div>
-    ${renderLikert(TAM_ITEMS,'section_d',5,"Per niente d'accordo","Completamente d'accordo")}
+    ${renderLikert(TAM_ITEMS,'section_d',9,"Per niente d'accordo","Completamente d'accordo")}
     <div class="nav-row">
       <span></span>
       <button class="btn-primary" id="btn-tam-next" disabled onclick="goTo('mavenism')">Avanti →</button>
@@ -1244,12 +1248,10 @@ function screenMavenism() {
     ${progressBar(11)}
     <div class="section-header">
       <div class="study-badge">Sezione E – QR Code (4/4)</div>
-      <h2>Esperienza con i codici QR</h2>
+      <h2>Indica quanto sei d'accordo con le seguenti affermazioni</h2>
       <p class="sub"><strong>1</strong> = Per niente d'accordo &nbsp;·&nbsp; <strong>5</strong> = Completamente d'accordo</p>
     </div>
-    <div class="section-title">Condivisione di informazioni sui prodotti</div>
     ${renderLikert(MAVEN_ITEMS,'section_d',5,"Per niente d'accordo","Completamente d'accordo")}
-    <div class="section-title" style="margin-top:1.5rem">Piacere nell'uso dei codici QR</div>
     ${renderLikert(ENJOY_ITEMS,'section_d',5,"Per niente d'accordo","Completamente d'accordo")}
     <div class="nav-row">
       <span></span>
@@ -1406,6 +1408,7 @@ function screenEnd() {
       <p style="margin-top:8px">In particolare, una parte dello studio analizzava l'effetto dei <strong>codici QR</strong> sulla percezione dei prodotti alimentari confezionati — non solo il loro contenuto informativo, ma anche il semplice fatto di essere presenti sul packaging. Le tue risposte contribuiranno a capire meglio come i segnali visivi influenzano le scelte dei consumatori.</p>
       <p style="margin-top:8px">Per informazioni: <a href="mailto:alessia.lombardi@unina.it">alessia.lombardi@unina.it</a></p>
     </div>
+    <p id="send-status" style="font-size:13px;color:var(--text-ter);margin-bottom:0.5rem"></p>
     <button class="btn-secondary" onclick="downloadData()">⬇ Scarica i tuoi dati (JSON)</button>
     <p style="font-size:12px;color:var(--text-ter);margin-top:1.25rem;text-align:center">Puoi chiudere questa scheda.</p>
   </div></div>`;
@@ -1440,7 +1443,8 @@ const SCREENS = {
 
 /* goTo(screen)
    Naviga alla schermata denominata (chiave di SCREENS).
-   Se screen === 'end' registra completed_at e salva prima del render. */
+   Se screen === 'end': registra completed_at, salva in localStorage, renderizza
+   la schermata, poi chiama submitData() (dopo il render così #send-status esiste). */
 function goTo(screen) {
   checkDone = null;
   if (screen === 'end') {
@@ -1450,6 +1454,7 @@ function goTo(screen) {
   const fn = SCREENS[screen] || screenWelcome;
   document.getElementById('app').innerHTML = fn();
   window.scrollTo(0, 0);
+  if (screen === 'end') submitData();
 }
 
 /* goToStimulus(si)
@@ -1467,9 +1472,10 @@ function goToStimulus(si) {
 /* ================================================================
    13. SALVATAGGIO DATI
    ─────────────────────────────────────────────────────────────────
-   I dati rimangono nel browser (localStorage) per tutta la sessione.
-   Non c'è backend: il trasferimento all'ente di ricerca avviene tramite
-   il download manuale del file JSON nella schermata finale.
+   Tre livelli di persistenza, in ordine di affidabilità decrescente:
+   1. submitData() → Google Apps Script Web App → Google Sheet (automatico)
+   2. saveData()   → localStorage del browser (backup locale per tutta la sessione)
+   3. downloadData() → file JSON scaricato dal partecipante (backup manuale)
 ================================================================ */
 
 /* saveData()
@@ -1477,6 +1483,35 @@ function goToStimulus(si) {
    Il try/catch ignora silenziosamente errori (es. modalità privata, storage pieno). */
 function saveData() {
   try { localStorage.setItem('survey_' + S.pid, JSON.stringify(S)); } catch(e) {}
+}
+
+/* submitData()
+   Invia S in JSON al Web App GAS via POST con mode:'no-cors' (fire-and-forget).
+   'no-cors' evita il preflight CORS: il browser manda la richiesta senza aspettare
+   un header Access-Control-Allow-Origin. La promise si risolve appena la richiesta
+   parte, non quando il server risponde — quindi non possiamo leggere la risposta,
+   ma possiamo aggiornare #send-status per dare un feedback visivo minimo.
+   Il localStorage rimane copia di backup in caso di errore di rete. */
+function submitData() {
+  if (!GAS_URL) return;
+  const el = document.getElementById('send-status');
+  if (el) el.textContent = 'Invio in corso…';
+  try {
+    fetch(GAS_URL, {
+      method:  'POST',
+      mode:    'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body:    JSON.stringify(S),
+    })
+    .then(() => {
+      if (el) { el.textContent = '✓ Dati inviati.'; el.style.color = 'var(--text-success)'; }
+    })
+    .catch(() => {
+      if (el) { el.textContent = 'Invio non riuscito — usa il download qui sotto.'; el.style.color = '#c0392b'; }
+    });
+  } catch(e) {
+    if (el) { el.textContent = 'Invio non riuscito — usa il download qui sotto.'; el.style.color = '#c0392b'; }
+  }
 }
 
 /* downloadData()
