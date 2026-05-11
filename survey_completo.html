@@ -445,7 +445,7 @@ function initSession() {
       qr_clicked:   false,
       qr_click_ts:  null,
       responses:    {},     // risposte PROD_SCALES per questo prodotto
-      wtp:          500,    // WTP in centesimi (default €5,00)
+      wtp:          0,    // WTP in centesimi (default €0,00)
     })),
     post:         {},       // risposte post-esposizione
     section_d:    {},       // risposte sezioni E (QR basic, CNS, TAM, Maven, Enjoy)
@@ -1076,13 +1076,13 @@ function screenStimulus(si) {
     <div class="wtp-wrap">
       <div class="scale-construct">Disponibilità a pagare</div>
       <p class="question-text">Qual è il prezzo massimo che pagheresti per questo prodotto?</p>
-      <!-- range 200–1200 centesimi (€2–€12); il valore è diviso per 100 al momento della visualizzazione -->
+      <!-- range 0–1200 centesimi (€2–€12); il valore è diviso per 100 al momento della visualizzazione -->
       <div class="wtp-slider-row">
         <span class="wtp-bound">€0</span>
-        <input type="range" min="0" max="1200" step="10" value="500"
+        <input type="range" min="0" max="1200" step="10" value="0"
           oninput="S.stimuli[${si}].wtp=+this.value;document.getElementById('wtp-d-${si}').textContent='€'+(this.value/100).toFixed(2).replace('.',',')">
         <span class="wtp-bound">€12</span>
-        <span class="wtp-value" id="wtp-d-${si}">€5,00</span>
+        <span class="wtp-value" id="wtp-d-${si}">€0,00</span>
       </div>
     </div>
 
@@ -1127,11 +1127,7 @@ function screenPost() {
             onclick="onRadioPost('rg-clicked','clicked','${o}',this)">${o}</button>`).join('')}
         </div>
       </div>
-      <div class="field-group">
-        <label class="field-label">Cosa ti aspettavi di trovare cliccando il QR?</label>
-        <textarea placeholder="Es: informazioni sull'origine, ingredienti, ricette…"
-          oninput="S.post.qr_expected=this.value"></textarea>
-      </div>
+
     </div>
 
     <!-- manipulation check: la risposta corretta dipende da S.condition (tracciabilita / nutrizione / sostenibilita) -->
