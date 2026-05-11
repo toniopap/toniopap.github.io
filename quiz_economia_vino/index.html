@@ -42,7 +42,46 @@
     pointer-events: none; z-index: 0;
   }
 
-  .page { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; padding: 48px 24px 80px; }
+  .page { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; padding: 32px 24px 80px; }
+
+  /* Quiz navigation */
+  .quiz-nav {
+    margin-bottom: 40px;
+  }
+  .quiz-nav-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .quiz-nav-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .quiz-nav-link {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--bark);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    text-decoration: none;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+    white-space: nowrap;
+  }
+  .quiz-nav-link:hover { border-color: var(--gold2); background: var(--paper); }
+  .quiz-nav-link.active {
+    background: var(--wine);
+    border-color: var(--wine);
+    color: #fff;
+    font-weight: 500;
+  }
 
   /* Header */
   header { text-align: center; margin-bottom: 56px; }
@@ -272,6 +311,22 @@
 </head>
 <body>
 <div class="page">
+
+  <nav class="quiz-nav">
+    <div class="quiz-nav-label">Quiz disponibili</div>
+    <div class="quiz-nav-grid">
+      <a class="quiz-nav-link active"          href="index.html">Microeconomia</a>
+      <a class="quiz-nav-link"                 href="quiz_introduzione_microeconomia_4.html">Introduzione &amp; Micro</a>
+      <a class="quiz-nav-link"                 href="quiz_microeconomia.html">Microeconomia II</a>
+      <a class="quiz-nav-link"                 href="quiz_economia_vitivinicola.html">Economia del vino</a>
+      <a class="quiz-nav-link"                 href="quiz_economia_vitivinicola_3.html">Economia del vino III</a>
+      <a class="quiz-nav-link"                 href="quiz_bilancio.html">Bilancio</a>
+      <a class="quiz-nav-link"                 href="quiz_bilancio_2.html">Reddito &amp; Costi-Benefici</a>
+      <a class="quiz-nav-link"                 href="quiz_MAT_FIN.html">Matematica finanziaria</a>
+      <a class="quiz-nav-link"                 href="quiz_MAT_FIN_2.html">Matematica finanziaria II</a>
+      <a class="quiz-nav-link"                 href="quiz_MAT_FIN_vino.html">Mat. fin. applicata</a>
+    </div>
+  </nav>
 
   <header>
     <div class="header-tag">Microeconomia · Quiz</div>
