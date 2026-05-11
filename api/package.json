@@ -1,0 +1,9 @@
+{
+  "name": "survey-api",
+  "version": "1.0.0",
+  "description": "Azure Functions API for survey data collection",
+  "main": "index.js",
+  "dependencies": {
+    "@azure/storage-blob": "^12.25.0"
+  }
+}
