@@ -509,10 +509,10 @@ const questions = [
     type: "calc",
     badge: "Esercizio – Valore Attuale Netto",
     text: "Calcola il Valore Attuale Netto (VAN) dell'investimento.",
-    scenario: "Un'azienda vitivinicola valuta l'installazione di un sistema di microirrigazione. Costo iniziale (anno 0): €2.000. Il risparmio netto generato è di €1.210 al 1° anno e di €1.331 al 2° anno. Tasso di sconto: 10%.",
-    expected: 200,
+    scenario: "Una cantina vitivinicola decide di lanciare una nuova linea di vini DOC in bottiglia premium. L'investimento iniziale per imbutigliatrice, etichettatrice e cella di affinamento è di €50.000 (anno 0). Nei tre anni successivi si prevedono i seguenti ricavi aggiuntivi e costi operativi aggiuntivi:\n• Anno 1: ricavi €25.000 – costi operativi €3.000\n• Anno 2: ricavi €27.500 – costi operativi €3.300\n• Anno 3: ricavi €30.250 – costi operativi €3.630\nIl tasso di sconto è del 10%.",
+    expected: 10000,
     unit: "€",
-    explanation: "VAN = –2.000 + 1.210/1,10 + 1.331/1,21 = –2.000 + 1.100 + 1.100 = €200. Il VAN è positivo: i benefici attualizzati superano i costi, quindi l'investimento è economicamente conveniente."
+    explanation: "Flusso netto anno 1: 25.000 – 3.000 = 22.000 → VA₁ = 22.000 / 1,10 = 20.000\nFlusso netto anno 2: 27.500 – 3.300 = 24.200 → VA₂ = 24.200 / 1,21 = 20.000\nFlusso netto anno 3: 30.250 – 3.630 = 26.620 → VA₃ = 26.620 / 1,331 = 20.000\nVAN = –50.000 + 20.000 + 20.000 + 20.000 = €10.000. Il VAN è positivo: l'investimento genera un valore netto di €10.000 ed è quindi economicamente conveniente."
   }
 ];
 
