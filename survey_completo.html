@@ -889,7 +889,7 @@ function screenScreening() {
 function screenSectionB() {
   checkDone = function() {
     const ok = S.section_b.cooking && S.section_b.shopping_freq && S.section_b.meat_freq
-            && S.section_b.meat_weekly && S.section_b.online_freq && S.section_b.qr_use;
+            && S.section_b.meat_weekly && S.section_b.online_freq;
     const btn = document.getElementById('btn-b-next');
     if (btn) btn.disabled = !ok;
   };
@@ -910,14 +910,14 @@ function screenSectionB() {
     <div class="field-group">
       <label class="field-label">2. Con quale frequenza fa la spesa alimentare?</label>
       ${radioGroup('rg-shopping',
-        ['Più volte alla settimana','Una volta alla settimana','Due volte al mese','Una volta al mese o meno'],
+        ['Una o più volte al giorno','Più volte alla settimana','Una volta alla settimana','Due volte al mese','Una volta al mese','Meno di una volta al mese'],
         'section_b','shopping_freq')}
     </div>
 
     <div class="field-group">
       <label class="field-label">3. Con quale frequenza acquista la carne rossa confezionata?</label>
       ${radioGroup('rg-meatfreq',
-        ['Più volte alla settimana','Una volta alla settimana','Due volte al mese','Una volta al mese o meno','Meno di una volta al mese'],
+        ['Una o più volte al giorno','Più volte alla settimana','Una volta alla settimana','Due volte al mese','Una volta al mese','Meno di una volta al mese'],
         'section_b','meat_freq')}
     </div>
 
@@ -938,12 +938,6 @@ function screenSectionB() {
         'section_b','online_freq')}
     </div>
 
-    <div class="field-group">
-      <label class="field-label">6. Con quale frequenza utilizzi QR code su prodotti alimentari?</label>
-      ${radioGroup('rg-qruse',
-        ['Mai','Raramente','Occasionalmente (mensile)','Spesso (settimanale o più)'],
-        'section_b','qr_use')}
-    </div>
 
     <div class="nav-row">
       <span></span>
