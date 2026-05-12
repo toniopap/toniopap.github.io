@@ -1332,13 +1332,13 @@ function screenQRBasic() {
 
     <div class="field-group" style="margin-top:1.5rem">
       <label class="field-label">Quanto ritieni utile un sistema di etichettatura basato su blockchain/QR per aumentare la fiducia nei prodotti agro-alimentari?</label>
-      <p class="sub" style="margin-bottom:8px"><strong>1</strong> = Per niente utile &nbsp;·&nbsp; <strong>9</strong> = Molto utile</p>
+      <p class="sub" style="margin-bottom:8px"><strong>1</strong> = Per niente utile &nbsp;·&nbsp; <strong>7</strong> = Molto utile</p>
       <div class="likert-labels">
         <span class="likert-label">Per niente utile</span>
         <span class="likert-label">Molto utile</span>
       </div>
       <div class="likert-buttons" id="btns-blockchain_useful">
-        ${[1,2,3,4,5,6,7,8,9].map(v => `<button class="lk-btn" onclick="onLikert('section_d','blockchain_useful',${v},this)">${v}</button>`).join('')}
+        ${[1,2,3,4,5,6,7].map(v => `<button class="lk-btn" onclick="onLikert('section_d','blockchain_useful',${v},this)">${v}</button>`).join('')}
       </div>
     </div>
 
