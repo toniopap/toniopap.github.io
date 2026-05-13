@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz – Reddito & Analisi Costi-Benefici</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-dark: #0F6E56;
+    --green-mid: #1D9E75;
+    --green-light: #E1F5EE;
+    --green-border: #9FE1CB;
+    --red-dark: #A32D2D;
+    --red-light: #FCEBEB;
+    --red-border: #F7C1C1;
+    --amber: #BA7517;
+    --amber-light: #FAEEDA;
+    --bg: #FAFAF8;
+    --surface: #FFFFFF;
+    --text: #1a1a18;
+    --text-muted: #6b6b66;
+    --border: #e2e0d8;
+    --radius: 10px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+  }
+  header {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto 2.5rem;
+  }
+  header .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--green-dark);
+    background: var(--green-light);
+    border: 1px solid var(--green-border);
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 1rem;
+  }
+  header h1 {
+    font-family: 'Lora', serif;
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+  header p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* Progress */
+  .progress-wrap {
+    max-width: 640px;
+    margin: 0 auto 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .progress-track {
+    flex: 1;
+    height: 5px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--green-mid);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+  .progress-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    min-width: 70px;
+    text-align: right;
+  }
+
+  /* Card */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.75rem 2rem;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .q-type-badge {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+  }
+  .q-text {
+    font-family: 'Lora', serif;
+    font-size: 1.05rem;
+    line-height: 1.55;
+    color: var(--text);
+    margin-bottom: 1rem;
+    font-weight: 400;
+  }
+  .q-scenario {
+    background: #F5F5F0;
+    border-left: 3px solid var(--green-mid);
+    border-radius: 0 6px 6px 0;
+    padding: 12px 16px;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--text);
+    margin-bottom: 1.25rem;
+  }
+  .q-hint {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-bottom: 1rem;
+  }
+
+  /* Multiple choice */
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .opt-btn {
+    width: 100%;
+    text-align: left;
+    padding: 11px 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    line-height: 1.4;
+  }
+  .opt-btn:hover:not(:disabled) { border-color: var(--green-mid); background: var(--green-light); }
+  .opt-btn.selected { border-color: var(--green-mid); background: var(--green-light); }
+  .opt-btn.correct { border-color: var(--green-dark); background: var(--green-light); color: var(--green-dark); font-weight: 500; }
+  .opt-btn.wrong { border-color: var(--red-dark); background: var(--red-light); color: var(--red-dark); }
+  .opt-btn:disabled { cursor: default; }
+
+  /* Drag */
+  .source-zone {
+    display: flex; flex-wrap: wrap; gap: 7px;
+    min-height: 52px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px dashed var(--border);
+    margin-bottom: 1rem;
+    background: #F5F5F0;
+  }
+  .drag-cols { display: flex; gap: 12px; }
+  .drag-col { flex: 1; min-width: 0; }
+  .drag-col h4 {
+    font-size: 11px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 6px;
+  }
+  .drop-zone {
+    min-height: 80px;
+    border: 1.5px dashed var(--border);
+    border-radius: 8px;
+    padding: 8px;
+    display: flex; flex-wrap: wrap; gap: 6px; align-content: flex-start;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .drop-zone.over { border-color: var(--green-mid); background: var(--green-light); }
+  .chip {
+    padding: 5px 12px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--surface);
+    font-size: 13px;
+    cursor: grab;
+    color: var(--text);
+    user-select: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    white-space: nowrap;
+  }
+  .chip:hover { border-color: var(--green-mid); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  .chip:active { cursor: grabbing; }
+  .chip.ok  { background: var(--green-light); border-color: var(--green-dark); color: var(--green-dark); cursor: default; }
+  .chip.ko  { background: var(--red-light);   border-color: var(--red-dark);   color: var(--red-dark);   cursor: default; }
+  .chip.chip-selected {
+    border-color: var(--green-mid);
+    background: var(--green-light);
+    box-shadow: 0 0 0 2px var(--green-border);
+    cursor: default;
+  }
+  .drag-hint {
+    display: none;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    line-height: 1.5;
+  }
+  @media (pointer: coarse) { .drag-hint { display: block; } }
+
+  /* Calc */
+  .calc-formula {
+    font-size: 15px; font-weight: 500; color: var(--text-muted);
+    margin-bottom: 1rem; font-family: 'Lora', serif; font-style: italic;
+  }
+  .calc-row {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    font-size: 14px; color: var(--text-muted);
+  }
+  .calc-row label { color: var(--text); font-size: 14px; }
+  .calc-inp {
+    width: 140px; padding: 9px 12px;
+    border: 1px solid var(--border); border-radius: 8px;
+    font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500;
+    text-align: right; color: var(--text); background: var(--surface);
+    transition: border-color 0.15s;
+  }
+  .calc-inp:focus { outline: none; border-color: var(--green-mid); }
+  .calc-inp.ok { border-color: var(--green-dark); color: var(--green-dark); background: var(--green-light); }
+  .calc-inp.ko { border-color: var(--red-dark);   color: var(--red-dark);   background: var(--red-light); }
+
+  /* Feedback */
+  .feedback {
+    margin-top: 1rem; padding: 12px 16px;
+    border-radius: 8px; font-size: 13.5px; line-height: 1.6;
+    display: none;
+  }
+  .feedback.show { display: block; }
+  .feedback.ok { background: var(--green-light); color: var(--green-dark); border: 1px solid var(--green-border); }
+  .feedback.ko { background: var(--red-light);   color: var(--red-dark);   border: 1px solid var(--red-border); }
+
+  /* Nav buttons */
+  .nav {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 1.5rem; padding-top: 1.25rem;
+    border-top: 1px solid var(--border);
+  }
+  .btn-check {
+    padding: 9px 22px;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: var(--surface); color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: border-color 0.15s, background 0.15s;
+  }
+  .btn-check:hover { border-color: var(--green-mid); background: var(--green-light); }
+  .btn-next {
+    margin-left: auto; padding: 9px 22px;
+    border: none; border-radius: 8px;
+    background: var(--green-mid); color: #fff;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: background 0.15s;
+    display: none;
+  }
+  .btn-next:hover { background: var(--green-dark); }
+
+  /* Score */
+  #scoreScreen { display: none; max-width: 640px; margin: 0 auto; text-align: center; padding: 2.5rem 2rem; }
+  .score-big { font-family: 'Lora', serif; font-size: 64px; font-weight: 600; color: var(--green-mid); line-height: 1; }
+  .score-sub { font-size: 15px; color: var(--text-muted); margin: 0.5rem 0 1.5rem; }
+  .score-msg { font-size: 15px; line-height: 1.6; color: var(--text); margin-bottom: 1.5rem; }
+  .score-badge-pill {
+    display: inline-block; padding: 6px 20px;
+    border-radius: 20px; font-size: 13px; font-weight: 500;
+    margin-bottom: 1.75rem;
+  }
+  .btn-restart {
+    padding: 11px 28px; border: none; border-radius: 8px;
+    background: var(--green-mid); color: #fff;
+    font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500;
+    cursor: pointer; transition: background 0.15s;
+  }
+  .btn-restart:hover { background: var(--green-dark); }
+
+  @media (max-width: 500px) {
+    .card { padding: 1.25rem 1rem; }
+    .drag-cols { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="tag">Economia dell'impresa vitivinicola</div>
+  <h1>Quiz – Reddito &amp; Analisi Costi-Benefici</h1>
+  <p>RL, RN, classificazione dei costi, VAN, B/C, TIR e ammortamento per ricostituzione.</p>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-track"><div class="progress-fill" id="prog"></div></div>
+  <div class="progress-label" id="progLabel">0 / 14</div>
+</div>
+
+<div class="card" id="quizCard">
+  <div class="q-type-badge" id="qTypeBadge"></div>
+  <div class="q-text" id="qText"></div>
+  <div class="q-scenario" id="qScenario" style="display:none"></div>
+  <div class="q-hint" id="qHint" style="display:none"></div>
+  <div id="qBody"></div>
+  <div class="feedback" id="feedback"></div>
+  <div class="nav">
+    <button class="btn-check" id="btnCheck" onclick="checkAnswer()">Verifica risposta</button>
+    <button class="btn-next" id="btnNext" onclick="nextQ()">Prossima →</button>
+  </div>
+</div>
+
+<div id="scoreScreen">
+  <div class="score-big" id="scoreNum"></div>
+  <div class="score-sub" id="scoreSub"></div>
+  <div class="score-msg" id="scoreMsg"></div>
+  <div class="score-badge-pill" id="scoreBadge"></div>
+  <br>
+  <button class="btn-restart" onclick="restart()">↺ Ricomincia</button>
+</div>
+
+<script>
+const questions = [
+  {
+    type: "mc",
+    badge: "Reddito aziendale",
+    text: "Qual è la formula del Reddito Lordo Aziendale (RL)?",
+    opts: [
+      "RL = PLV – (Sv + Q)",
+      "RL = PLV – CV",
+      "RL = PLV – CV – CF",
+      "RL = Sa + St + Bi + Bf ± T"
+    ],
+    ans: 1,
+    explanation: "Il reddito lordo aziendale si ottiene sottraendo dalla PLV i soli costi variabili (CV): RL = PLV – CV. Detraendo poi anche i costi fissi (CF) si ottiene il reddito netto: RN = RL – CF."
+  },
+  {
+    type: "mc",
+    badge: "Reddito aziendale",
+    text: "Come si calcola il Reddito Netto dell'imprenditore concreto (RN)?",
+    opts: [
+      "RN = PLV – Sv",
+      "RN = PNs – Im",
+      "RN = PLV – CV – CF",
+      "RN = RL + CF"
+    ],
+    ans: 2,
+    explanation: "Il reddito netto si ottiene detraendo dal reddito lordo (RL = PLV – CV) anche i costi fissi (CF): RN = PLV – CV – CF = RL – CF. Rappresenta la quota di produzione spettante all'imprenditore concreto."
+  },
+  {
+    type: "mc",
+    badge: "Classificazione dei costi",
+    text: "Un viticoltore sostiene una spesa per la quota fissa del canone di irrigazione, che alimenta sia il vigneto sia l'uliveto. Come si classifica questo costo?",
+    opts: [
+      "Costo specifico, perché riguarda direttamente l'irrigazione",
+      "Costo plurimo, perché è sostenuto per due o più attività",
+      "Costo generale, perché riguarda l'intera azienda",
+      "Costo variabile, perché dipende dal volume di produzione"
+    ],
+    ans: 1,
+    explanation: "I costi plurimi sono sostenuti per due o più attività produttive specifiche. La quota di irrigazione è qui attribuita sia al vigneto sia all'uliveto. Un costo generale sarebbe invece indivisibile e riferito all'intera azienda (es. imposte, contributi consortili, spese di illuminazione dell'ufficio)."
+  },
+  {
+    type: "mc",
+    badge: "Classificazione dei costi",
+    text: "Le imposte aziendali, i contributi consortili e le spese generali di illuminazione sono esempi di:",
+    opts: [
+      "Costi specifici, attribuibili alle singole colture",
+      "Costi plurimi, sostenuti per due o più attività",
+      "Costi fissi e basta, indipendentemente dalla loro attribuibilità",
+      "Costi generali, sostenuti per l'azienda nel suo complesso"
+    ],
+    ans: 3,
+    explanation: "I costi generali riguardano l'azienda presa complessivamente e non sono attribuibili a singole attività o colture. Si distinguono dai costi specifici (attribuibili a una singola attività) e dai costi plurimi (attribuibili a due o più attività)."
+  },
+  {
+    type: "mc",
+    badge: "PLV e scorte",
+    text: "Come devono essere trattate le variazioni NEGATIVE delle scorte nel bilancio consuntivo?",
+    opts: [
+      "Si aggiungono all'attivo come qualsiasi altro prodotto venduto",
+      "Si ignorano perché relative a produzioni dell'anno precedente",
+      "Si detraggono dalla PLV oppure si inseriscono tra i costi del passivo",
+      "Si riportano come 'entrate accessorie' nell'attivo"
+    ],
+    ans: 2,
+    explanation: "Le variazioni positive delle scorte si includono nella PLV (attivo), mentre quelle negative si detraggono dalla PLV o si inseriscono tra i costi del passivo. Questo è essenziale per prodotti come il vino, la cui vendita può essere differita nel tempo."
+  },
+  {
+    type: "mc",
+    badge: "Analisi Costi-Benefici",
+    text: "Cosa indica un Valore Attuale Netto (VAN) positivo in un'analisi costi-benefici?",
+    opts: [
+      "I costi del progetto superano i benefici attualizzati",
+      "Il tasso di sconto è uguale al tasso interno di rendimento (TIR)",
+      "I benefici attualizzati superano i costi attualizzati: il progetto crea valore",
+      "Il progetto ha una durata superiore all'orizzonte temporale stabilito"
+    ],
+    ans: 2,
+    explanation: "Il VAN misura la differenza tra benefici e costi, entrambi espressi in valore attuale. Un VAN > 0 significa che il progetto è economicamente vantaggioso perché i benefici attualizzati superano i costi. Un VAN = 0 corrisponde al TIR uguale al tasso di sconto."
+  },
+  {
+    type: "mc",
+    badge: "Analisi Costi-Benefici",
+    text: "Il rapporto costi-benefici (B/C) indica un investimento profittevole quando:",
+    opts: [
+      "B/C = 0",
+      "B/C < 1",
+      "B/C > 1",
+      "B/C = 1 esattamente"
+    ],
+    ans: 2,
+    explanation: "B/C > 1 significa che i benefici attualizzati superano i costi attualizzati (equivalente a VAN > 0). Essendo adimensionale, è utile per confrontare l'efficienza per unità di costo tra progetti con scale diverse."
+  },
+  {
+    type: "mc",
+    badge: "Analisi Costi-Benefici",
+    text: "Cos'è il Tasso Interno di Rendimento (TIR)?",
+    opts: [
+      "Il tasso d'interesse applicato dai mutui bancari all'azienda agricola",
+      "Il tasso di sconto che rende il VAN del progetto uguale a zero",
+      "Il rapporto tra i benefici totali e i costi totali del progetto",
+      "Il tasso medio di crescita del fatturato aziendale nell'ultimo triennio"
+    ],
+    ans: 1,
+    explanation: "Il TIR è il tasso di sconto che azzera il VAN, ossia il tasso al quale si recupera esattamente l'investimento iniziale. Un progetto è ammissibile se il TIR supera il costo opportunità (es. il rendimento di investimenti alternativi)."
+  },
+  {
+    type: "mc",
+    badge: "Analisi Costi-Benefici",
+    text: "In cosa consiste l'Analisi Costi-Benefici 'ex ante'?",
+    opts: [
+      "Si valuta, a consuntivo, se le scelte realizzate sono state vantaggiose",
+      "Si calcola il TIR effettivo dopo la conclusione del progetto",
+      "Si stima, prima dell'investimento, se i benefici previsti supereranno i costi",
+      "Si confronta il VAN di due progetti già realizzati e conclusi"
+    ],
+    ans: 2,
+    explanation: "L'ABC ex ante è una valutazione preventiva: si stima se i benefici attesi supereranno i costi previsti, scegliendo eventualmente tra opzioni progettuali o decidendo di mantenere lo status quo. L'ABC ex post valuta invece scelte già effettuate per correggere i processi decisionali futuri."
+  },
+  {
+    type: "drag",
+    badge: "Classificazione",
+    text: "Trascina ogni voce nella sezione corretta: ATTIVO (PLV) o PASSIVO (Spese/Costi).",
+    items: [
+      { label: "Variazioni positive delle scorte",    cat: "A" },
+      { label: "Sementi e piante",                    cat: "P" },
+      { label: "Utile lordo di stalla",               cat: "A" },
+      { label: "Quote di manutenzione",               cat: "P" },
+      { label: "Contributi dello Stato e UE",         cat: "A" },
+      { label: "Noleggi e consulenze professionali",  cat: "P" },
+      { label: "Servizi forniti a terzi",             cat: "A" },
+      { label: "Quote di assicurazione",              cat: "P" }
+    ],
+    zones: ["A", "P"],
+    zoneLabels: ["Attivo (PLV)", "Passivo (Costi)"]
+  },
+  {
+    type: "drag",
+    badge: "Classificazione",
+    text: "Classifica i seguenti costi come SPECIFICI, PLURIMI o GENERALI.",
+    items: [
+      { label: "Fertilizzanti per il vigneto",              cat: "S" },
+      { label: "Quota irrigazione su vite e olivo",         cat: "M" },
+      { label: "Imposte aziendali",                         cat: "G" },
+      { label: "Antiparassitari per il frutteto",           cat: "S" },
+      { label: "Contributi consortili",                     cat: "G" },
+      { label: "Gasolio di una macchina usata su 2 colture","cat": "M" }
+    ],
+    zones: ["S", "M", "G"],
+    zoneLabels: ["Specifici", "Plurimi", "Generali"]
+  },
+  {
+    type: "calc",
+    badge: "Esercizio – Reddito Lordo",
+    text: "Calcola il Reddito Lordo Aziendale (RL).",
+    scenario: "Un'azienda vitivinicola realizza una PLV di €95.000. I costi variabili sono: carburanti €3.500, antiparassitari €9.000, sementi e piante €4.500, remunerazione avventizi €13.000, interessi sul capitale di anticipazione €2.000, mangimi e lettimi €6.000.",
+    expected: 57000,
+    unit: "€",
+    explanation: "CV = 3.500 + 9.000 + 4.500 + 13.000 + 2.000 + 6.000 = €38.000. RL = 95.000 – 38.000 = €57.000. Il reddito lordo copre ancora i costi fissi; detraendoli si ottiene il reddito netto."
+  },
+  {
+    type: "calc",
+    badge: "Esercizio – Reddito Netto",
+    text: "Dal Reddito Lordo calcolato nell'esercizio precedente, calcola il Reddito Netto (RN).",
+    scenario: "RL = €57.000. I costi fissi sono: quote di ammortamento €8.500, canone d'affitto fondiario €7.000, imposte €3.500, remunerazione lavoratori fissi €5.000.",
+    expected: 33000,
+    unit: "€",
+    explanation: "CF = 8.500 + 7.000 + 3.500 + 5.000 = €24.000. RN = 57.000 – 24.000 = €33.000. Questo valore rappresenta la quota di prodotto netto spettante all'imprenditore concreto."
+  },
+  {
+    type: "calc",
+    badge: "Esercizio – Ammortamento (ricostituzione)",
+    text: "Calcola l'annualità da accantonare per ricostituire il valore di un'autoclave.",
+    scenario: "Un'autoclave in acciaio per la conservazione del vino ha un valore iniziale di €10.000 e una durata prevista di 4 anni. Il tasso d'interesse è del 5%.",
+    expected: 2320,
+    unit: "€",
+    explanation: "a = 10.000 × 0,05 / (1,05⁴ – 1) = 500 / 0,2155 ≈ €2.320/anno. Questo criterio calcola l'annualità costante che, investita al tasso del 5%, consente di ricostituire il valore iniziale del bene al termine della sua vita utile."
+  },
+  {
+    type: "calc",
+    badge: "Esercizio – Valore Attuale Netto",
+    text: "Calcola il Valore Attuale Netto (VAN) dell'investimento.",
+    scenario: "Una cantina vitivinicola decide di lanciare una nuova linea di vini DOC in bottiglia premium. L'investimento iniziale per imbutigliatrice, etichettatrice e cella di affinamento è di €50.000 (anno 0). Nei tre anni successivi si prevedono i seguenti ricavi aggiuntivi e costi operativi aggiuntivi:\n• Anno 1: ricavi €25.000 – costi operativi €3.000\n• Anno 2: ricavi €27.500 – costi operativi €3.300\n• Anno 3: ricavi €30.250 – costi operativi €3.630\nIl tasso di sconto è del 10%.",
+    expected: 10000,
+    unit: "€",
+    explanation: "Flusso netto anno 1: 25.000 – 3.000 = 22.000 → VA₁ = 22.000 / 1,10 = 20.000\nFlusso netto anno 2: 27.500 – 3.300 = 24.200 → VA₂ = 24.200 / 1,21 = 20.000\nFlusso netto anno 3: 30.250 – 3.630 = 26.620 → VA₃ = 26.620 / 1,331 = 20.000\nVAN = –50.000 + 20.000 + 20.000 + 20.000 = €10.000. Il VAN è positivo: l'investimento genera un valore netto di €10.000 ed è quindi economicamente conveniente."
+  }
+];
+
+let current = 0, score = 0, checked = false;
+let dragPlaced = {};
+let selectedChip = null;
+
+function clearSelection() {
+  if (selectedChip) { selectedChip.classList.remove('chip-selected'); selectedChip = null; }
+}
+
+function init() {
+  current = 0; score = 0; checked = false;
+  document.getElementById('quizCard').style.display = 'block';
+  document.getElementById('scoreScreen').style.display = 'none';
+  showQ();
+}
+
+function showQ() {
+  checked = false;
+  const q = questions[current];
+  const total = questions.length;
+
+  document.getElementById('prog').style.width = ((current / total) * 100) + '%';
+  document.getElementById('progLabel').textContent = current + ' / ' + total;
+  document.getElementById('qTypeBadge').textContent = q.badge || '';
+  document.getElementById('qText').textContent = q.text;
+
+  const sc = document.getElementById('qScenario');
+  if (q.scenario) { sc.textContent = q.scenario; sc.style.display = 'block'; }
+  else sc.style.display = 'none';
+
+  const hi = document.getElementById('qHint');
+  if (q.hint) { hi.textContent = '💡 ' + q.hint; hi.style.display = 'block'; }
+  else hi.style.display = 'none';
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback'; fb.textContent = '';
+
+  document.getElementById('btnCheck').style.display = 'inline-block';
+  document.getElementById('btnNext').style.display = 'none';
+
+  const body = document.getElementById('qBody');
+  body.innerHTML = '';
+
+  if (q.type === 'mc') renderMC(q, body);
+  else if (q.type === 'drag') renderDrag(q, body);
+  else if (q.type === 'calc') renderCalc(q, body);
+}
+
+function renderMC(q, body) {
+  const wrap = document.createElement('div');
+  wrap.className = 'options';
+  q.opts.forEach((o) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn'; btn.textContent = o;
+    btn.onclick = () => {
+      if (checked) return;
+      wrap.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    };
+    wrap.appendChild(btn);
+  });
+  body.appendChild(wrap);
+}
+
+function renderDrag(q, body) {
+  dragPlaced = {};
+  q.zones.forEach(z => dragPlaced[z] = []);
+  clearSelection();
+
+  const hint = document.createElement('p');
+  hint.className = 'drag-hint';
+  hint.textContent = 'Tocca una voce per selezionarla (evidenziata in verde), poi tocca la categoria dove inserirla.';
+  body.appendChild(hint);
+
+  const src = document.createElement('div');
+  src.className = 'source-zone'; src.id = 'srcZone';
+  q.items.forEach((it, i) => src.appendChild(makeChip(it.label, i)));
+  addDropBehavior(src, 'src', q);
+  body.appendChild(src);
+
+  const cols = document.createElement('div'); cols.className = 'drag-cols';
+  q.zones.forEach((z, zi) => {
+    const col = document.createElement('div'); col.className = 'drag-col';
+    const h4 = document.createElement('h4'); h4.textContent = q.zoneLabels[zi];
+    const dz = document.createElement('div'); dz.className = 'drop-zone'; dz.dataset.zone = z;
+    addDropBehavior(dz, z, q);
+    col.appendChild(h4); col.appendChild(dz); cols.appendChild(col);
+  });
+  body.appendChild(cols);
+}
+
+function makeChip(label, idx) {
+  const chip = document.createElement('div');
+  chip.className = 'chip'; chip.textContent = label;
+  chip.draggable = true; chip.dataset.idx = idx;
+
+  let wasDragging = false;
+  chip.addEventListener('dragstart', e => {
+    wasDragging = true;
+    clearSelection();
+    e.dataTransfer.setData('idx', idx);
+    chip.style.opacity = '0.4';
+  });
+  chip.addEventListener('dragend', () => {
+    chip.style.opacity = '1';
+    setTimeout(() => { wasDragging = false; }, 100);
+  });
+
+  chip.addEventListener('click', e => {
+    if (wasDragging || chip.classList.contains('ok') || chip.classList.contains('ko')) return;
+    e.stopPropagation();
+    if (selectedChip === chip) {
+      clearSelection();
+    } else {
+      clearSelection();
+      chip.classList.add('chip-selected');
+      selectedChip = chip;
+    }
+  });
+
+  return chip;
+}
+
+function addDropBehavior(el, zone, q) {
+  el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('over'); });
+  el.addEventListener('dragleave', () => el.classList.remove('over'));
+  el.addEventListener('drop', e => {
+    e.preventDefault(); el.classList.remove('over');
+    const idx = e.dataTransfer.getData('idx');
+    q.zones.forEach(z => { dragPlaced[z] = dragPlaced[z].filter(x => x != idx); });
+    if (zone !== 'src') dragPlaced[zone].push(idx);
+    refreshDrag(q);
+  });
+
+  // tap-to-place: se c'è un chip selezionato, toccando la zona lo sposta lì
+  el.addEventListener('click', () => {
+    if (!selectedChip || checked) return;
+    const idx = selectedChip.dataset.idx;
+    q.zones.forEach(z => { dragPlaced[z] = dragPlaced[z].filter(x => x != idx); });
+    if (zone !== 'src') dragPlaced[zone].push(idx);
+    clearSelection();
+    refreshDrag(q);
+  });
+}
+
+function refreshDrag(q) {
+  const placed = [];
+  q.zones.forEach(z => dragPlaced[z].forEach(i => placed.push(parseInt(i))));
+  const src = document.getElementById('srcZone');
+  src.innerHTML = '';
+  q.items.forEach((it, i) => { if (!placed.includes(i)) src.appendChild(makeChip(it.label, i)); });
+  q.zones.forEach(z => {
+    const dz = document.querySelector('[data-zone="' + z + '"]');
+    if (!dz) return;
+    dz.innerHTML = '';
+    dragPlaced[z].forEach(idx => dz.appendChild(makeChip(q.items[parseInt(idx)].label, idx)));
+  });
+}
+
+function renderCalc(q, body) {
+  const formula = document.createElement('div');
+  formula.className = 'calc-formula'; formula.textContent = q.formula;
+  body.appendChild(formula);
+
+  const row = document.createElement('div'); row.className = 'calc-row';
+  const lbl = document.createElement('label'); lbl.textContent = 'Risultato =';
+  const inp = document.createElement('input');
+  inp.type = 'number'; inp.className = 'calc-inp'; inp.id = 'calcInp'; inp.placeholder = '0';
+  const unit = document.createElement('span'); unit.textContent = q.unit; unit.style.fontWeight = '500';
+  row.appendChild(lbl); row.appendChild(inp); row.appendChild(unit);
+  body.appendChild(row);
+}
+
+function checkAnswer() {
+  if (checked) return;
+  const q = questions[current];
+  const fb = document.getElementById('feedback');
+  let correct = false;
+
+  if (q.type === 'mc') {
+    const sel = document.querySelector('.opt-btn.selected');
+    if (!sel) { fb.className = 'feedback show ko'; fb.textContent = 'Seleziona una risposta prima di verificare.'; return; }
+    const idx = Array.from(document.querySelectorAll('.opt-btn')).indexOf(sel);
+    correct = (idx === q.ans);
+    document.querySelectorAll('.opt-btn').forEach((b, i) => {
+      b.disabled = true;
+      if (i === q.ans) b.classList.add('correct');
+      else if (!correct && b === sel) b.classList.add('wrong');
+    });
+  }
+  else if (q.type === 'drag') {
+    const placed = [];
+    q.zones.forEach(z => dragPlaced[z].forEach(i => placed.push(parseInt(i))));
+    if (placed.length < q.items.length) {
+      fb.className = 'feedback show ko'; fb.textContent = 'Posiziona tutti gli elementi prima di verificare.'; return;
+    }
+    let allOk = true;
+    q.zones.forEach(z => {
+      document.querySelector('[data-zone="' + z + '"]').querySelectorAll('.chip').forEach(chip => {
+        const it = q.items[parseInt(chip.dataset.idx)];
+        const ok = it.cat === z;
+        if (!ok) allOk = false;
+        chip.classList.add(ok ? 'ok' : 'ko');
+        chip.draggable = false;
+      });
+    });
+    correct = allOk;
+  }
+  else if (q.type === 'calc') {
+    const inp = document.getElementById('calcInp');
+    if (!inp || inp.value === '') {
+      fb.className = 'feedback show ko'; fb.textContent = 'Inserisci un valore numerico prima di verificare.'; return;
+    }
+    const val = parseFloat(inp.value);
+    correct = Math.abs(val - q.expected) < 1;
+    inp.disabled = true;
+    inp.classList.add(correct ? 'ok' : 'ko');
+    if (!correct) {
+      const hint = document.createElement('div');
+      hint.style.cssText = 'margin-top:8px;font-size:13px;color:var(--text-muted)';
+      hint.innerHTML = 'Risposta corretta: <strong style="color:var(--green-dark)">' + q.unit + q.expected.toLocaleString('it-IT') + '</strong>';
+      inp.parentElement.appendChild(hint);
+    }
+  }
+
+  checked = true;
+  if (correct) score++;
+  fb.className = 'feedback show ' + (correct ? 'ok' : 'ko');
+  fb.textContent = (correct ? '✓ Corretto! ' : '✗ Non esatto. ') + q.explanation;
+  document.getElementById('btnCheck').style.display = 'none';
+  const btnNext = document.getElementById('btnNext');
+  btnNext.style.display = 'inline-block';
+  btnNext.textContent = current < questions.length - 1 ? 'Prossima domanda →' : 'Vedi il risultato';
+}
+
+function nextQ() {
+  current++;
+  if (current >= questions.length) showScore();
+  else showQ();
+}
+
+function showScore() {
+  document.getElementById('quizCard').style.display = 'none';
+  document.getElementById('prog').style.width = '100%';
+  document.getElementById('progLabel').textContent = questions.length + ' / ' + questions.length;
+  const ss = document.getElementById('scoreScreen');
+  ss.style.display = 'block';
+  document.getElementById('scoreNum').textContent = score + '/' + questions.length;
+  const pct = Math.round((score / questions.length) * 100);
+  document.getElementById('scoreSub').textContent = pct + '% di risposte corrette';
+  let msg, badge, col, bgCol;
+  if (pct >= 90) {
+    msg = 'Risultato eccellente! Padroneggi perfettamente i concetti di reddito aziendale e analisi costi-benefici.';
+    badge = '🏆 Esperto di bilancio'; col = 'var(--green-dark)'; bgCol = 'var(--green-light)';
+  } else if (pct >= 70) {
+    msg = 'Buon risultato! Conosci bene gli argomenti, ma ripassare VAN, TIR e la classificazione dei costi potrebbe aiutarti.';
+    badge = '👍 Ben preparato'; col = 'var(--amber)'; bgCol = 'var(--amber-light)';
+  } else if (pct >= 50) {
+    msg = 'Sufficiente. Ti consiglio di ripassare le formule di RL e RN, la distinzione tra costi specifici/plurimi/generali e il calcolo del VAN.';
+    badge = '📖 Da ripassare'; col = '#D85A30'; bgCol = '#FAECE7';
+  } else {
+    msg = 'Continua a studiare. Rileggi le slide su reddito lordo/netto, analisi costi-benefici (VAN, B/C, TIR) e la formula di ricostituzione dell\'ammortamento.';
+    badge = '📚 Ripasso necessario'; col = 'var(--red-dark)'; bgCol = 'var(--red-light)';
+  }
+  document.getElementById('scoreMsg').textContent = msg;
+  const pill = document.getElementById('scoreBadge');
+  pill.textContent = badge;
+  pill.style.background = bgCol; pill.style.color = col;
+  pill.style.border = '1px solid ' + col;
+}
+
+function restart() { init(); }
+init();
+</script>
+</body>
+</html>
