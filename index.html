@@ -434,6 +434,7 @@ function initSession() {
     sequence: seq,
     screening: {},          // risposte sezione A (screening)
     section_b: {},          // risposte sezione B (abitudini d'acquisto)
+    demographics: { health: [] },
     fcq: {},                // risposte FCQ
     isd: {},                // risposte ISD
     trust: {},              // risposte scala fiducia
@@ -449,7 +450,6 @@ function initSession() {
     })),
     post:         {},       // risposte post-esposizione
     section_d:    {},       // risposte sezioni E (QR basic, CNS, TAM, Maven, Enjoy)
-    demographics: { health: [] },
     completed_at: null,
   };
 }
@@ -875,7 +875,7 @@ function screenScreening() {
     <div class="nav-row">
       <span></span>
       <button class="btn-primary" id="btn-scr-next" disabled
-        onclick="S.screening.responsible==='Non responsabile'||S.screening.vegetarian==='Sì'?goTo('screenout'):goTo('sectionB')">
+        onclick="S.screening.responsible==='Non responsabile'||S.screening.vegetarian==='Sì'?goTo('screenout'):goTo('demographics')">
         Avanti →
       </button>
     </div>
@@ -889,12 +889,12 @@ function screenScreening() {
 function screenSectionB() {
   checkDone = function() {
     const ok = S.section_b.cooking && S.section_b.shopping_freq && S.section_b.meat_freq
-            && S.section_b.meat_weekly && S.section_b.online_freq && S.section_b.qr_use;
+            && S.section_b.meat_weekly && S.section_b.online_freq;
     const btn = document.getElementById('btn-b-next');
     if (btn) btn.disabled = !ok;
   };
   return `<div class="form-wrap">
-    ${progressBar(2)}
+    ${progressBar(3)}
     <div class="section-header">
       <div class="study-badge">Sezione B</div>
       <h2>Abitudini di acquisto e consumo</h2>
@@ -910,14 +910,14 @@ function screenSectionB() {
     <div class="field-group">
       <label class="field-label">2. Con quale frequenza fa la spesa alimentare?</label>
       ${radioGroup('rg-shopping',
-        ['Più volte alla settimana','Una volta alla settimana','Due volte al mese','Una volta al mese o meno'],
+        ['Una o più volte al giorno','Più volte alla settimana','Una volta alla settimana','Due volte al mese','Una volta al mese','Meno di una volta al mese'],
         'section_b','shopping_freq')}
     </div>
 
     <div class="field-group">
       <label class="field-label">3. Con quale frequenza acquista la carne rossa confezionata?</label>
       ${radioGroup('rg-meatfreq',
-        ['Più volte alla settimana','Una volta alla settimana','Due volte al mese','Una volta al mese o meno','Meno di una volta al mese'],
+        ['Una o più volte al giorno','Più volte alla settimana','Una volta alla settimana','Due volte al mese','Una volta al mese','Meno di una volta al mese'],
         'section_b','meat_freq')}
     </div>
 
@@ -938,361 +938,10 @@ function screenSectionB() {
         'section_b','online_freq')}
     </div>
 
-    <div class="field-group">
-      <label class="field-label">6. Con quale frequenza utilizzi QR code su prodotti alimentari?</label>
-      ${radioGroup('rg-qruse',
-        ['Mai','Raramente','Occasionalmente (mensile)','Spesso (settimanale o più)'],
-        'section_b','qr_use')}
-    </div>
 
     <div class="nav-row">
       <span></span>
-      <button class="btn-primary" id="btn-b-next" disabled onclick="goTo('fcq')">Avanti →</button>
-    </div>
-  </div>`;
-}
-
-/* screenFCQ()
-   Sezione C1 – Food Choice Questionnaire (11 item, scala 1–7).
-   checkDone: abilita "Avanti" quando tutti gli item FCQ hanno risposta. */
-function screenFCQ() {
-  checkDone = function() {
-    const ok = FCQ_ITEMS.every(i => S.fcq[i.id] !== undefined);
-    const btn = document.getElementById('btn-fcq-next');
-    if (btn) btn.disabled = !ok;
-  };
-  return `<div class="form-wrap">
-    ${progressBar(3)}
-    <div class="section-header">
-      <div class="study-badge">Sezione C – Importanza delle caratteristiche del cibo</div>
-      <h2>Per me è importante che il cibo che mangio abitualmente…</h2>
-      <p class="sub"><strong>1</strong> = Per niente importante &nbsp;·&nbsp; <strong>7</strong> = Molto importante</p>
-    </div>
-    ${renderLikert(FCQ_ITEMS,'fcq',7,'Per niente importante','Molto importante')}
-    <div class="nav-row">
-      <span></span>
-      <button class="btn-primary" id="btn-fcq-next" disabled onclick="goTo('isd')">Avanti →</button>
-    </div>
-  </div>`;
-}
-
-/* screenISD()
-   Sezione C2 – Internet Search Dependence (12 item, scala 0–4).
-   Usa renderLikert0 per la scala con zero come valore minimo. */
-function screenISD() {
-  checkDone = function() {
-    const ok = ISD_ITEMS.every(i => S.isd[i.id] !== undefined);
-    const btn = document.getElementById('btn-isd-next');
-    if (btn) btn.disabled = !ok;
-  };
-  return `<div class="form-wrap">
-    ${progressBar(4)}
-    <div class="section-header">
-      <div class="study-badge">Sezione C – Utilizzo di Internet per la ricerca di informazioni</div>
-      <h2>Quanto spesso ti comporti come descritto nelle seguenti affermazioni?</h2>
-      <p class="sub">
-        <strong>0</strong> = Mai &nbsp;·&nbsp; <strong>1</strong> = Raramente &nbsp;·&nbsp; <strong>2</strong> = A volte &nbsp;·&nbsp; <strong>3</strong> = Spesso &nbsp;·&nbsp; <strong>4</strong> = Sempre</p>
-    </div>
-    ${renderLikert0(ISD_ITEMS,'isd')}
-    <div class="nav-row">
-      <span></span>
-      <button class="btn-primary" id="btn-isd-next" disabled onclick="goTo('trust')">Avanti →</button>
-    </div>
-  </div>`;
-}
-
-/* screenTrust()
-   Sezione C3 – scala fiducia nelle istituzioni (18 item, scala 1–5).
-   Gli item sono raggruppati visivamente per istituzione (gov/far/mfr). */
-function screenTrust() {
-  checkDone = function() {
-    const ok = TRUST_ITEMS.every(i => S.trust[i.id] !== undefined);
-    const btn = document.getElementById('btn-trust-next');
-    if (btn) btn.disabled = !ok;
-  };
-  return `<div class="form-wrap">
-    ${progressBar(5)}
-    <div class="section-header">
-      <div class="study-badge">Sezione C – Fiducia nelle istituzioni alimentari</div>
-      <h2>Indica quanto sei d'accordo con le seguenti affermazioni</h2>
-      <p class="sub"><strong>1</strong> = Per niente d'accordo &nbsp;·&nbsp; <strong>5</strong> = Completamente d'accordo</p>
-    </div>
-    ${renderLikert(TRUST_ITEMS,'trust',5,"Per niente d'accordo","Completamente d'accordo",true)}
-    <div class="nav-row">
-      <span></span>
-      <button class="btn-primary" id="btn-trust-next" disabled onclick="goToStimulus(0)">Avanti →</button>
-    </div>
-  </div>`;
-}
-
-/* screenStimulus(si)
-   Sezione D – schermata di valutazione per il prodotto all'indice si.
-   Mostra: immagine prodotto (con badge QR cliccabile se hasQR=true),
-   6 scale Likert 1–7, slider WTP (€2–€12).
-   Il timestamp di apertura viene registrato in goToStimulus().
-   Parametro: si – indice 0-based del prodotto in S.sequence. */
-function screenStimulus(si) {
-  const prod  = S.sequence[si];
-  const total = S.sequence.length;
-  const pct   = Math.round(((5 + (si + 1) / total) / TOTAL_SECTIONS) * 100);
-  /* qrUrl non è più usato per navigazione (il modal carica S.condition + '.html'),
-     ma viene conservato per eventuale logging futuro */
-  // const qrUrl = `${STUDY_URL}/${S.condition}?pid=${S.participant_id}&sid=${prod.id}`;
-
-  return `<div class="stim-wrap">
-    <div class="progress-bar-wrap">
-      <div class="progress-meta">
-        <span class="progress-label">Sezione 6 di ${TOTAL_SECTIONS} · Prodotto ${si+1} di ${total}</span>
-        <span class="progress-label">${pct}%</span>
-      </div>
-      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
-    </div>
-
-    <div class="section-header">
-      <div class="study-badge">Sezione D – Valutazione prodotti</div>
-      <h2>Osserva il prodotto e rispondi alle domande</h2>
-    </div>
-
-    <div class="stimulus-card">
-      <div class="stimulus-img">
-        ${illo(prod.type)}
-        ${prod.hasQR ? `
-          <button class="qr-badge"
-             title="Clicca per maggiori informazioni" onclick="onQrClick(${si})">
-            ${QR_SVG}
-          </button>` : ''}
-      </div>
-      <div class="stimulus-meta">
-        <p class="stimulus-hint">Osserva attentamente questo prodotto e rispondi alle domande qui sotto.</p>
-        ${prod.hasQR
-          ? `<span class="qr-note" id="qr-note-${si}">↗ Clicca sul QR per maggiori informazioni sul prodotto</span>`
-          : ''}
-      </div>
-    </div>
-
-    <div class="section-title">Valuta il prodotto</div>
-    ${renderProdScales(si)}
-
-    <div class="wtp-wrap">
-      <div class="scale-construct">Disponibilità a pagare</div>
-      <p class="question-text">Qual è il prezzo massimo che pagheresti per questo prodotto?</p>
-      <!-- range 0–1200 centesimi (€2–€12); il valore è diviso per 100 al momento della visualizzazione -->
-      <div class="wtp-slider-row">
-        <span class="wtp-bound">€0</span>
-        <input type="range" min="0" max="1200" step="10" value="0"
-          oninput="S.stimuli[${si}].wtp=+this.value;document.getElementById('wtp-d-${si}').textContent='€'+(this.value/100).toFixed(2).replace('.',',')">
-        <span class="wtp-bound">€12</span>
-        <span class="wtp-value" id="wtp-d-${si}">€0,00</span>
-      </div>
-    </div>
-
-    <div class="nav-row">
-      <span class="nav-hint" id="nh-${si}">Completa tutte le risposte per continuare</span>
-      <button class="btn-primary" id="btn-sn-${si}" disabled
-        onclick="${si < total - 1 ? `goToStimulus(${si+1})` : `goTo('post')`}">
-        ${si < total - 1 ? 'Prodotto successivo →' : 'Sezione successiva →'}
-      </button>
-    </div>
-  </div>`;
-}
-
-/* screenPost()
-   Sezione D post-esposizione – domande di memoria e percezione del QR
-   dopo la visione di tutti i prodotti. Il pulsante "Avanti" è sempre
-   abilitato (nessun checkDone): le risposte sono facoltative. */
-function screenPost() {
-  return `<div class="form-wrap">
-    ${progressBar(7)}
-    <div class="section-header">
-      <div class="study-badge">Sezione D – Post-valutazione</div>
-      <h2>Qualche domanda sui prodotti che hai appena visto</h2>
-      
-    </div>
-
-
-    <div class="field-group">
-      <label class="field-label">Hai notato un codice QR su uno dei prodotti?</label>
-      <div class="radio-group" id="rg-noticed">
-        ${['Sì','No','Non ricordo'].map(o => `<button class="radio-btn"
-          onclick="onRadioPost('rg-noticed','noticed','${o}',this);togglePostQR('${o}')">${o}</button>`).join('')}
-      </div>
-    </div>
-
-    <!-- blocco visibile solo se risponde "Sì" alla domanda sul QR -->
-    <div id="post-qr-block" style="display:none">
-      <div class="field-group">
-        <label class="field-label">Hai cliccato sul codice QR?</label>
-        <div class="radio-group" id="rg-clicked">
-          ${['Sì','No'].map(o => `<button class="radio-btn"
-            onclick="onRadioPost('rg-clicked','clicked','${o}',this)">${o}</button>`).join('')}
-        </div>
-      </div>
-
-    </div>
-
-    <!-- manipulation check: la risposta corretta dipende da S.condition (tracciabilita / nutrizione / sostenibilita) -->
-    <div class="field-group">
-      <label class="field-label">Il codice QR presente su uno dei prodotti rimandava a informazioni su:</label>
-      
-      <div class="radio-group" id="rg-manip">
-        ${[
-          'La tracciabilità e la provenienza del prodotto (filiera, allevamento, territorio)',
-          'La composizione nutrizionale e i benefici per la salute',
-          'La sostenibilità ambientale e l\'impatto ecologico',
-          'Le offerte promozionali e il prezzo del prodotto',
-          'Ricette e consigli di utilizzo in cucina',
-        ].map(o => `<button class="radio-btn"
-          onclick="onRadioPost('rg-manip','manip_check','${o.replace(/'/g,"\\'")}',this)">${o}</button>`).join('')}
-      </div>
-    </div>
-
-    <div class="field-group">
-      <label class="field-label">Quanto ritieni utile avere un QR code su prodotti alimentari confezionati?</label>
-      <div class="likert-labels">
-        <span class="likert-label">Per niente utile</span>
-        <span class="likert-label">Molto utile</span>
-      </div>
-      <div class="likert-buttons" id="btns-post-util">
-        ${[1,2,3,4,5,6,7].map(v =>
-          `<button class="lk-btn" onclick="onPostLikert('qr_usefulness',${v},this)">${v}</button>`
-        ).join('')}
-      </div>
-    </div>
-
-    <div class="nav-row">
-      <span></span>
-      <button class="btn-primary" onclick="goTo('qr_basic')">Avanti →</button>
-    </div>
-  </div>`;
-}
-
-/* screenQRBasic()
-   Sezione E1 – tre domande sull'importanza della tracciabilità, utilità
-   del sistema blockchain/QR e frequenza d'uso dei QR nell'ultimo anno.
-   checkDone: abilita "Avanti" quando tutte e tre le risposte sono presenti. */
-function screenQRBasic() {
-  checkDone = function() {
-    const ok = S.section_d.traceability_imp !== undefined
-            && S.section_d.blockchain_useful !== undefined
-            && S.section_d.qr_usage;
-    const btn = document.getElementById('btn-qrb-next');
-    if (btn) btn.disabled = !ok;
-  };
-  return `<div class="form-wrap">
-    ${progressBar(8)}
-    <div class="section-header">
-      <div class="study-badge">Sezione E – QR Code (1/4)</div>
-      <h2>Tracciabilità e codici QR</h2>
-    </div>
-
-    <div class="field-group">
-      <label class="field-label">Quanto è importante per te la tracciabilità e la trasparenza nella scelta di prodotti alimentari?</label>
-      <p class="sub" style="margin-bottom:8px"><strong>1</strong> = Per niente importante &nbsp;·&nbsp; <strong>9</strong> = Molto importante</p>
-      <div class="likert-labels">
-        <span class="likert-label">Per niente importante</span>
-        <span class="likert-label">Molto importante</span>
-      </div>
-      <div class="likert-buttons" id="btns-traceability_imp">
-        ${[1,2,3,4,5,6,7,8,9].map(v => `<button class="lk-btn" onclick="onLikert('section_d','traceability_imp',${v},this)">${v}</button>`).join('')}
-      </div>
-    </div>
-
-    <div class="field-group" style="margin-top:1.5rem">
-      <label class="field-label">Quanto ritieni utile un sistema di etichettatura basato su blockchain/QR per aumentare la fiducia nei prodotti agro-alimentari?</label>
-      <p class="sub" style="margin-bottom:8px"><strong>1</strong> = Per niente utile &nbsp;·&nbsp; <strong>9</strong> = Molto utile</p>
-      <div class="likert-labels">
-        <span class="likert-label">Per niente utile</span>
-        <span class="likert-label">Molto utile</span>
-      </div>
-      <div class="likert-buttons" id="btns-blockchain_useful">
-        ${[1,2,3,4,5,6,7,8,9].map(v => `<button class="lk-btn" onclick="onLikert('section_d','blockchain_useful',${v},this)">${v}</button>`).join('')}
-      </div>
-    </div>
-
-    <div class="field-group" style="margin-top:1.5rem">
-      <label class="field-label">Quante volte hai utilizzato un codice QR nell'ultimo anno?</label>
-      ${radioGroup('rg-qruse2',
-        ['Meno di 5 volte','5–10 volte','Più di 10 volte'],
-        'section_d','qr_usage')}
-    </div>
-
-    <div class="nav-row">
-      <span></span>
-      <button class="btn-primary" id="btn-qrb-next" disabled onclick="goTo('cns')">Avanti →</button>
-    </div>
-  </div>`;
-}
-
-/* screenCNS()
-   Sezione E2 – Consumer Need for Stimulation (7 item, scala 1–7 invertita).
-   Misura la propensione a cercare attivamente informazioni su nuovi prodotti. */
-function screenCNS() {
-  checkDone = function() {
-    const ok = CNS_ITEMS.every(i => S.section_d[i.id] !== undefined);
-    const btn = document.getElementById('btn-cns-next');
-    if (btn) btn.disabled = !ok;
-  };
-  return `<div class="form-wrap">
-    ${progressBar(9)}
-    <div class="section-header">
-      <div class="study-badge">Sezione E – QR Code (2/4)</div>
-      <h2>Indica quanto sei d'accordo con le seguenti affermazioni</h2>
-      <p class="sub"><strong>1</strong> = Completamente d'accordo &nbsp;·&nbsp; <strong>7</strong> = Per niente d'accordo</p>
-    </div>
-    ${renderLikert(CNS_ITEMS,'section_d',7,"Completamente d'accordo","Per niente d'accordo")}
-    <div class="nav-row">
-      <span></span>
-      <button class="btn-primary" id="btn-cns-next" disabled onclick="goTo('tam')">Avanti →</button>
-    </div>
-  </div>`;
-}
-
-/* screenTAM()
-   Sezione E3 – Technology Acceptance Model per QR alimentari (14 item, scala 1–5).
-   Sottoscale PI, PU, PEU, ATT, BI raggruppate visivamente dal campo item.group. */
-function screenTAM() {
-  checkDone = function() {
-    const ok = TAM_ITEMS.every(i => S.section_d[i.id] !== undefined);
-    const btn = document.getElementById('btn-tam-next');
-    if (btn) btn.disabled = !ok;
-  };
-  return `<div class="form-wrap">
-    ${progressBar(10)}
-    <div class="section-header">
-      <div class="study-badge">Sezione E – QR Code (3/4)</div>
-      <h2>Indica quanto sei d'accordo con le seguenti affermazioni</h2>
-      <p class="sub"><strong>1</strong> = Per niente d'accordo &nbsp;·&nbsp; <strong>9</strong> = Completamente d'accordo</p>
-    </div>
-    ${renderLikert(TAM_ITEMS,'section_d',9,"Per niente d'accordo","Completamente d'accordo")}
-    <div class="nav-row">
-      <span></span>
-      <button class="btn-primary" id="btn-tam-next" disabled onclick="goTo('mavenism')">Avanti →</button>
-    </div>
-  </div>`;
-}
-
-/* screenMavenism()
-   Sezione E4 – Market Maven scale (5 item) + Perceived Enjoyment QR (3 item).
-   Entrambe le scale usano Likert 1–5.
-   checkDone: abilita "Avanti" quando tutti e 8 gli item hanno risposta. */
-function screenMavenism() {
-  checkDone = function() {
-    const ok = [...MAVEN_ITEMS, ...ENJOY_ITEMS].every(i => S.section_d[i.id] !== undefined);
-    const btn = document.getElementById('btn-mav-next');
-    if (btn) btn.disabled = !ok;
-  };
-  return `<div class="form-wrap">
-    ${progressBar(11)}
-    <div class="section-header">
-      <div class="study-badge">Sezione E – QR Code (4/4)</div>
-      <h2>Indica quanto sei d'accordo con le seguenti affermazioni</h2>
-      <p class="sub"><strong>1</strong> = Per niente d'accordo &nbsp;·&nbsp; <strong>5</strong> = Completamente d'accordo</p>
-    </div>
-    ${renderLikert(MAVEN_ITEMS,'section_d',5,"Per niente d'accordo","Completamente d'accordo")}
-    ${renderLikert(ENJOY_ITEMS,'section_d',5,"Per niente d'accordo","Completamente d'accordo")}
-    <div class="nav-row">
-      <span></span>
-      <button class="btn-primary" id="btn-mav-next" disabled onclick="goTo('demographics')">Avanti →</button>
+      <button class="btn-primary" id="btn-b-next" disabled onclick="goToStimulus(0)">Avanti →</button>
     </div>
   </div>`;
 }
@@ -1333,7 +982,7 @@ function screenDemographics() {
   const healthOpts = ['Malattie cardiache','Colesterolo alto','Diabete','Ipertensione','Sovrappeso','Nessuno dei precedenti'];
 
   return `<div class="form-wrap">
-    ${progressBar(12)}
+    ${progressBar(2)}
     <div class="section-header">
       <div class="study-badge">Informazioni socio-demografiche</div>
       <h2>Alcune informazioni su di te</h2>
@@ -1425,7 +1074,352 @@ function screenDemographics() {
 
     <div class="nav-row">
       <span></span>
-      <button class="btn-primary" id="btn-demo-next" disabled onclick="goTo('end')">Completa il questionario →</button>
+      <button class="btn-primary" id="btn-demo-next" disabled onclick="goTo('sectionB')">Avanti →</button>
+    </div>
+  </div>`;
+}
+
+/* screenFCQ()
+   Sezione C1 – Food Choice Questionnaire (11 item, scala 1–7).
+   checkDone: abilita "Avanti" quando tutti gli item FCQ hanno risposta. */
+function screenFCQ() {
+  checkDone = function() {
+    const ok = FCQ_ITEMS.every(i => S.fcq[i.id] !== undefined);
+    const btn = document.getElementById('btn-fcq-next');
+    if (btn) btn.disabled = !ok;
+  };
+  return `<div class="form-wrap">
+    ${progressBar(6)}
+    <div class="section-header">
+      <div class="study-badge">Sezione C – Importanza delle caratteristiche del cibo</div>
+      <h2>Per me è importante che il cibo che mangio abitualmente…</h2>
+      <p class="sub"><strong>1</strong> = Per niente importante &nbsp;·&nbsp; <strong>7</strong> = Molto importante</p>
+    </div>
+    ${renderLikert(FCQ_ITEMS,'fcq',7,'Per niente importante','Molto importante')}
+    <div class="nav-row">
+      <span></span>
+      <button class="btn-primary" id="btn-fcq-next" disabled onclick="goTo('isd')">Avanti →</button>
+    </div>
+  </div>`;
+}
+
+/* screenISD()
+   Sezione C2 – Internet Search Dependence (12 item, scala 0–4).
+   Usa renderLikert0 per la scala con zero come valore minimo. */
+function screenISD() {
+  checkDone = function() {
+    const ok = ISD_ITEMS.every(i => S.isd[i.id] !== undefined);
+    const btn = document.getElementById('btn-isd-next');
+    if (btn) btn.disabled = !ok;
+  };
+  return `<div class="form-wrap">
+    ${progressBar(7)}
+    <div class="section-header">
+      <div class="study-badge">Sezione C – Utilizzo di Internet per la ricerca di informazioni</div>
+      <h2>Quanto spesso ti comporti come descritto nelle seguenti affermazioni?</h2>
+      <p class="sub">
+        <strong>0</strong> = Mai &nbsp;·&nbsp; <strong>1</strong> = Raramente &nbsp;·&nbsp; <strong>2</strong> = A volte &nbsp;·&nbsp; <strong>3</strong> = Spesso &nbsp;·&nbsp; <strong>4</strong> = Sempre</p>
+    </div>
+    ${renderLikert0(ISD_ITEMS,'isd')}
+    <div class="nav-row">
+      <span></span>
+      <button class="btn-primary" id="btn-isd-next" disabled onclick="goTo('trust')">Avanti →</button>
+    </div>
+  </div>`;
+}
+
+/* screenTrust()
+   Sezione C3 – scala fiducia nelle istituzioni (18 item, scala 1–5).
+   Gli item sono raggruppati visivamente per istituzione (gov/far/mfr). */
+function screenTrust() {
+  checkDone = function() {
+    const ok = TRUST_ITEMS.every(i => S.trust[i.id] !== undefined);
+    const btn = document.getElementById('btn-trust-next');
+    if (btn) btn.disabled = !ok;
+  };
+  return `<div class="form-wrap">
+    ${progressBar(8)}
+    <div class="section-header">
+      <div class="study-badge">Sezione C – Fiducia nelle istituzioni alimentari</div>
+      <h2>Indica quanto sei d'accordo con le seguenti affermazioni</h2>
+      <p class="sub"><strong>1</strong> = Per niente d'accordo &nbsp;·&nbsp; <strong>5</strong> = Completamente d'accordo</p>
+    </div>
+    ${renderLikert(TRUST_ITEMS,'trust',5,"Per niente d'accordo","Completamente d'accordo",true)}
+    <div class="nav-row">
+      <span></span>
+      <button class="btn-primary" id="btn-trust-next" disabled onclick="goTo('qr_basic')">Avanti →</button>
+    </div>
+  </div>`;
+}
+
+/* screenStimulus(si)
+   Sezione D – schermata di valutazione per il prodotto all'indice si.
+   Mostra: immagine prodotto (con badge QR cliccabile se hasQR=true),
+   6 scale Likert 1–7, slider WTP (€2–€12).
+   Il timestamp di apertura viene registrato in goToStimulus().
+   Parametro: si – indice 0-based del prodotto in S.sequence. */
+function screenStimulus(si) {
+  const prod  = S.sequence[si];
+  const total = S.sequence.length;
+  const pct   = Math.round(((3 + (si + 1) / total) / TOTAL_SECTIONS) * 100);
+  /* qrUrl non è più usato per navigazione (il modal carica S.condition + '.html'),
+     ma viene conservato per eventuale logging futuro */
+  // const qrUrl = `${STUDY_URL}/${S.condition}?pid=${S.participant_id}&sid=${prod.id}`;
+
+  return `<div class="stim-wrap">
+    <div class="progress-bar-wrap">
+      <div class="progress-meta">
+        <span class="progress-label">Sezione 4 di ${TOTAL_SECTIONS} · Prodotto ${si+1} di ${total}</span>
+        <span class="progress-label">${pct}%</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+    </div>
+
+    <div class="section-header">
+      <div class="study-badge">Sezione D – Valutazione prodotti</div>
+      <h2>Osserva il prodotto e rispondi alle domande</h2>
+    </div>
+
+    <div class="stimulus-card">
+      <div class="stimulus-img">
+        ${illo(prod.type)}
+        ${prod.hasQR ? `
+          <button class="qr-badge"
+             title="Clicca per maggiori informazioni" onclick="onQrClick(${si})">
+            ${QR_SVG}
+          </button>` : ''}
+      </div>
+      <div class="stimulus-meta">
+        <p class="stimulus-hint">Osserva attentamente questo prodotto e rispondi alle domande qui sotto.</p>
+        ${prod.hasQR
+          ? `<span class="qr-note" id="qr-note-${si}">↗ Clicca sul QR per maggiori informazioni sul prodotto</span>`
+          : ''}
+      </div>
+    </div>
+
+    <div class="section-title">Valuta il prodotto</div>
+    ${renderProdScales(si)}
+
+    <div class="wtp-wrap">
+      <div class="scale-construct">Disponibilità a pagare</div>
+      <p class="question-text">Qual è il prezzo massimo che pagheresti per questo prodotto?</p>
+      <!-- range 0–1200 centesimi (€2–€12); il valore è diviso per 100 al momento della visualizzazione -->
+      <div class="wtp-slider-row">
+        <span class="wtp-bound">€0</span>
+        <input type="range" min="0" max="1200" step="10" value="0"
+          oninput="S.stimuli[${si}].wtp=+this.value;document.getElementById('wtp-d-${si}').textContent='€'+(this.value/100).toFixed(2).replace('.',',')">
+        <span class="wtp-bound">€12</span>
+        <span class="wtp-value" id="wtp-d-${si}">€0,00</span>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <span class="nav-hint" id="nh-${si}">Completa tutte le risposte per continuare</span>
+      <button class="btn-primary" id="btn-sn-${si}" disabled
+        onclick="${si < total - 1 ? `goToStimulus(${si+1})` : `goTo('post')`}">
+        ${si < total - 1 ? 'Prodotto successivo →' : 'Sezione successiva →'}
+      </button>
+    </div>
+  </div>`;
+}
+
+/* screenPost()
+   Sezione D post-esposizione – domande di memoria e percezione del QR
+   dopo la visione di tutti i prodotti. Il pulsante "Avanti" è sempre
+   abilitato (nessun checkDone): le risposte sono facoltative. */
+function screenPost() {
+  return `<div class="form-wrap">
+    ${progressBar(5)}
+    <div class="section-header">
+      <div class="study-badge">Sezione D – Post-valutazione</div>
+      <h2>Qualche domanda sui prodotti che hai appena visto</h2>
+      
+    </div>
+
+
+    <div class="field-group">
+      <label class="field-label">Hai notato un codice QR su uno dei prodotti?</label>
+      <div class="radio-group" id="rg-noticed">
+        ${['Sì','No','Non ricordo'].map(o => `<button class="radio-btn"
+          onclick="onRadioPost('rg-noticed','noticed','${o}',this);togglePostQR('${o}')">${o}</button>`).join('')}
+      </div>
+    </div>
+
+    <!-- blocco visibile solo se risponde "Sì" alla domanda sul QR -->
+    <div id="post-qr-block" style="display:none">
+      <div class="field-group">
+        <label class="field-label">Hai cliccato sul codice QR?</label>
+        <div class="radio-group" id="rg-clicked">
+          ${['Sì','No'].map(o => `<button class="radio-btn"
+            onclick="onRadioPost('rg-clicked','clicked','${o}',this)">${o}</button>`).join('')}
+        </div>
+      </div>
+
+    </div>
+
+    <!-- manipulation check: la risposta corretta dipende da S.condition (tracciabilita / nutrizione / sostenibilita) -->
+    <div class="field-group">
+      <label class="field-label">Il codice QR presente su uno dei prodotti rimandava a informazioni su:</label>
+      
+      <div class="radio-group" id="rg-manip">
+        ${[
+          'La tracciabilità e la provenienza del prodotto (filiera, allevamento, territorio)',
+          'La composizione nutrizionale e i benefici per la salute',
+          'La sostenibilità ambientale e l\'impatto ecologico',
+          'Le offerte promozionali e il prezzo del prodotto',
+          'Ricette e consigli di utilizzo in cucina',
+        ].map(o => `<button class="radio-btn"
+          onclick="onRadioPost('rg-manip','manip_check','${o.replace(/'/g,"\\'")}',this)">${o}</button>`).join('')}
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Quanto ritieni utile avere un QR code su prodotti alimentari confezionati?</label>
+      <div class="likert-labels">
+        <span class="likert-label">Per niente utile</span>
+        <span class="likert-label">Molto utile</span>
+      </div>
+      <div class="likert-buttons" id="btns-post-util">
+        ${[1,2,3,4,5,6,7].map(v =>
+          `<button class="lk-btn" onclick="onPostLikert('qr_usefulness',${v},this)">${v}</button>`
+        ).join('')}
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <span></span>
+      <button class="btn-primary" onclick="goTo('fcq')">Avanti →</button>
+    </div>
+  </div>`;
+}
+
+/* screenQRBasic()
+   Sezione E1 – tre domande sull'importanza della tracciabilità, utilità
+   del sistema blockchain/QR e frequenza d'uso dei QR nell'ultimo anno.
+   checkDone: abilita "Avanti" quando tutte e tre le risposte sono presenti. */
+function screenQRBasic() {
+  checkDone = function() {
+    const ok = S.section_d.traceability_imp !== undefined
+            && S.section_d.blockchain_useful !== undefined
+            && S.section_d.qr_usage;
+    const btn = document.getElementById('btn-qrb-next');
+    if (btn) btn.disabled = !ok;
+  };
+  return `<div class="form-wrap">
+    ${progressBar(9)}
+    <div class="section-header">
+      <div class="study-badge">Sezione E – QR Code (1/4)</div>
+      <h2>Tracciabilità e codici QR</h2>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Quanto è importante per te la tracciabilità e la trasparenza nella scelta di prodotti alimentari?</label>
+      <p class="sub" style="margin-bottom:8px"><strong>1</strong> = Per niente importante &nbsp;·&nbsp; <strong>7</strong> = Molto importante</p>
+      <div class="likert-labels">
+        <span class="likert-label">Per niente importante</span>
+        <span class="likert-label">Molto importante</span>
+      </div>
+      <div class="likert-buttons" id="btns-traceability_imp">
+        ${[1,2,3,4,5,6,7].map(v => `<button class="lk-btn" onclick="onLikert('section_d','traceability_imp',${v},this)">${v}</button>`).join('')}
+      </div>
+    </div>
+
+    <div class="field-group" style="margin-top:1.5rem">
+      <label class="field-label">Quanto ritieni utile un sistema di etichettatura basato su blockchain/QR per aumentare la fiducia nei prodotti agro-alimentari?</label>
+      <p class="sub" style="margin-bottom:8px"><strong>1</strong> = Per niente utile &nbsp;·&nbsp; <strong>7</strong> = Molto utile</p>
+      <div class="likert-labels">
+        <span class="likert-label">Per niente utile</span>
+        <span class="likert-label">Molto utile</span>
+      </div>
+      <div class="likert-buttons" id="btns-blockchain_useful">
+        ${[1,2,3,4,5,6,7].map(v => `<button class="lk-btn" onclick="onLikert('section_d','blockchain_useful',${v},this)">${v}</button>`).join('')}
+      </div>
+    </div>
+
+    <div class="field-group" style="margin-top:1.5rem">
+      <label class="field-label">Quante volte hai utilizzato un codice QR nell'ultimo anno?</label>
+      ${radioGroup('rg-qruse2',
+        ['Meno di 5 volte','5–10 volte','Più di 10 volte'],
+        'section_d','qr_usage')}
+    </div>
+
+    <div class="nav-row">
+      <span></span>
+      <button class="btn-primary" id="btn-qrb-next" disabled onclick="goTo('cns')">Avanti →</button>
+    </div>
+  </div>`;
+}
+
+/* screenCNS()
+   Sezione E2 – Consumer Need for Stimulation (7 item, scala 1–7 invertita).
+   Misura la propensione a cercare attivamente informazioni su nuovi prodotti. */
+function screenCNS() {
+  checkDone = function() {
+    const ok = CNS_ITEMS.every(i => S.section_d[i.id] !== undefined);
+    const btn = document.getElementById('btn-cns-next');
+    if (btn) btn.disabled = !ok;
+  };
+  return `<div class="form-wrap">
+    ${progressBar(10)}
+    <div class="section-header">
+      <div class="study-badge">Sezione E – QR Code (2/4)</div>
+      <h2>Indica quanto sei d'accordo con le seguenti affermazioni</h2>
+      <p class="sub"><strong>1</strong> = Completamente d'accordo &nbsp;·&nbsp; <strong>7</strong> = Per niente d'accordo</p>
+    </div>
+    ${renderLikert(CNS_ITEMS,'section_d',7,"Completamente d'accordo","Per niente d'accordo")}
+    <div class="nav-row">
+      <span></span>
+      <button class="btn-primary" id="btn-cns-next" disabled onclick="goTo('tam')">Avanti →</button>
+    </div>
+  </div>`;
+}
+
+/* screenTAM()
+   Sezione E3 – Technology Acceptance Model per QR alimentari (14 item, scala 1–5).
+   Sottoscale PI, PU, PEU, ATT, BI raggruppate visivamente dal campo item.group. */
+function screenTAM() {
+  checkDone = function() {
+    const ok = TAM_ITEMS.every(i => S.section_d[i.id] !== undefined);
+    const btn = document.getElementById('btn-tam-next');
+    if (btn) btn.disabled = !ok;
+  };
+  return `<div class="form-wrap">
+    ${progressBar(11)}
+    <div class="section-header">
+      <div class="study-badge">Sezione E – QR Code (3/4)</div>
+      <h2>Indica quanto sei d'accordo con le seguenti affermazioni</h2>
+      <p class="sub"><strong>1</strong> = Per niente d'accordo &nbsp;·&nbsp; <strong>7</strong> = Completamente d'accordo</p>
+    </div>
+    ${renderLikert(TAM_ITEMS,'section_d',7,"Per niente d'accordo","Completamente d'accordo")}
+    <div class="nav-row">
+      <span></span>
+      <button class="btn-primary" id="btn-tam-next" disabled onclick="goTo('mavenism')">Avanti →</button>
+    </div>
+  </div>`;
+}
+
+/* screenMavenism()
+   Sezione E4 – Market Maven scale (5 item) + Perceived Enjoyment QR (3 item).
+   Entrambe le scale usano Likert 1–5.
+   checkDone: abilita "Avanti" quando tutti e 8 gli item hanno risposta. */
+function screenMavenism() {
+  checkDone = function() {
+    const ok = [...MAVEN_ITEMS, ...ENJOY_ITEMS].every(i => S.section_d[i.id] !== undefined);
+    const btn = document.getElementById('btn-mav-next');
+    if (btn) btn.disabled = !ok;
+  };
+  return `<div class="form-wrap">
+    ${progressBar(12)}
+    <div class="section-header">
+      <div class="study-badge">Sezione E – QR Code (4/4)</div>
+      <h2>Indica quanto sei d'accordo con le seguenti affermazioni</h2>
+      <p class="sub"><strong>1</strong> = Per niente d'accordo &nbsp;·&nbsp; <strong>5</strong> = Completamente d'accordo</p>
+    </div>
+    ${renderLikert(MAVEN_ITEMS,'section_d',5,"Per niente d'accordo","Completamente d'accordo")}
+    ${renderLikert(ENJOY_ITEMS,'section_d',5,"Per niente d'accordo","Completamente d'accordo")}
+    <div class="nav-row">
+      <span></span>
+      <button class="btn-primary" id="btn-mav-next" disabled onclick="goTo('end')">Completa il questionario →</button>
     </div>
   </div>`;
 }
@@ -1596,11 +1590,11 @@ goTo('welcome');
 if (new URLSearchParams(location.search).has('dev')) {
   const DEV_SCREENS = [
     ['welcome','Welcome'],['screening','A – Screening'],['screenout','Screenout'],
-    ['sectionB','B – Acquisti'],['fcq','C1 – FCQ'],['isd','C2 – ISD'],
-    ['trust','C3 – Trust'],
+    ['sectionB','B – Acquisti'],['demographics','Dati demo'],
     ...Array.from({length:4},(_,i) => [`__stim${i}`,`D – Prodotto ${i+1}`]),
-    ['post','D – Post'],['qr_basic','E1 – QR Basic'],['cns','E2 – CNS'],
-    ['tam','E3 – TAM'],['mavenism','E4 – Maven'],['demographics','Dati demo'],['end','Fine'],
+    ['post','D – Post'],['qr_basic','E1 – QR Basic'],['fcq','C1 – FCQ'],['isd','C2 – ISD'],
+    ['trust','C3 – Trust'],['cns','E2 – CNS'],
+    ['tam','E3 – TAM'],['mavenism','E4 – Maven'],['end','Fine'],
   ];
   const nav = document.createElement('div');
   nav.style.cssText = 'position:fixed;bottom:12px;left:50%;transform:translateX(-50%);z-index:9999;background:#1a1a18;border-radius:10px;padding:8px 10px;display:flex;flex-wrap:wrap;gap:5px;max-width:95vw;box-shadow:0 4px 20px rgba(0,0,0,0.35)';
