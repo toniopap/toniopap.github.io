@@ -270,7 +270,7 @@ const FOCAL_QR = { id: 'carne_qr',   name: 'Fettine di Vitello', brand: 'Linea N
 const PROD_SCALES = [
   { id: 'q_quality1', label: 'Qualità percepita',     q: 'Mi aspetto che questo prodotto sia buono.'                        },
   { id: 'q_quality2', label: 'Qualità percepita',     q: 'Mi aspetto che questo prodotto sia fresco.'                        },
-  { id: 'q_safety',   label: 'Sicurezza alimentare',  q: 'Questo prodotto mi sembra sicuro da consumare.'                    },
+  { id: 'q_safety',   label: 'Sicurezza alimentare',  q: 'Mi aspetto che questo prodotto sia sicuro da consumare.'                    },
   { id: 'q_trust',    label: 'Fiducia',               q: 'Mi fido della provenienza di questo prodotto.'                     },
   { id: 'q_transp',   label: 'Trasparenza',           q: 'Il produttore sembra voler essere trasparente con il consumatore.' },
   { id: 'q_intent',   label: "Intenzione d'acquisto", q: "Sarei propenso/a ad acquistare questo prodotto."                   },
@@ -888,8 +888,7 @@ function screenScreening() {
    checkDone: abilita "Avanti" solo quando tutte e 6 le domande hanno risposta. */
 function screenSectionB() {
   checkDone = function() {
-    const ok = S.section_b.cooking && S.section_b.shopping_freq && S.section_b.meat_freq
-            && S.section_b.meat_weekly && S.section_b.online_freq;
+    const ok = S.section_b.cooking && S.section_b.shopping_freq && S.section_b.meat_freq && S.section_b.online_freq;
     const btn = document.getElementById('btn-b-next');
     if (btn) btn.disabled = !ok;
   };
@@ -915,7 +914,7 @@ function screenSectionB() {
     </div>
 
     <div class="field-group">
-      <label class="field-label">3. Con quale frequenza acquista la carne rossa confezionata?</label>
+      <label class="field-label">3. Con quale frequenza acquista la carne rossa?</label>
       ${radioGroup('rg-meatfreq',
         ['Una o più volte al giorno','Più volte alla settimana','Una volta alla settimana','Due volte al mese','Una volta al mese','Meno di una volta al mese'],
         'section_b','meat_freq')}
