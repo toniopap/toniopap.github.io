@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz — VAN con tre fasi di PLV</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f4f8; min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 2rem 1rem; }
+  .wrap { max-width: 700px; width: 100%; }
+
+  /* Header */
+  .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+  .title { font-size: 13px; font-weight: 600; color: #185fa5; letter-spacing: .08em; text-transform: uppercase; }
+  .badge { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: #0c447c; color: #b5d4f4; font-weight: 600; }
+
+  /* Progress */
+  .progress-bar { height: 4px; background: #cfe0f5; border-radius: 2px; margin-bottom: 1.5rem; }
+  .progress-fill { height: 4px; background: #185fa5; border-radius: 2px; transition: width .4s ease; }
+
+  /* Card */
+  .card { background: #fff; border-radius: 14px; border: 1px solid #d4e4f5; padding: 2rem; box-shadow: 0 2px 12px rgba(24,95,165,.07); }
+
+  /* Counter & category */
+  .counter { font-size: 12px; color: #9ab0c8; margin-bottom: 0.6rem; }
+  .category { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 5px; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: .05em; }
+  .cat-intro  { background: #e6f1fb; color: #185fa5; }
+
+  /* Question */
+  .question { font-size: 17px; font-weight: 600; color: #0c2a45; line-height: 1.55; margin-bottom: 1.25rem; }
+  .question ul { margin: 0.4rem 0 0.4rem 1.4rem; font-size: 15px; font-weight: 400; }
+  .question li { margin-bottom: 0.2rem; }
+
+  /* Options */
+  .opts { display: flex; flex-direction: column; gap: 10px; }
+  .opt { background: #f5f9fe; border: 1.5px solid #d4e4f5; border-radius: 10px; padding: 13px 16px; font-size: 15px; color: #0c2a45; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 12px; transition: border-color .15s, background .15s; }
+  .opt:hover:not(:disabled) { border-color: #185fa5; background: #e6f1fb; }
+  .opt .letter { font-size: 12px; font-weight: 700; width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid #b5d4f4; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #378add; }
+  .opt.correct { border-color: #3b6d11; background: #eaf3de; }
+  .opt.correct .letter { background: #3b6d11; color: #fff; border-color: #3b6d11; }
+  .opt.wrong { border-color: #a32d2d; background: #fcebeb; }
+  .opt.wrong .letter { background: #a32d2d; color: #fff; border-color: #a32d2d; }
+  .opt:disabled { cursor: default; }
+
+  /* Feedback */
+  .feedback { margin-top: 1rem; font-size: 14px; padding: 12px 16px; border-radius: 10px; border-left: 4px solid; line-height: 1.7; display: none; }
+  .fb-ok { background: #eaf3de; border-color: #3b6d11; color: #27500a; }
+  .fb-ko { background: #fcebeb; border-color: #a32d2d; color: #791f1f; }
+
+  /* Next button */
+  .btn-next { margin-top: 1.25rem; padding: 11px 26px; border-radius: 10px; background: #185fa5; color: #e6f1fb; border: none; font-size: 15px; font-weight: 600; cursor: pointer; display: none; }
+  .btn-next:hover { background: #0c447c; }
+
+  /* Result */
+  .result { text-align: center; padding: 1rem 0; }
+  .score-big { font-size: 64px; font-weight: 700; color: #185fa5; line-height: 1; margin-bottom: 0.4rem; }
+  .score-sub { font-size: 15px; color: #7a9abf; margin-bottom: 1rem; }
+  .stars { font-size: 28px; letter-spacing: 5px; margin-bottom: 1rem; color: #c8901a; }
+  .msg { font-size: 15px; color: #0c2a45; margin-bottom: 2rem; line-height: 1.65; max-width: 500px; margin-left: auto; margin-right: auto; }
+  .recap { background: #f5f9fe; border-radius: 10px; padding: 1.25rem; text-align: left; margin-bottom: 1.5rem; border: 1px solid #d4e4f5; }
+  .recap-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 6px 0; border-bottom: 1px solid #e8f0f8; gap: 12px; }
+  .recap-row:last-child { border: none; }
+  .recap-text { color: #2a4a6a; flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .ok { color: #3b6d11; font-weight: 700; flex-shrink: 0; }
+  .ko { color: #a32d2d; font-weight: 700; flex-shrink: 0; }
+  .btn-restart { padding: 11px 30px; border-radius: 10px; background: #185fa5; color: #e6f1fb; border: none; font-size: 15px; font-weight: 600; cursor: pointer; }
+  .btn-restart:hover { background: #0c447c; }
+
+  /* Footer */
+  .footer { text-align: center; margin-top: 1.5rem; font-size: 12px; color: #9ab0c8; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <span class="title">Economia dell'Impresa Vitivinicola</span>
+    <span class="badge">Quiz</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="pbar" style="width:0%"></div></div>
+  <div class="card" id="quiz-area"></div>
+  <div class="footer">Dott. Antonio Paparella Ph.D. &nbsp;·&nbsp; Matematica finanziaria</div>
+</div>
+
+<script>
+const questions = [
+  {
+    cat: "intro", catLabel: "Matematica finanziaria",
+    q: `Un vigneto ha un ciclo produttivo di <b>20 anni</b> con la seguente Produzione Lorda Vendibile (PLV):
+        <br><br><b>PLV ANNUA</b>
+        <ul>
+          <li>Fase crescente — anni 1–5: € 4.000/anno</li>
+          <li>Fase stazionaria — anni 6–14: € 8.000/anno</li>
+          <li>Fase decrescente — anni 15–20: € 5.000/anno</li>
+        </ul>
+        <br><b>COSTI</b>
+        <ul>
+          <li>Anno 0 (investimento iniziale): € 10.000</li>
+          <li>Anni 1–20 (gestione annua): € 3.000/anno</li>
+        </ul>
+        <br>Al tasso del <b>4%</b>, calcolare il VAN dell'investimento.`,
+    opts: [
+      "€ 31.062,90",
+      "€ 41.062,90"
+    ],
+    ans: 0,
+    fb: `I flussi netti annui sono:
+         <ul style="margin:.4rem 0 .4rem 1.2rem">
+           <li>Anni 1–5: 4.000 − 3.000 = <b>1.000 €/anno</b></li>
+           <li>Anni 6–14: 8.000 − 3.000 = <b>5.000 €/anno</b></li>
+           <li>Anni 15–20: 5.000 − 3.000 = <b>2.000 €/anno</b></li>
+         </ul>
+         <b>VAN = −10.000 + 1.000 · a(5; 4%) + 5.000 · a(9; 4%) · v<sup>5</sup> + 2.000 · a(6; 4%) · v<sup>14</sup></b><br>
+         = −10.000 + 1.000 × 4,4518 + 5.000 × 7,4353 × 0,8219 + 2.000 × 5,2421 × 0,5775<br>
+         = −10.000 + 4.451,82 + 30.556,64 + 6.054,44<br>
+         = <b>€ 31.062,90</b><br><br>
+         L'opzione B (€ 41.062,90) è l'errore tipico di chi dimentica di sottrarre l'investimento iniziale.`
+  }
+];
+
+let cur = 0, score = 0, answered = false;
+const history = [];
+
+function render(){
+  const area = document.getElementById('quiz-area');
+  document.getElementById('pbar').style.width = (cur / questions.length * 100) + '%';
+  if(cur >= questions.length){ showResult(area); return; }
+  const q = questions[cur];
+  const letters = ['A','B','C','D'];
+  area.innerHTML = `
+    <div class="counter">Domanda ${cur+1} di ${questions.length}</div>
+    <span class="category cat-intro">${q.catLabel}</span>
+    <div class="question">${q.q}</div>
+    <div class="opts">
+      ${q.opts.map((o,i)=>`
+        <button class="opt" id="opt${i}" onclick="pick(${i})">
+          <span class="letter">${letters[i]}</span>${o}
+        </button>`).join('')}
+    </div>
+    <div class="feedback" id="feedback"></div>
+    <button class="btn-next" id="btn-next" onclick="next()">
+      ${cur < questions.length-1 ? 'Prossima domanda →' : 'Vedi il risultato →'}
+    </button>
+  `;
+}
+
+function pick(i){
+  if(answered) return;
+  answered = true;
+  const q = questions[cur];
+  const correct = i === q.ans;
+  if(correct) score++;
+  history.push({ q: q.opts[i], ok: correct });
+  for(let k=0; k<q.opts.length; k++){
+    const btn = document.getElementById('opt'+k);
+    btn.disabled = true;
+    if(k === q.ans) btn.classList.add('correct');
+    else if(k === i && !correct) btn.classList.add('wrong');
+  }
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback ' + (correct ? 'fb-ok' : 'fb-ko');
+  fb.innerHTML = (correct ? '✓ Corretto! ' : '✗ Risposta errata. ') + q.fb;
+  fb.style.display = 'block';
+  document.getElementById('btn-next').style.display = 'inline-block';
+}
+
+function next(){
+  cur++;
+  answered = false;
+  document.getElementById('pbar').style.width = (cur/questions.length*100)+'%';
+  render();
+}
+
+function getMsg(s,t){
+  const p = s/t;
+  if(p >= 1)   return 'Ottimo! Calcolo del VAN corretto in tutte le fasi.';
+  if(p >= .5)  return 'Quasi! Ricontrolla la formula di attualizzazione per le fasi successive alla prima.';
+  return 'Rileggi la formula del VAN con rendite posticipate e i fattori di sconto v^n.';
+}
+
+function getStars(s,t){
+  const n = Math.round(s/t*5);
+  return Array.from({length:5},(_,i)=>i<n?'★':'☆').join('');
+}
+
+function showResult(area){
+  document.getElementById('pbar').style.width='100%';
+  const t = questions.length;
+  area.innerHTML = `
+    <div class="result">
+      <div class="score-big">${score}<span style="font-size:30px;color:#7a9abf">/${t}</span></div>
+      <div class="score-sub">risposte corrette su ${t}</div>
+      <div class="stars">${getStars(score,t)}</div>
+      <p class="msg">${getMsg(score,t)}</p>
+      <div class="recap">
+        ${history.map((h,i)=>`
+          <div class="recap-row">
+            <span class="recap-text">${i+1}. ${h.q}</span>
+            <span class="${h.ok?'ok':'ko'}">${h.ok?'✓':'✗'}</span>
+          </div>`).join('')}
+      </div>
+      <button class="btn-restart" onclick="restart()">↺ Ricomincia il quiz</button>
+    </div>
+  `;
+}
+
+function restart(){
+  cur=0; score=0; answered=false; history.length=0;
+  document.getElementById('pbar').style.width='0%';
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
