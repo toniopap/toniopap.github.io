@@ -205,7 +205,6 @@
    4.  SCALE QUESTIONARIO          – strumenti psicometrici:
          FCQ   Food Choice Questionnaire
          ISD   Internet Search Dependence
-         TRUST Fiducia nelle istituzioni alimentari
          CNS   Consumer Need for Stimulation
          TAM   Technology Acceptance Model (QR)
          MAVEN Market Maven scale
@@ -236,6 +235,10 @@
 const STUDY_URL  = 'https://toniopap.github.io/';
 const CONDITIONS = ['V3_Nutraceutiche', 'V4_Pascolo', 'V5_Maturazione']; // etichette per le tre varianti del QR code
 const ORDERS     = ['A', 'B'];
+
+/* QR_RANDOM: se true, la condizione QR è estratta casualmente da CONDITIONS.
+   Se false, tutti i partecipanti vedono la stessa pagina 'Qr_landing_page.html'. */
+const QR_RANDOM  = false;
 
 /* GAS_URL: incollare qui l'URL del Web App dopo il deploy su Google Apps Script.
    Lasciare stringa vuota durante sviluppo locale (submitData() non farà nulla). */
@@ -268,12 +271,13 @@ const FOCAL_QR = { id: 'carne_qr',   name: 'Fettine di Vitello', brand: 'Linea N
    alimentare, fiducia nella provenienza, trasparenza e intenzione d'acquisto.
 ================================================================ */
 const PROD_SCALES = [
-  { id: 'q_quality1', label: 'Qualità percepita',     q: 'Mi aspetto che questo prodotto sia buono.'                        },
-  { id: 'q_quality2', label: 'Qualità percepita',     q: 'Mi aspetto che questo prodotto sia fresco.'                        },
-  { id: 'q_safety',   label: 'Sicurezza alimentare',  q: 'Mi aspetto che questo prodotto sia sicuro da consumare.'                    },
-  { id: 'q_trust',    label: 'Fiducia',               q: 'Mi fido della provenienza di questo prodotto.'                     },
-  { id: 'q_transp',   label: 'Trasparenza',           q: 'Il produttore sembra voler essere trasparente con il consumatore.' },
-  { id: 'q_intent',   label: "Intenzione d'acquisto", q: "Sarei propenso/a ad acquistare questo prodotto."                   },
+  { id: 'q_quality1',   label:'' , q: 'Mi aspetto che questo prodotto sia buono.'                        },
+  { id: 'q_health',    label:'' , q: 'Mi aspetto che questo prodotto sia sano.'                        },
+  { id: 'q_safety',     label:'' ,q: 'Mi aspetto che questo prodotto sia sicuro da consumare.'                    },
+  { id: 'q_trust',                 label:'' ,  q: 'Mi fido della provenienza di questo prodotto.'                     },
+  { id: 'q_transp',             label:'' , q: 'Il produttore sembra voler essere trasparente con il consumatore.' },
+  { id: 'q_animal_welfare', label:'' , q: 'Mi aspetto che questo prodotto sia rispettoso del benessere animale.' },
+  { id: 'q_intent', label:'' , q: "Sarei propenso/a ad acquistare questo prodotto."                   },
 ];
 
 /* ================================================================
@@ -315,30 +319,6 @@ const ISD_ITEMS = [
   { id:'isd10', q:'Di solito inizio a cercare online inconsapevolmente quando sono inattivo/a.' },
   { id:'isd11', q:"Non sono sicuro/a della risposta nella mia memoria se non riesco a verificarla tramite ricerca su Internet." },
   { id:'isd12', q:'Penso che si possano trovare informazioni affidabili tramite la ricerca su Internet.' },
-];
-
-/* TRUST – Fiducia nelle istituzioni del sistema alimentare
-   18 item organizzati in 3 gruppi da 6 (governo, agricoltori, industria).
-   Ogni gruppo misura competenza, onestà e trasparenza. Scala 1–5. */
-const TRUST_ITEMS = [
-  { id:'gov1', group:'Fiducia nel governo',              q:'Il governo si prende cura della sicurezza del nostro cibo.' },
-  { id:'gov2', group:'Fiducia nel governo',              q:'Il governo presta particolare attenzione alla sicurezza alimentare.' },
-  { id:'gov3', group:'Fiducia nel governo',              q:'Il governo ha le competenze per controllare la sicurezza alimentare.' },
-  { id:'gov4', group:'Fiducia nel governo',              q:'Il governo ha le conoscenze sufficienti per garantire la sicurezza dei prodotti alimentari.' },
-  { id:'gov5', group:'Fiducia nel governo',              q:"Il governo è onesto riguardo alla sicurezza alimentare." },
-  { id:'gov6', group:'Fiducia nel governo',              q:'Il governo è sufficientemente trasparente riguardo alla sicurezza alimentare.' },
-  { id:'far1', group:'Fiducia negli agricoltori',        q:'Gli agricoltori si prendono cura della sicurezza del nostro cibo.' },
-  { id:'far2', group:'Fiducia negli agricoltori',        q:'Gli agricoltori prestano particolare attenzione alla sicurezza alimentare.' },
-  { id:'far3', group:'Fiducia negli agricoltori',        q:'Gli agricoltori hanno le competenze per controllare la sicurezza alimentare.' },
-  { id:'far4', group:'Fiducia negli agricoltori',        q:'Gli agricoltori hanno le conoscenze sufficienti per garantire la sicurezza dei prodotti alimentari.' },
-  { id:'far5', group:'Fiducia negli agricoltori',        q:"Gli agricoltori sono onesti riguardo alla sicurezza alimentare." },
-  { id:'far6', group:'Fiducia negli agricoltori',        q:'Gli agricoltori sono sufficientemente trasparenti riguardo alla sicurezza alimentare.' },
-  { id:'mfr1', group:"Fiducia nell'industria alimentare", q:"Le industrie alimentari si prendono cura della sicurezza del nostro cibo." },
-  { id:'mfr2', group:"Fiducia nell'industria alimentare", q:'Le industrie alimentari prestano particolare attenzione alla sicurezza alimentare.' },
-  { id:'mfr3', group:"Fiducia nell'industria alimentare", q:'Le industrie alimentari hanno le competenze per controllare la sicurezza alimentare.' },
-  { id:'mfr4', group:"Fiducia nell'industria alimentare", q:'Le industrie alimentari hanno le conoscenze sufficienti per garantire la sicurezza dei prodotti alimentari.' },
-  { id:'mfr5', group:"Fiducia nell'industria alimentare", q:"Le industrie alimentari sono oneste riguardo alla sicurezza alimentare." },
-  { id:'mfr6', group:"Fiducia nell'industria alimentare", q:'Le industrie alimentari sono sufficientemente trasparenti riguardo alla sicurezza alimentare.' },
 ];
 
 /* CNS – Consumer Need for Stimulation
@@ -416,7 +396,9 @@ let checkDone = null;
    – costruisce la sequenza dei 4 prodotti interleaving filler e focali
    – prepara S con tutte le sotto-strutture pronte a ricevere risposte */
 function initSession() {
-  const condition = CONDITIONS[Math.floor(Math.random() * 3)];
+  const condition = QR_RANDOM
+    ? CONDITIONS[Math.floor(Math.random() * 3)]
+    : 'Qr_landing_page';
   const order     = ORDERS[Math.floor(Math.random() * 2)];
   const pid       = 'P' + Date.now().toString(36).toUpperCase();
 
@@ -437,7 +419,6 @@ function initSession() {
     demographics: { health: [] },
     fcq: {},                // risposte FCQ
     isd: {},                // risposte ISD
-    trust: {},              // risposte scala fiducia
     stimuli: seq.map(p => ({
       stimulus_id:  p.id,
       has_qr:       p.hasQR,
@@ -498,7 +479,7 @@ const QR_SVG = `<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" widt
 ================================================================ */
 
 /* Numero totale di sezioni (denominatore per il calcolo della percentuale) */
-const TOTAL_SECTIONS = 12;
+const TOTAL_SECTIONS = 11;
 
 /* progressBar(section, label)
    Restituisce l'HTML della barra di avanzamento orizzontale.
@@ -1122,31 +1103,7 @@ function screenISD() {
     ${renderLikert0(ISD_ITEMS,'isd')}
     <div class="nav-row">
       <span></span>
-      <button class="btn-primary" id="btn-isd-next" disabled onclick="goTo('trust')">Avanti →</button>
-    </div>
-  </div>`;
-}
-
-/* screenTrust()
-   Sezione C3 – scala fiducia nelle istituzioni (18 item, scala 1–5).
-   Gli item sono raggruppati visivamente per istituzione (gov/far/mfr). */
-function screenTrust() {
-  checkDone = function() {
-    const ok = TRUST_ITEMS.every(i => S.trust[i.id] !== undefined);
-    const btn = document.getElementById('btn-trust-next');
-    if (btn) btn.disabled = !ok;
-  };
-  return `<div class="form-wrap">
-    ${progressBar(8)}
-    <div class="section-header">
-      <div class="study-badge">Sezione C – Fiducia nelle istituzioni alimentari</div>
-      <h2>Indica quanto sei d'accordo con le seguenti affermazioni</h2>
-      <p class="sub"><strong>1</strong> = Per niente d'accordo &nbsp;·&nbsp; <strong>5</strong> = Completamente d'accordo</p>
-    </div>
-    ${renderLikert(TRUST_ITEMS,'trust',5,"Per niente d'accordo","Completamente d'accordo",true)}
-    <div class="nav-row">
-      <span></span>
-      <button class="btn-primary" id="btn-trust-next" disabled onclick="goTo('qr_basic')">Avanti →</button>
+      <button class="btn-primary" id="btn-isd-next" disabled onclick="goTo('qr_basic')">Avanti →</button>
     </div>
   </div>`;
 }
@@ -1305,7 +1262,7 @@ function screenQRBasic() {
     if (btn) btn.disabled = !ok;
   };
   return `<div class="form-wrap">
-    ${progressBar(9)}
+    ${progressBar(8)}
     <div class="section-header">
       <div class="study-badge">Sezione E – QR Code (1/4)</div>
       <h2>Tracciabilità e codici QR</h2>
@@ -1359,7 +1316,7 @@ function screenCNS() {
     if (btn) btn.disabled = !ok;
   };
   return `<div class="form-wrap">
-    ${progressBar(10)}
+    ${progressBar(9)}
     <div class="section-header">
       <div class="study-badge">Sezione E – QR Code (2/4)</div>
       <h2>Indica quanto sei d'accordo con le seguenti affermazioni</h2>
@@ -1383,7 +1340,7 @@ function screenTAM() {
     if (btn) btn.disabled = !ok;
   };
   return `<div class="form-wrap">
-    ${progressBar(11)}
+    ${progressBar(10)}
     <div class="section-header">
       <div class="study-badge">Sezione E – QR Code (3/4)</div>
       <h2>Indica quanto sei d'accordo con le seguenti affermazioni</h2>
@@ -1408,7 +1365,7 @@ function screenMavenism() {
     if (btn) btn.disabled = !ok;
   };
   return `<div class="form-wrap">
-    ${progressBar(12)}
+    ${progressBar(11)}
     <div class="section-header">
       <div class="study-badge">Sezione E – QR Code (4/4)</div>
       <h2>Indica quanto sei d'accordo con le seguenti affermazioni</h2>
@@ -1461,7 +1418,6 @@ const SCREENS = {
   sectionB:     screenSectionB,
   fcq:          screenFCQ,
   isd:          screenISD,
-  trust:        screenTrust,
   post:         screenPost,
   qr_basic:     screenQRBasic,
   cns:          screenCNS,
@@ -1592,7 +1548,7 @@ if (new URLSearchParams(location.search).has('dev')) {
     ['sectionB','B – Acquisti'],['demographics','Dati demo'],
     ...Array.from({length:4},(_,i) => [`__stim${i}`,`D – Prodotto ${i+1}`]),
     ['post','D – Post'],['qr_basic','E1 – QR Basic'],['fcq','C1 – FCQ'],['isd','C2 – ISD'],
-    ['trust','C3 – Trust'],['cns','E2 – CNS'],
+    ['cns','E2 – CNS'],
     ['tam','E3 – TAM'],['mavenism','E4 – Maven'],['end','Fine'],
   ];
   const nav = document.createElement('div');
